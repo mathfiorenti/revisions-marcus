@@ -1,0 +1,316 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>QCM SES Chapitre 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout : une colonne façon copie double Seyès, une question par écran, marge rouge à gauche */
+:root {
+  --paper: #fbfbf8;
+  --line: #dfe4f2;
+  --ink: #1d2340;
+  --muted: #5b6280;
+  --pen: #1f4fd1;         /* stylo bleu */
+  --margin: #d9473a;      /* marge rouge */
+  --card: #ffffff;
+  --good: #1f7a46;
+  --good-bg: #e6f4ec;
+  --bad: #b3261e;
+  --bad-bg: #fbe9e7;
+  --border: #ccd2e3;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12152a; --line: #1e2340; --ink: #e9ebf5; --muted: #a3a9c4;
+    --pen: #7ea2ff; --margin: #ff7a6b; --card: #1a1e36;
+    --good: #6fd39a; --good-bg: #173326; --bad: #ff8f85; --bad-bg: #3a1c1c; --border: #33395c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12152a; --line: #1e2340; --ink: #e9ebf5; --muted: #a3a9c4;
+  --pen: #7ea2ff; --margin: #ff7a6b; --card: #1a1e36;
+  --good: #6fd39a; --good-bg: #173326; --bad: #ff8f85; --bad-bg: #3a1c1c; --border: #33395c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--line) 31px 32px);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 20px 40px;
+  border-left: 2px solid var(--margin);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+header { display: flex; flex-direction: column; gap: 4px; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--margin); font-weight: 700; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); font-size: .95rem; margin: 0; }
+
+.progress { display: flex; flex-direction: column; gap: 6px; }
+.progress-top { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--pen); width: 0; transition: width .3s ease; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.qnum { font-family: var(--font-display); font-weight: 600; color: var(--pen); font-size: .95rem; }
+.prompt { font-size: 1.12rem; font-weight: 700; margin: 0; text-wrap: pretty; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  font: inherit; color: var(--ink); text-align: left;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-height: 52px;
+  display: flex; gap: 12px; align-items: flex-start;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.opt:hover:not(:disabled) { border-color: var(--pen); }
+.opt:focus-visible { outline: 3px solid var(--pen); outline-offset: 2px; }
+.opt .letter {
+  flex: none; width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid currentColor; display: grid; place-items: center;
+  font-weight: 700; font-size: .85rem; color: var(--muted);
+}
+.opt .txt { min-width: 0; }
+.opt:disabled { cursor: default; }
+.opt.correct { border-color: var(--good); background: var(--good-bg); }
+.opt.correct .letter { color: var(--good); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+.opt.wrong .letter { color: var(--bad); }
+.opt.dim { opacity: .55; }
+
+.hint-btn { align-self: flex-start; font: inherit; font-size: .9rem; color: var(--pen); background: none; border: none; padding: 0; text-decoration: underline; cursor: pointer; }
+.hint { font-size: .95rem; color: var(--muted); font-style: italic; margin: 0; }
+
+.feedback { border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.feedback.ok { background: var(--good-bg); }
+.feedback.ko { background: var(--bad-bg); }
+.feedback strong { color: var(--good); }
+.feedback.ko strong { color: var(--bad); }
+.feedback p { margin: 0; font-size: .97rem; }
+
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  font: inherit; font-weight: 700;
+  border-radius: 10px; padding: 13px 18px; min-height: 48px;
+  cursor: pointer; flex: 1 1 auto;
+  background: var(--pen); color: var(--paper); border: 2px solid var(--pen);
+}
+.btn.ghost { background: transparent; color: var(--pen); }
+.btn:focus-visible { outline: 3px solid var(--margin); outline-offset: 2px; }
+
+.score {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: 3.4rem; line-height: 1; color: var(--margin);
+  font-variant-numeric: tabular-nums;
+  transform: rotate(-4deg); align-self: flex-start;
+  border: 3px solid var(--margin); border-radius: 12px; padding: 6px 14px;
+}
+.score small { font-size: 1.4rem; }
+.verdict { font-size: 1.05rem; margin: 0; }
+.best { font-size: .9rem; color: var(--muted); margin: 0; }
+.review { display: flex; flex-direction: column; gap: 12px; }
+.review h2 { font-family: var(--font-display); font-size: 1.15rem; margin: 0; }
+.rev-item { border-top: 1px solid var(--border); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; }
+.rev-item p { margin: 0; font-size: .95rem; }
+.rev-item .q { font-weight: 700; }
+.rev-item .yours { color: var(--bad); }
+.rev-item .right { color: var(--good); }
+.rev-item .why { color: var(--muted); }
+footer { font-size: .85rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">SES · Seconde · Chapitre 1</span>
+    <h1>Économistes, sociologues, politistes : es-tu prêt ?</h1>
+    <p class="sub">20 questions sur tout le chapitre. Une réponse par question, l'explication s'affiche tout de suite.</p>
+  </header>
+
+  <div class="progress" id="progress">
+    <div class="progress-top"><span id="pos">Question 1 / 20</span><span id="pts">0 bonne réponse</span></div>
+    <div class="bar"><span id="barfill"></span></div>
+  </div>
+
+  <main id="stage"></main>
+
+  <footer>Rappel : les définitions du professeur se savent mot pour mot.</footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  {p:"Que signifie la rareté en économie ?", o:["Une ressource a presque disparu","Les ressources disponibles sont limitées au regard des besoins et des désirs","Un bien coûte très cher","Les entreprises produisent trop peu par manque d'efforts"], c:1, e:"La rareté est relative : une ressource est rare quand elle ne suffit pas à satisfaire tous les besoins et désirs, même si elle existe en grande quantité.", h:"Pense aux mots « au regard de » dans la définition."},
+  {p:"Quelle est la question de base de la science économique ?", o:["Comment se conquiert le pouvoir ?","Comment fait-on société ?","Comment allouer efficacement des ressources rares ?","Comment gagner le plus d'argent possible ?"], c:2, e:"Parce que les ressources sont rares, il faut choisir comment les répartir entre différents usages : c'est l'allocation des ressources."},
+  {p:"Dans une boulangerie, laquelle de ces ressources fait partie du capital ?", o:["La farine","Le four","Le boulanger","Le sel"], c:1, e:"Le capital regroupe les équipements et bâtiments qui servent à produire. La farine et le sel relèvent de la terre (ressources naturelles), le boulanger du travail."},
+  {p:"Lequel de ces exemples est un service ?", o:["Une baguette de pain","Un vélo","Une coupe de cheveux","Un smartphone"], c:2, e:"Un service est immatériel : il est produit et consommé en même temps. Les autres exemples sont des biens matériels et stockables."},
+  {p:"Quelles sont les deux questions de base de la sociologie ?", o:["Que produire ? Pour qui produire ?","Comment fait-on société ? Comment explique-t-on les comportements sociaux ?","Qui gouverne ? Comment voter ?","Pourquoi les prix montent-ils ? Comment épargner ?"], c:1, e:"La sociologie étudie les liens sociaux (faire société) et explique les comportements sociaux."},
+  {p:"Que montre l'exemple des chenilles frites au Mexique et des cuisses de grenouilles en France ?", o:["Les goûts sont uniquement naturels","Les Français mangent mieux que les Mexicains","Nos goûts et comportements sont influencés par la société dans laquelle nous vivons","Chaque individu choisit ses goûts seul"], c:2, e:"Ce qui dégoûte dans une société est apprécié dans une autre : les goûts sont façonnés socialement. Attention, la réponse B est un jugement de valeur."},
+  {p:"Qu'est-ce qui distingue le pouvoir politique des autres formes de pouvoir ?", o:["Il est toujours exercé par un président","Il s'exerce sur l'ensemble de la société","Il concerne seulement les entreprises","Il est toujours démocratique"], c:1, e:"Le pouvoir de l'école ou des parents ne concerne qu'un groupe ; le pouvoir politique s'exerce sur toute la société."},
+  {p:"Un coup d'État est :", o:["Une conquête légale du pouvoir","Une forme d'élection","Une conquête illégale, par le renversement souvent brutal du pouvoir en place","Une décision du Parlement"], c:2, e:"La conquête légale passe par l'élection ; le coup d'État est une conquête illégale."},
+  {p:"Qu'est-ce qui caractérise une dictature ?", o:["Le peuple décide","Les élections sont libres","Tous les pouvoirs sont concentrés entre les mains d'une personne ou d'un petit nombre","Le gouvernement est « du peuple, par le peuple, pour le peuple »"], c:2, e:"En dictature, le peuple n'a pas de place. La formule de Lincoln (réponse D) définit au contraire la démocratie."},
+  {p:"« Pourquoi les filles font-elles moins d'études scientifiques que les garçons ? » relève principalement de :", o:["L'économie","La sociologie","La science politique"], c:1, e:"La question cherche à expliquer un comportement social qui diffère selon le sexe."},
+  {p:"« Comment explique-t-on que l'on produise des automobiles en France ? » relève principalement de :", o:["L'économie","La sociologie","La science politique"], c:0, e:"La question porte sur la production, donc sur l'allocation des ressources rares."},
+  {p:"Quelle affirmation décrit une enquête quantitative ?", o:["Quelques entretiens longs et approfondis","Un questionnaire auprès d'un grand échantillon, produisant des données chiffrées","L'observation d'un seul groupe pendant des mois","Le récit de vie d'une personne"], c:1, e:"L'enquête quantitative mesure l'ampleur d'un phénomène avec des chiffres. Les autres réponses décrivent des enquêtes qualitatives."},
+  {p:"Un échantillon représentatif, c'est :", o:["Toute la population interrogée","Les personnes qui ont accepté de répondre","Une partie de la population qui a les mêmes caractéristiques que la population totale","Un groupe de spécialistes"], c:2, e:"Il reproduit en petit la population (sexe, âge, région…), ce qui permet de généraliser les résultats sans interroger tout le monde."},
+  {p:"Document INSEE : « 30 % pour les femmes ». Que signifie ce chiffre ?", o:["30 % des femmes sont discriminées au travail","Parmi les femmes déclarant avoir subi une discrimination au travail, 30 % citent leur sexe comme principal motif","30 % des discriminations concernent des femmes","Les femmes sont 30 % plus discriminées que les hommes"], c:1, e:"Toujours se demander « 30 % de qui ? ». L'ensemble de référence est celui des femmes qui déclarent une discrimination, pas toutes les femmes.", h:"Quel est l'ensemble de référence ?"},
+  {p:"Quelle situation illustre une corrélation négative ?", o:["La température monte et les ventes de glaces augmentent","Le prix d'un produit augmente et les quantités achetées diminuent","Le revenu augmente et les départs en vacances augmentent","Deux variables baissent en même temps"], c:1, e:"Négative = sens opposé. Attention : deux variables qui baissent ensemble évoluent dans le même sens, la corrélation est positive."},
+  {p:"Les mois où l'on vend le plus de glaces sont ceux où il y a le plus de noyades. Quel est le piège ?", o:["Les glaces provoquent les noyades","Une variable cachée : la chaleur de l'été explique les deux","Une causalité inverse : les noyades font vendre des glaces","Il n'y a aucune corrélation"], c:1, e:"La chaleur fait à la fois vendre des glaces et pousse à se baigner : c'est une troisième variable commune."},
+  {p:"« Les personnes qui vont souvent à l'hôpital sont plus souvent malades. » Quel est le piège ?", o:["Une causalité inverse : c'est la maladie qui conduit à l'hôpital","Une coïncidence","Une corrélation négative","Aucun piège : l'hôpital rend malade"], c:0, e:"Le sens de la causalité est inversé : on va à l'hôpital parce qu'on est malade."},
+  {p:"Un modèle en sciences sociales est :", o:["Une copie exacte de la réalité","Un exemple à suivre","Une représentation simplifiée de la réalité qui en retient certains éléments pour raisonner","Une enquête statistique"], c:2, e:"Le modèle simplifie volontairement pour comprendre des mécanismes, comme le circuit économique."},
+  {p:"Dans le circuit économique simplifié, quel flux va des entreprises vers les ménages et est un flux monétaire ?", o:["Le travail","Les dépenses de consommation","Les salaires","Les biens et services"], c:2, e:"Les salaires sont de l'argent versé par les entreprises aux ménages, en contrepartie du travail. Les biens et services vont aussi vers les ménages, mais ce sont des flux réels."},
+  {p:"Laquelle de ces phrases contient un jugement de valeur, interdit dans une démarche scientifique ?", o:["En 2021, 19 % des personnes discriminées au travail citent leur sexe","Les jeunes votent moins que leurs aînés","Il est scandaleux que les jeunes votent si peu","Le prix du chocolat a augmenté"], c:2, e:"« Scandaleux » exprime une opinion. Les sciences sociales s'en tiennent aux faits : elles décrivent et expliquent."}
+];
+const LETTERS = ["A","B","C","D"];
+const GOOD = ["Exact !","Bien vu.","Parfait.","Oui !","Correct."];
+const BAD = ["Pas tout à fait.","Raté, relis bien.","Presque…","Non, regarde l'explication."];
+const STORE = "qcm-ses-chap1-best";
+
+let order = [], idx = 0, score = 0, answers = [];
+const $ = id => document.getElementById(id);
+
+function readBest(){ try { return JSON.parse(localStorage.getItem(STORE)); } catch(e){ return null; } }
+function writeBest(v){ try { localStorage.setItem(STORE, JSON.stringify(v)); } catch(e){} }
+
+function start(list){
+  order = list; idx = 0; score = 0; answers = [];
+  $("progress").hidden = false;
+  render();
+}
+
+function updateProgress(){
+  $("pos").textContent = `Question ${idx + 1} / ${order.length}`;
+  $("pts").textContent = `${score} bonne${score > 1 ? "s" : ""} réponse${score > 1 ? "s" : ""}`;
+  $("barfill").style.width = `${(idx / order.length) * 100}%`;
+}
+
+function el(tag, cls, text){ const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+
+function render(){
+  updateProgress();
+  const qi = order[idx], q = QUESTIONS[qi];
+  const stage = $("stage"); stage.innerHTML = "";
+  const card = el("section","card");
+  card.appendChild(el("span","qnum",`Question ${qi + 1}`));
+  card.appendChild(el("p","prompt",q.p));
+  if (q.h){
+    const hb = el("button","hint-btn","Besoin d'un indice ?"); hb.type = "button"; hb.id = "hint-btn";
+    const ht = el("p","hint",q.h); ht.hidden = true;
+    hb.onclick = () => { ht.hidden = false; hb.hidden = true; };
+    card.appendChild(hb); card.appendChild(ht);
+  }
+  const opts = el("div","options");
+  q.o.forEach((t,i) => {
+    const b = el("button","opt"); b.type = "button"; b.id = `opt-${i}`;
+    b.appendChild(el("span","letter",LETTERS[i]));
+    b.appendChild(el("span","txt",t));
+    b.onclick = () => choose(i, card, opts);
+    opts.appendChild(b);
+  });
+  card.appendChild(opts);
+  stage.appendChild(card);
+  window.scrollTo({top:0});
+}
+
+function choose(i, card, opts){
+  const qi = order[idx], q = QUESTIONS[qi], ok = i === q.c;
+  if (ok) score++;
+  answers.push({qi, chosen:i, ok});
+  [...opts.children].forEach((b,j) => {
+    b.disabled = true;
+    if (j === q.c) b.classList.add("correct");
+    else if (j === i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const hb = card.querySelector(".hint-btn"); if (hb) hb.hidden = true;
+  const fb = el("div", "feedback " + (ok ? "ok" : "ko"));
+  const pick = arr => arr[(qi + i) % arr.length];
+  fb.appendChild(el("strong", null, ok ? pick(GOOD) : pick(BAD)));
+  fb.appendChild(el("p", null, q.e));
+  card.appendChild(fb);
+  const act = el("div","actions");
+  const last = idx === order.length - 1;
+  const nx = el("button","btn", last ? "Voir mon score" : "Question suivante"); nx.type = "button"; nx.id = "next-btn";
+  nx.onclick = () => { if (last) finish(); else { idx++; render(); } };
+  act.appendChild(nx); card.appendChild(act);
+  updateProgress();
+  $("barfill").style.width = `${((idx + 1) / order.length) * 100}%`;
+  nx.focus({preventScroll:true});
+  fb.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"nearest"});
+}
+
+function finish(){
+  $("progress").hidden = true;
+  const total = order.length, on20 = Math.round(score / total * 20 * 2) / 2;
+  const full = total === QUESTIONS.length;
+  let best = readBest();
+  if (full && (!best || score > best.score)) { best = {score, total}; writeBest(best); }
+  const stage = $("stage"); stage.innerHTML = "";
+  const card = el("section","card");
+  const sc = el("div","score"); sc.textContent = full ? String(on20).replace(".", ",") : `${score}`;
+  const sm = el("small", null, full ? " / 20" : ` / ${total}`); sc.appendChild(sm);
+  card.appendChild(sc);
+  let msg;
+  const r = score / total;
+  if (r === 1) msg = "Sans faute. Tu es prêt pour l'interro.";
+  else if (r >= .8) msg = "Très bien. Relis les explications des questions ratées et ce sera parfait.";
+  else if (r >= .6) msg = "Correct, mais il reste des notions fragiles. Relis la fiche puis refais les erreurs.";
+  else msg = "Il faut retravailler le cours : reprends la fiche de révision, puis recommence.";
+  card.appendChild(el("p","verdict", `${score} bonne${score>1?"s":""} réponse${score>1?"s":""} sur ${total}. ${msg}`));
+  if (best && full) card.appendChild(el("p","best", `Meilleur score sur ce téléphone : ${best.score} / ${best.total}`));
+  const wrong = answers.filter(a => !a.ok);
+  const act = el("div","actions");
+  if (wrong.length){
+    const rb = el("button","btn", `Refaire mes ${wrong.length} erreur${wrong.length>1?"s":""}`); rb.type = "button"; rb.id = "redo-btn";
+    rb.onclick = () => start(wrong.map(a => a.qi));
+    act.appendChild(rb);
+  }
+  const all = el("button","btn ghost","Recommencer tout le QCM"); all.type = "button"; all.id = "restart-btn";
+  all.onclick = () => start(QUESTIONS.map((_,i) => i));
+  act.appendChild(all);
+  card.appendChild(act);
+  stage.appendChild(card);
+  if (wrong.length){
+    const rv = el("section","card review");
+    rv.appendChild(el("h2", null, "Mes erreurs à revoir"));
+    wrong.forEach(a => {
+      const q = QUESTIONS[a.qi], it = el("div","rev-item");
+      it.appendChild(el("p","q", `${a.qi + 1}. ${q.p}`));
+      it.appendChild(el("p","yours", `Ta réponse : ${q.o[a.chosen]}`));
+      it.appendChild(el("p","right", `Bonne réponse : ${q.o[q.c]}`));
+      it.appendChild(el("p","why", q.e));
+      rv.appendChild(it);
+    });
+    stage.appendChild(rv);
+  }
+  window.scrollTo({top:0});
+}
+
+start(QUESTIONS.map((_,i) => i));
+</script>
+
+</body></html>

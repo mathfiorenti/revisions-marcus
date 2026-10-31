@@ -1,0 +1,203 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>QCM Athènes et Rome</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout : une colonne étroite façon fiche, une question à la fois, bandeau à grecque en tête */
+:root{
+  --bg:#f7efe2; --surface:#fffaf2; --ink:#231a12; --muted:#6d5c4a;
+  --terre:#b4532a; --terre-soft:#f2d9c9; --line:#e2d2bb;
+  --ok:#2f7a4f; --ok-soft:#dcefe3; --ko:#b23a2b; --ko-soft:#f6dcd7;
+  --display:"Marcellus","Times New Roman",serif; --body:"Source Sans 3",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17120e; --surface:#221b15; --ink:#f1e6d6; --muted:#b3a18b;
+  --terre:#e07a4a; --terre-soft:#3b2519; --line:#3a2e24;
+  --ok:#63c08a; --ok-soft:#1d3226; --ko:#ef7a69; --ko-soft:#3a1f1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17120e; --surface:#221b15; --ink:#f1e6d6; --muted:#b3a18b;
+  --terre:#e07a4a; --terre-soft:#3b2519; --line:#3a2e24;
+  --ok:#63c08a; --ok-soft:#1d3226; --ko:#ef7a69; --ko-soft:#3a1f1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 28px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.meander{height:14px;background:
+  linear-gradient(var(--terre),var(--terre)) top/100% 2px no-repeat,
+  linear-gradient(var(--terre),var(--terre)) bottom/100% 2px no-repeat,
+  repeating-linear-gradient(90deg,var(--terre) 0 2px,transparent 2px 7px,var(--terre) 7px 9px,transparent 9px 14px) center/100% 6px no-repeat;opacity:.75}
+header h1{font-family:var(--display);font-weight:400;font-size:1.65rem;margin:6px 0 2px;text-wrap:balance;letter-spacing:.01em}
+header p{margin:0;color:var(--muted);font-size:.95rem}
+.bar{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.track{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.fill{height:100%;background:var(--terre);width:0;transition:width .3s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.part{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--terre)}
+.qtext{font-size:1.12rem;font-weight:600;margin:0;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{all:unset;box-sizing:border-box;display:flex;gap:10px;align-items:flex-start;width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer;font-size:1rem;min-height:48px}
+.opt .l{font-family:var(--display);color:var(--terre);min-width:1.1em}
+.opt:focus-visible{outline:3px solid var(--terre);outline-offset:2px}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+.opt.ko{border-color:var(--ko);background:var(--ko-soft)}
+.opt[disabled]{cursor:default}
+.fb{border-radius:10px;padding:11px 13px;font-size:.96rem}
+.fb.ok{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.fb.ko{background:var(--ko-soft);border-left:4px solid var(--ko)}
+.fb b{display:block;margin-bottom:2px}
+.btn{all:unset;box-sizing:border-box;text-align:center;padding:13px 16px;border-radius:10px;background:var(--terre);color:#fff;font-weight:700;cursor:pointer;min-height:48px}
+.btn.ghost{background:transparent;color:var(--terre);border:1.5px solid var(--terre)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row .btn{flex:1 1 180px}
+.score{font-family:var(--display);font-size:3rem;line-height:1;margin:4px 0;font-variant-numeric:tabular-nums}
+.verdict{font-size:1.05rem;font-weight:600}
+.recap{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.recap li{border-left:3px solid var(--ko);padding:4px 0 4px 10px;font-size:.93rem}
+.recap li span{display:block;color:var(--ok);font-weight:600}
+.parts{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:.93rem;font-variant-numeric:tabular-nums}
+.small{font-size:.85rem;color:var(--muted)}
+.chooser{display:flex;flex-direction:column;gap:8px}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="meander" aria-hidden="true"></div>
+  <header>
+    <h1>Athènes et Rome</h1>
+    <p>Histoire · Seconde · Chapitre 1 : la Méditerranée antique</p>
+  </header>
+
+  <section id="start" class="card">
+    <div class="part">Entraînement</div>
+    <p class="qtext" style="font-weight:400">46 questions sur ton cours, avec une explication courte après chaque réponse. Choisis ta partie :</p>
+    <div class="chooser">
+      <button class="btn" id="go-gr">I. Athènes (25 questions)</button>
+      <button class="btn" id="go-ro">II. Rome (21 questions)</button>
+      <button class="btn ghost" id="go-all">Tout le chapitre (46 questions)</button>
+      <button class="btn ghost" id="go-quick">Révision express (15 questions au hasard)</button>
+    </div>
+    <p class="small" id="best"></p>
+  </section>
+
+  <div class="bar" id="bar" hidden><span id="count">1 / 24</span><div class="track"><div class="fill" id="fill"></div></div><span id="pts">0 pt</span></div>
+
+  <section id="quiz" class="card" hidden>
+    <div class="part" id="qpart"></div>
+    <p class="qtext" id="qtext"></p>
+    <div class="opts" id="opts"></div>
+    <div id="fb" class="fb" hidden></div>
+    <button class="btn" id="next" hidden>Question suivante</button>
+  </section>
+
+  <section id="end" class="card" hidden>
+    <div class="part">Résultat</div>
+    <div class="score" id="final"></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="parts" id="byPart"></div>
+    <div id="recapWrap"><p class="small" style="margin:6px 0">À revoir :</p><ul class="recap" id="recap"></ul></div>
+    <div class="row">
+      <button class="btn" id="retryErr">Refaire mes erreurs</button>
+      <button class="btn ghost" id="restart">Recommencer</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const Q=[
+{p:"II.A · Les conquêtes",q:"En quelle année Carthage est-elle détruite par Rome ?",o:["-146","-509","-27","212"],e:"C'est la fin des guerres puniques. La même époque voit la conquête de la Grèce et de la Macédoine (-148/-146)."},
+{p:"II.A · Les conquêtes",q:"Qui conquiert la Gaule, entre -58 et -51 ?",o:["Jules César","Auguste","Trajan","Pompée"],e:"La guerre des Gaules fait de César un général très populaire, ce qui l'aide dans sa carrière politique."},
+{p:"II.A · Les conquêtes",q:"Sous quel empereur l'Empire atteint-il son extension maximale (vers 117) ?",o:["Trajan","Auguste","Constantin","Caracalla"],e:"Trajan conquiert la Dacie (106). L'Empire s'étend alors sur trois continents autour de la Méditerranée."},
+{p:"II.A · Les frontières",q:"Qu'est-ce que le limes ?",o:["La frontière fortifiée de l'Empire","Une route commerciale vers la Chine","Un impôt payé par les provinces","Le port de Rome"],e:"Murs, fossés, camps et routes militaires : mur d'Hadrien, Rhin et Danube, Euphrate."},
+{p:"II.A · Les frontières",q:"Quel peuple est la principale menace à l'est de l'Euphrate ?",o:["Les Parthes","Les Germains","Les Daces","Les Huns"],e:"Germains au nord du Rhin et du Danube, Daces au nord du Danube, Parthes à l'est."},
+{p:"II.A · Les échanges",q:"Que fournit surtout l'Égypte à Rome ?",o:["Du blé","De l'ambre","Du vin","De la soie"],e:"L'Égypte est le grenier à blé de Rome ; elle fournit aussi du papyrus."},
+{p:"II.A · Les échanges",q:"Quel est le port de Rome ?",o:["Ostie","Massilia","Alexandrie","Bérénice"],e:"Massilia (Marseille), Carthage, Tarragone, Alexandrie et Antioche sont les autres grands ports."},
+{p:"II.A · Les échanges",q:"Comment la soie chinoise arrive-t-elle dans l'Empire ?",o:["Indirectement, par la route de la soie via les Parthes","Directement, par des ambassades romaines en Chine","Par les caravanes transsahariennes","Par la Baltique"],e:"Le lien avec la Chine est indirect : la soie passe par l'Asie centrale et les territoires parthes."},
+{p:"II.A · Méthode",q:"Sur un croquis, quel type de figuré utilise-t-on pour un port ?",o:["Un figuré ponctuel","Un figuré de surface","Un figuré linéaire","Une couleur de fond"],e:"Ponctuel : villes, ports. Linéaire : frontières, routes, flux. Surface : territoires conquis."},
+{p:"II.B · La République",q:"Sous la République, qui élit les magistrats ?",o:["Les comices (assemblées de citoyens)","Le Sénat","L'empereur","Les tribuns de la plèbe"],e:"Le Sénat contrôle les magistrats ; les comices les élisent pour un an (2 consuls, préteurs, questeurs…)."},
+{p:"II.B · Auguste",q:"Quelle bataille de -31 donne la victoire à Octave sur Antoine et Cléopâtre ?",o:["Actium","Alésia","Salamine","Pont Milvius"],e:"Après Actium, Octave est seul maître de Rome ; en -27, il reçoit le titre d'Auguste."},
+{p:"II.B · Auguste",q:"Que signifie princeps, le titre choisi par Auguste ?",o:["Le premier (des citoyens)","Le roi","Le dieu vivant","Le dictateur"],e:"Auguste évite le titre de roi : il garde une façade républicaine tout en détenant tous les pouvoirs."},
+{p:"II.B · Auguste",q:"Comment Auguste s'assure-t-il le soutien de l'armée et du peuple ?",o:["Dons aux soldats et distributions de vivres","Élections libres chaque année","Suppression du Sénat","Tirage au sort des magistrats"],e:"Il achète les fidélités. Le poète Virgile assure aussi sa propagande."},
+{p:"II.B · Auguste",q:"Qu'est-ce que l'apothéose d'Auguste ?",o:["Sa divinisation après sa mort","Son triomphe militaire","Sa prise de pouvoir en -27","Son assassinat"],e:"Il devient divus Augustus (Livie, diva). Le culte impérial se diffuse avec sacrifices, temples et fêtes."},
+{p:"II.B · L'intégration",q:"Que décide l'édit de Caracalla en 212 ?",o:["La citoyenneté pour tous les hommes libres de l'Empire","La fin de l'esclavage","Le christianisme religion officielle","Le partage de l'Empire"],e:"Contraste avec Athènes : Rome ouvre sa citoyenneté pour intégrer les peuples conquis."},
+{p:"II.B · L'intégration",q:"Qu'est-ce que la romanisation ?",o:["La diffusion du latin et du mode de vie romain dans les provinces","La conquête militaire d'un territoire","La fusion des religions","Le culte rendu à l'empereur"],e:"Ex. : des villes sur le modèle de Rome, comme Nîmes, avec thermes et amphithéâtres."},
+{p:"II.B · L'intégration",q:"Les Gaulois adoptent les dieux romains tout en gardant les leurs. Comment appelle-t-on ce mélange ?",o:["Le syncrétisme","La romanisation","Le monothéisme","L'apothéose"],e:"Rome est aussi influencée par les cultes orientaux (Isis) qui promettent la vie éternelle."},
+{p:"II.C · Constantin",q:"Que garantit l'édit de Milan en 313 ?",o:["La tolérance religieuse, notamment pour les chrétiens","Le christianisme comme seule religion autorisée","La citoyenneté pour tous","Le partage de l'Empire"],e:"Ne pas confondre : en 392, Théodose fait du christianisme la religion officielle et interdit les autres cultes."},
+{p:"II.C · Constantin",q:"À quoi sert le concile de Nicée réuni par Constantin en 325 ?",o:["Fixer le dogme chrétien (Trinité) et condamner l'arianisme","Élire l'empereur d'Orient","Signer la paix avec les Parthes","Diviser l'Empire en deux"],e:"Première réunion des évêques de tout l'Empire : Jésus est déclaré vrai homme et vrai Dieu."},
+{p:"II.C · La recomposition",q:"En quelle année l'Empire est-il partagé définitivement entre Orient et Occident ?",o:["395","392","313","476"],e:"392 : christianisme religion officielle. 395 : partage. 476 : fin de l'Empire d'Occident."},
+{p:"II.C · La recomposition",q:"Que devient la partie orientale de l'Empire ?",o:["L'Empire byzantin","Le royaume des Francs","L'Empire parthe","Un ensemble de cités grecques indépendantes"],e:"La partie occidentale, elle, subit les migrations germaniques (sac de Rome en 410) et disparaît en 476."},
+{p:"I.A · La Grèce des cités",q:"Qu'est-ce qu'une cité-État (polis) ?",o:["Un petit État indépendant organisé autour d'une ville et de son territoire","Une province de l'Empire perse","Une ville fondée par Rome","Un quartier d'Athènes"],e:"La Grèce compte environ 750 cités-États indépendantes, chacune avec ses lois, ses dieux et son armée."},
+{p:"I.A · La Grèce des cités",q:"Lequel de ces éléments n'unit PAS les Grecs ?",o:["Un gouvernement commun","La langue grecque","Les jeux panhelléniques","Les textes d'Homère"],e:"Les Grecs sont divisés politiquement (régimes variés) mais unis par la culture : langue, mythes, théâtre, jeux."},
+{p:"I.A · La Grèce des cités",q:"Qu'est-ce qu'une colonie grecque ?",o:["Une cité fondée par une cité grecque et qui en dépend","Une cité conquise par les Perses","Un territoire acheté par Athènes","Une île sacrée"],e:"La cité d'origine s'appelle la métropole (la « cité-mère »)."},
+{p:"I.A · Les guerres médiques",q:"Contre qui les Grecs combattent-ils pendant les guerres médiques ?",o:["Les Perses","Les Romains","Les Macédoniens","Les Spartiates"],e:"« Mèdes » est le nom que les Grecs donnent aux Perses."},
+{p:"I.A · Les guerres médiques",q:"En -490, Darius débarque à Marathon. Quelle est l'issue ?",o:["Victoire des hoplites athéniens","Victoire perse et incendie d'Athènes","Victoire navale grecque","Paix sans combat"],e:"L'armée de citoyens athéniens arrête provisoirement l'expansion perse vers l'ouest."},
+{p:"I.A · Les guerres médiques",q:"Quelle bataille de -480 est une victoire navale décisive des Athéniens ?",o:["Salamine","Thermopyles","Marathon","Chéronée"],e:"Aux Thermopyles (défaite), 300 Spartiates retardent Xerxès ; à Salamine, la flotte athénienne l'emporte."},
+{p:"I.A · Méthode",q:"Eschyle, auteur de la tragédie Les Perses, est un témoin…",o:["direct mais partial, car athénien","neutre, car étranger","tardif, né 200 ans après","perse"],e:"Tragédien athénien contemporain des faits (il a combattu à Salamine), il glorifie sa cité : esprit critique !"},
+{p:"I.A · La thalassocratie",q:"Que signifie « thalassocratie » ?",o:["Domination fondée sur la maîtrise de la mer","Pouvoir des plus riches","Pouvoir d'un seul homme","Alliance de cités terrestres"],e:"Thalassa = la mer, kratos = le pouvoir."},
+{p:"I.A · La thalassocratie",q:"En quelle année est créée la Ligue de Délos ?",o:["-478/-477","-508/-507","-431","-338"],e:"Alliance contre les Perses dirigée par Athènes, financée par le tribut des cités membres."},
+{p:"I.A · La thalassocratie",q:"Quelle ligue, dirigée par Sparte, est la rivale de la Ligue de Délos ?",o:["La Ligue du Péloponnèse","La Ligue ionienne","La Ligue de Délos","La Ligue latine"],e:"Ligue de Délos (Athènes, maritime) contre Ligue du Péloponnèse (Sparte, terrestre)."},
+{p:"I.A · La thalassocratie",q:"Le décret monétaire d'Athènes oblige les alliés à…",o:["utiliser la monnaie, les poids et les mesures athéniens","frapper leur propre monnaie","payer en blé plutôt qu'en argent","quitter la Ligue"],e:"C'est une preuve de coercition : la domination devient économique."},
+{p:"I.A · La thalassocratie",q:"Quel événement de -454 montre que l'alliance devient un empire ?",o:["Le trésor de la Ligue est transféré de Délos à Athènes","La bataille de Salamine","La mort de Périclès","La réforme de Clisthène"],e:"Athènes contrôle désormais l'argent des alliés et l'utilise pour ses propres projets."},
+{p:"I.B · La démocratie",q:"Qui met en place la démocratie à Athènes en -508/-507 ?",o:["Clisthène","Périclès","Solon","Platon"],e:"Il met fin à la tyrannie et crée les dèmes, ce qui rompt avec le système clanique."},
+{p:"I.B · La démocratie",q:"Que signifie « isonomie » ?",o:["L'égalité de tous les citoyens devant la loi","Le droit de parler à l'Assemblée","L'exil d'un citoyen dangereux","Le tirage au sort"],e:"À ne pas confondre avec l'iségorie, l'égalité de parole à l'Assemblée."},
+{p:"I.B · La démocratie",q:"L'ostracisme, c'est…",o:["l'exil pour 10 ans d'un citoyen jugé dangereux pour la démocratie","la condamnation à mort d'un traître","l'exclusion des métèques","l'élection des stratèges"],e:"Les citoyens écrivent le nom sur un tesson de poterie, l'ostrakon."},
+{p:"I.B · Les institutions",q:"Quelle institution vote les lois et décide de la guerre ?",o:["L'Ecclésia","La Boulè","L'Héliée","Les stratèges"],e:"L'Ecclésia, assemblée de tous les citoyens, se réunit sur la colline de la Pnyx."},
+{p:"I.B · Les institutions",q:"Quel est le rôle de la Boulè ?",o:["Préparer les lois (conseil de 500 citoyens tirés au sort)","Rendre la justice","Diriger l'armée","Voter l'ostracisme"],e:"La Boulè prépare, l'Ecclésia vote, l'Héliée (6 000 citoyens) juge."},
+{p:"I.B · Les institutions",q:"Pourquoi les 10 stratèges sont-ils élus et non tirés au sort ?",o:["Diriger l'armée demande des compétences","Ils sont trop nombreux","Les dieux l'interdisent","Pour éviter de les payer"],e:"La plupart des magistrats sont tirés au sort, mais la guerre exige des chefs compétents."},
+{p:"I.B · Périclès",q:"Qu'est-ce que le misthos ?",o:["Une indemnité versée aux citoyens qui participent aux institutions","L'impôt payé par les métèques","Le tribut des alliés","Le salaire des esclaves"],e:"Créé par Périclès, il permet aux citoyens pauvres de participer à la vie politique."},
+{p:"I.B · Périclès",q:"Avec quel argent Périclès finance-t-il en partie les grands travaux de l'Acropole ?",o:["Le trésor de la Ligue de Délos","Sa fortune personnelle uniquement","Les impôts payés par Sparte","Les dons des Perses"],e:"Démocratie et empire sont liés : le tribut des alliés finance la grandeur d'Athènes."},
+{p:"I.C · Les limites",q:"Combien Athènes compte-t-elle de citoyens environ au Ve siècle ?",o:["40 000","4 000","400 000","110 000"],e:"Sur environ 250 000 à 300 000 habitants ; on compte aussi environ 110 000 esclaves."},
+{p:"I.C · Les limites",q:"Depuis la loi de Périclès de -451, pour être citoyen il faut…",o:["avoir deux parents athéniens","être propriétaire d'une terre","savoir lire et écrire","avoir servi dans la flotte"],e:"Il faut aussi être un homme, majeur et libre."},
+{p:"I.C · Les limites",q:"Que reproche Platon à la démocratie ?",o:["Gouverner est une science que tout le monde ne possède pas","Elle donne trop de pouvoir aux femmes","Elle est trop favorable aux Perses","Elle coûte trop cher en temples"],e:"Il préfère le gouvernement des meilleurs, des sages (sens premier d'aristocratie)."},
+{p:"I.C · Le déclin",q:"Quelle guerre met fin à l'hégémonie athénienne en -404 ?",o:["La guerre du Péloponnèse contre Sparte","La deuxième guerre médique","La guerre contre Rome","La guerre de Troie"],e:"Guerre de -431 à -404 : Ligue de Délos dissoute, flotte anéantie, régime des Trente."},
+{p:"I.C · Le déclin",q:"En quelle année la démocratie athénienne prend-elle fin ?",o:["-322","-338","-404","-479"],e:"-338 est la défaite de Chéronée face à Philippe II ; la démocratie disparaît en -322, face à la Macédoine."}
+];
+const L="ABCD";
+let order=[],i=0,score=0,errors=[],partStats={};
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function getBest(){try{return JSON.parse(localStorage.getItem("qcmAthenesBest")||"null")}catch(e){return null}}
+function setBest(s,n){try{const b=getBest();const pct=s/n;if(!b||pct>b.pct)localStorage.setItem("qcmAthenesBest",JSON.stringify({pct,s,n}))}catch(e){}}
+function showBest(){const b=getBest();$("best").textContent=b?`Ton meilleur score : ${b.s} / ${b.n}`:""}
+function start(idx){order=shuffle(idx);i=0;score=0;errors=[];partStats={};
+  $("start").hidden=true;$("end").hidden=true;$("quiz").hidden=false;$("bar").hidden=false;show()}
+function show(){const qi=order[i],d=Q[qi];
+  $("count").textContent=`${i+1} / ${order.length}`;$("pts").textContent=`${score} pt${score>1?"s":""}`;
+  $("fill").style.width=(i/order.length*100)+"%";
+  $("qpart").textContent=d.p;$("qtext").textContent=d.q;$("fb").hidden=true;$("next").hidden=true;
+  const box=$("opts");box.innerHTML="";
+  shuffle(d.o.map((t,k)=>({t,ok:k===0}))).forEach((o,k)=>{
+    const b=document.createElement("button");b.className="opt";b.id=`opt${k}`;
+    b.innerHTML=`<span class="l">${L[k]}</span><span></span>`;b.lastChild.textContent=o.t;b.dataset.ok=o.ok?"1":"";
+    b.onclick=()=>answer(b,qi);box.appendChild(b)});
+  $("quiz").scrollIntoView({block:"nearest"})}
+function answer(btn,qi){const d=Q[qi];const good=btn.dataset.ok==="1";
+  const ps=partStats[d.p.split(" · ")[0]]||(partStats[d.p.split(" · ")[0]]={ok:0,n:0});ps.n++;
+  document.querySelectorAll(".opt").forEach(b=>{b.disabled=true;if(b.dataset.ok)b.classList.add("ok")});
+  if(good){score++;ps.ok++}else{btn.classList.add("ko");errors.push(qi)}
+  const fb=$("fb");fb.className="fb "+(good?"ok":"ko");
+  fb.innerHTML=`<b>${good?"Bonne réponse":"Raté : la bonne réponse est « "+esc(d.o[0])+" »"}</b>${esc(d.e)}`;fb.hidden=false;
+  $("pts").textContent=`${score} pt${score>1?"s":""}`;
+  $("next").textContent=i===order.length-1?"Voir mon résultat":"Question suivante";$("next").hidden=false;$("next").focus({preventScroll:true});
+  fb.scrollIntoView({block:"nearest",behavior:"smooth"})}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+$("next").onclick=()=>{i++;if(i<order.length)show();else end()};
+function end(){$("quiz").hidden=true;$("fill").style.width="100%";$("end").hidden=false;
+  const n=order.length;$("final").textContent=`${score} / ${n}`;setBest(score,n);
+  const pct=score/n;
+  $("verdict").textContent=pct===1?"Parfait. Tu es prêt pour le contrôle.":pct>=.8?"Très bien. Relis seulement les points ci-dessous.":pct>=.6?"Correct, mais il reste des notions à fixer.":"Reprends les fiches de révision, puis refais tes erreurs.";
+  const names={"I.A":"Athènes · Hégémonie","I.B":"Athènes · Démocratie","I.C":"Athènes · Limites et déclin","II.A":"Rome · Conquêtes et échanges","II.B":"Rome · Auguste et intégration","II.C":"Rome · Constantin et recomposition"};
+  $("byPart").innerHTML=Object.keys(names).filter(k=>partStats[k]).map(k=>`<span>${names[k]}</span><span>${partStats[k].ok} / ${partStats[k].n}</span>`).join("");
+  $("recap").innerHTML=errors.map(qi=>`<li>${esc(Q[qi].q)}<span>${esc(Q[qi].o[0])}</span></li>`).join("");
+  $("recapWrap").hidden=!errors.length;$("retryErr").hidden=!errors.length;
+  $("end").scrollIntoView({block:"start",behavior:"smooth"})}
+$("go-all").onclick=()=>start(Q.map((_,k)=>k));
+$("go-quick").onclick=()=>start(shuffle(Q.map((_,k)=>k)).slice(0,15));
+$("go-gr").onclick=()=>start(Q.map((_,k)=>k).filter(k=>Q[k].p.startsWith("I.")));
+$("go-ro").onclick=()=>start(Q.map((_,k)=>k).filter(k=>Q[k].p.startsWith("II.")));
+$("retryErr").onclick=()=>start(errors.slice());
+$("restart").onclick=()=>{$("end").hidden=true;$("bar").hidden=true;$("start").hidden=false;showBest()};
+showBest();
+</script>
+
+</body></html>

@@ -1,0 +1,78 @@
+{
+  "version": "2026-10-31-1",
+  "matieres": [
+    {
+      "id": "histoire",
+      "nom": "Histoire",
+      "couleur": "#b2711a",
+      "couleurNuit": "#e2a54f",
+      "pictogramme": "colonne",
+      "chapitres": [
+        {
+          "id": "mediterranee-antique",
+          "titre": "La Méditerranée antique",
+          "sousTitre": "Les empreintes grecques et romaines · Athènes, Rome",
+          "ajoute": "2026-10-31",
+          "ressources": [
+            { "id": "hist-fiches", "type": "fiche", "titre": "Fiches de révision", "detail": "14 pages · frise, dates zéro faute, schémas, pièges", "fichier": "contenus/histoire/mediterranee-antique-fiches.pdf" },
+            { "id": "hist-fc", "type": "flashcards", "titre": "Flashcards", "detail": "Athènes et Rome · 71 cartes", "decks": ["hist-athenes", "hist-rome"], "fichier": "contenus/histoire/flashcards.json" },
+            { "id": "hist-qcm", "type": "quiz", "titre": "QCM Athènes et Rome", "detail": "46 questions expliquées · mode express", "fichier": "contenus/histoire/qcm-athenes-rome.html" },
+            { "id": "hist-anim", "type": "animation", "titre": "Athènes en mouvement", "detail": "Fiche animée façon story · version provisoire", "fichier": "contenus/histoire/athenes-en-mouvement.html" },
+            { "id": "hist-dc", "type": "entrainement", "titre": "Développements construits", "detail": "8 sujets et corrigés · 9 pages", "fichier": "contenus/histoire/mediterranee-antique-developpements-construits.pdf" },
+            { "id": "hist-v1", "type": "video", "titre": "La démocratie athénienne", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/01_Athenes-democratie.mp4" },
+            { "id": "hist-v2", "type": "video", "titre": "La bataille de Salamine", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/02_Salamine.mp4" },
+            { "id": "hist-v3", "type": "video", "titre": "Les conquêtes de Rome", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/03_Rome-conquetes.mp4" },
+            { "id": "hist-v4", "type": "video", "titre": "Auguste", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/04_Auguste.mp4" },
+            { "id": "hist-v5", "type": "video", "titre": "Romanisation et édit de Caracalla", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/05_Romanisation-Caracalla.mp4" },
+            { "id": "hist-v6", "type": "video", "titre": "Constantin, 312", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/06_Constantin-312.mp4" },
+            { "id": "hist-v7", "type": "video", "titre": "La fin de l'Empire d'Occident", "detail": "Extrait vidéo", "fichier": "contenus/histoire/videos/07_Fin-Empire-Occident.mp4" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "francais",
+      "nom": "Français",
+      "couleur": "#b13c63",
+      "couleurNuit": "#e57b9f",
+      "pictogramme": "plume",
+      "chapitres": [
+        {
+          "id": "roman-realiste",
+          "titre": "Le roman et le récit",
+          "sousTitre": "Séquences 1 et 2 · le roman réaliste du XIXe siècle",
+          "ajoute": "2026-10-04",
+          "ressources": [
+            { "id": "fr-fiche", "type": "fiche", "titre": "Fiche de révision", "detail": "Pennac, Zola, focalisation · 11 pages", "fichier": "contenus/francais/fiche-roman-sequences-1-2.pdf" },
+            { "id": "fr-eval-sujet", "type": "entrainement", "titre": "Évaluation blanche · sujet", "detail": "Le roman réaliste · 3 pages", "fichier": "contenus/francais/evaluation-blanche-roman-realiste-sujet.pdf" },
+            { "id": "fr-eval-corrige", "type": "corrige", "titre": "Évaluation blanche · corrigé", "detail": "À ouvrir après avoir fait le sujet · 6 pages", "fichier": "contenus/francais/evaluation-blanche-roman-realiste-corrige.pdf" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ses",
+      "nom": "SES",
+      "couleur": "#6a4bb8",
+      "couleurNuit": "#a68cf0",
+      "pictogramme": "graphique",
+      "chapitres": [
+        {
+          "id": "ses-ch1",
+          "titre": "Chapitre 1 · Comment les sciences sociales étudient la société",
+          "sousTitre": "Économie, sociologie, science politique · méthodes et modèles",
+          "ajoute": "2026-10-11",
+          "ressources": [
+            { "id": "ses-qcm", "type": "quiz", "titre": "QCM du chapitre 1", "detail": "20 questions expliquées", "fichier": "contenus/ses/qcm-chapitre-1.html" },
+            { "id": "ses-exos", "type": "entrainement", "titre": "Cours, méthodes et exercices corrigés", "detail": "Définitions, 12 exercices · 18 pages", "fichier": "contenus/ses/ses-chapitre-1-revision-et-exercices.pdf" }
+          ]
+        }
+      ]
+    },
+    { "id": "maths", "nom": "Maths", "couleur": "#2a62c4", "couleurNuit": "#7fa6ff", "pictogramme": "compas", "chapitres": [] },
+    { "id": "physique-chimie", "nom": "Physique-chimie", "couleur": "#c25425", "couleurNuit": "#f08c5e", "pictogramme": "fiole", "chapitres": [] },
+    { "id": "svt", "nom": "SVT", "couleur": "#4f8a2b", "couleurNuit": "#8fc66a", "pictogramme": "feuille", "chapitres": [] },
+    { "id": "geographie", "nom": "Géographie", "couleur": "#2f7f6a", "couleurNuit": "#5cc0a4", "pictogramme": "globe", "chapitres": [] },
+    { "id": "anglais", "nom": "Anglais", "couleur": "#1f86a3", "couleurNuit": "#5cc3df", "pictogramme": "bulle", "chapitres": [] }
+  ]
+}

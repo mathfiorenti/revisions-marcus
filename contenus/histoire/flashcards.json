@@ -1,0 +1,695 @@
+{
+ "decks": {
+  "hist-rome": {
+   "ajoute": "2026-10-31",
+   "matiere": "Histoire",
+   "nb": 32,
+   "ordre": 2,
+   "sousTitre": "Conquêtes, Auguste, Constantin",
+   "titre": "Rome, de la République à l'Empire"
+  },
+  "hist-athenes": {
+   "ajoute": "2026-10-31",
+   "matiere": "Histoire",
+   "nb": 39,
+   "ordre": 1,
+   "sousTitre": "Démocratie et hégémonie",
+   "titre": "Athènes au Ve siècle av. J.-C."
+  }
+ },
+ "cards": [
+  {
+   "deck": "hist-athenes",
+   "n": 1,
+   "notion": "La Grèce des cités",
+   "plus": "Environ 750 cités au Ve s. ; Athènes et Sparte sont les plus puissantes.",
+   "recto": "Qu'est-ce qu'une polis (cité-État) ?",
+   "type": "Définition",
+   "verso": "Une communauté de citoyens indépendante, organisée autour d'une ville et de son territoire agricole, avec ses propres lois, ses dieux et son armée.",
+   "id": "hist-athenes-01"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 2,
+   "notion": "La Grèce des cités",
+   "plus": "Les Grecs se disent Hellènes ; ceux qui ne parlent pas grec sont des « barbares ».",
+   "recto": "Les Grecs n'ont pas d'État commun. Qu'est-ce qui les unit ?",
+   "type": "Pourquoi ?",
+   "verso": "Une culture commune : la langue grecque, les mêmes dieux et sanctuaires (Delphes, Olympie), les jeux panhelléniques, les poèmes d'Homère.",
+   "id": "hist-athenes-02"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 3,
+   "notion": "La Grèce des cités",
+   "plus": "Exemple : Marseille (Massalia), fondée par Phocée vers -600.",
+   "recto": "Métropole et colonie",
+   "type": "Définition",
+   "verso": "La métropole est la cité-mère qui fonde une colonie, cité nouvelle installée ailleurs en Méditerranée.",
+   "id": "hist-athenes-03"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 4,
+   "notion": "Guerres médiques",
+   "plus": "« Mèdes » est le nom que les Grecs donnent aux Perses.",
+   "recto": "Les guerres médiques",
+   "type": "Définition",
+   "verso": "Les guerres entre les cités grecques et l'Empire perse (-490 à -479).",
+   "id": "hist-athenes-04"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 5,
+   "notion": "Guerres médiques",
+   "recto": "-490",
+   "type": "Date",
+   "verso": "Bataille de Marathon : les hoplites athéniens battent l'armée perse de Darius Ier.",
+   "id": "hist-athenes-05"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 6,
+   "notion": "Guerres médiques",
+   "plus": "La même année, défaite grecque aux Thermopyles : 300 Spartiates retardent l'armée perse.",
+   "recto": "-480",
+   "type": "Date",
+   "verso": "Bataille navale de Salamine : la flotte grecque, surtout athénienne, bat Xerxès.",
+   "id": "hist-athenes-06"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 7,
+   "notion": "Guerres médiques",
+   "recto": "Pourquoi la victoire de Salamine renforce-t-elle la démocratie athénienne ?",
+   "type": "Mise en relation",
+   "verso": "La victoire vient de la flotte, dont les rameurs sont les citoyens pauvres (thètes). Ils gagnent du poids politique : puissance maritime et démocratie progressent ensemble.",
+   "id": "hist-athenes-07"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 8,
+   "notion": "Analyse de documents",
+   "recto": "Eschyle, Les Perses (-472) : quel regard critique porter sur ce document ?",
+   "type": "Méthode",
+   "verso": "Témoin direct (il a combattu à Salamine), mais athénien et auteur de théâtre : il glorifie sa cité et la liberté grecque face au roi perse. Source précieuse mais partiale.",
+   "id": "hist-athenes-08"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 9,
+   "notion": "Thalassocratie",
+   "recto": "Thalassocratie",
+   "type": "Définition",
+   "verso": "Une domination fondée sur la maîtrise de la mer (thalassa = mer, kratos = pouvoir). Athènes s'appuie sur ses trières et sur le port du Pirée.",
+   "id": "hist-athenes-09"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 10,
+   "notion": "Thalassocratie",
+   "recto": "Hégémonie",
+   "type": "Définition",
+   "verso": "La domination d'une cité sur les autres : politique, militaire et économique.",
+   "id": "hist-athenes-10"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 11,
+   "notion": "Ligue de Délos",
+   "recto": "-478/-477",
+   "type": "Date",
+   "verso": "Création de la Ligue de Délos : alliance de cités contre les Perses, dirigée par Athènes et financée par un tribut (phoros).",
+   "id": "hist-athenes-11"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 12,
+   "notion": "Ligue de Délos",
+   "recto": "-454",
+   "type": "Date",
+   "verso": "Le trésor de la Ligue est transféré de Délos à Athènes : l'alliance devient un empire athénien.",
+   "id": "hist-athenes-12"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 13,
+   "notion": "Ligue de Délos",
+   "plus": "Bon réflexe en développement construit : citer au moins trois de ces preuves.",
+   "recto": "Quels faits montrent que la Ligue de Délos devient un empire athénien ?",
+   "type": "Pourquoi ?",
+   "verso": "Le trésor transféré à Athènes (-454), le tribut obligatoire, le décret imposant la monnaie, les poids et les mesures d'Athènes, la répression des cités qui veulent partir (Naxos, Thasos), l'installation de colons athéniens (clérouquies).",
+   "id": "hist-athenes-13"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 14,
+   "notion": "Ligue de Délos",
+   "plus": "Piège : ce n'est pas la « Ligue de Corinthe ».",
+   "recto": "La Ligue du Péloponnèse",
+   "type": "Acteur",
+   "verso": "L'alliance terrestre dirigée par Sparte, rivale de la Ligue de Délos.",
+   "id": "hist-athenes-14"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 15,
+   "notion": "Naissance de la démocratie",
+   "recto": "-508/-507",
+   "type": "Date",
+   "verso": "Réformes de Clisthène : naissance de la démocratie athénienne.",
+   "id": "hist-athenes-15"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 16,
+   "notion": "Naissance de la démocratie",
+   "recto": "Clisthène",
+   "type": "Acteur",
+   "verso": "Aristocrate athénien qui fonde la démocratie en -508/-507. Il répartit les citoyens en 10 tribus qui mêlent des dèmes de la ville, de la côte et de l'intérieur, pour briser le pouvoir des grandes familles.",
+   "id": "hist-athenes-16"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 17,
+   "notion": "Naissance de la démocratie",
+   "recto": "Dème",
+   "type": "Définition",
+   "verso": "La circonscription de base (village ou quartier) où chaque citoyen est inscrit. Clisthène en fait le socle de la citoyenneté.",
+   "id": "hist-athenes-17"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 18,
+   "notion": "Principes démocratiques",
+   "plus": "Ne pas confondre avec l'iségorie.",
+   "recto": "Isonomie",
+   "type": "Définition",
+   "verso": "L'égalité de tous les citoyens devant la loi.",
+   "id": "hist-athenes-18"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 19,
+   "notion": "Principes démocratiques",
+   "plus": "Ne pas confondre avec l'isonomie.",
+   "recto": "Iségorie",
+   "type": "Définition",
+   "verso": "L'égalité de parole : tout citoyen peut prendre la parole à l'Ecclésia.",
+   "id": "hist-athenes-19"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 20,
+   "notion": "Principes démocratiques",
+   "plus": "L'ostracisé garde ses biens et sa citoyenneté.",
+   "recto": "Ostracisme",
+   "type": "Définition",
+   "verso": "Le vote par lequel les citoyens exilent pour 10 ans un homme jugé dangereux pour la démocratie, en écrivant son nom sur un tesson de poterie (ostrakon).",
+   "id": "hist-athenes-20"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 21,
+   "notion": "Institutions",
+   "recto": "L'Ecclésia",
+   "type": "Institution",
+   "verso": "L'assemblée de tous les citoyens, réunie sur la colline de la Pnyx : elle vote les lois, décide de la guerre et de la paix, élit les stratèges et vote l'ostracisme.",
+   "id": "hist-athenes-21"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 22,
+   "notion": "Institutions",
+   "plus": "La Boulè prépare, l'Ecclésia vote, l'Héliée juge.",
+   "recto": "La Boulè",
+   "type": "Institution",
+   "verso": "Le conseil de 500 citoyens tirés au sort pour un an (50 par tribu) : il prépare les lois soumises à l'Ecclésia.",
+   "id": "hist-athenes-22"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 23,
+   "notion": "Institutions",
+   "recto": "L'Héliée",
+   "type": "Institution",
+   "verso": "Le tribunal populaire : 6 000 citoyens tirés au sort chaque année et répartis en jurys.",
+   "id": "hist-athenes-23"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 24,
+   "notion": "Institutions",
+   "plus": "Exception : les 10 stratèges sont élus, car commander l'armée exige des compétences.",
+   "recto": "Pourquoi les Athéniens jugent-ils le tirage au sort plus démocratique que l'élection ?",
+   "type": "Pourquoi ?",
+   "verso": "Il donne à chaque citoyen la même chance d'exercer une charge, quelles que soient sa fortune et sa célébrité. L'élection favorise les riches et les bons orateurs.",
+   "id": "hist-athenes-24"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 25,
+   "notion": "Périclès",
+   "plus": "Point de passage du programme : savoir le présenter en 3 ou 4 phrases.",
+   "recto": "Périclès",
+   "type": "Acteur",
+   "verso": "Stratège réélu presque chaque année de -443 à sa mort en -429. Il crée le misthos, fait reconstruire l'Acropole (Parthénon) et domine la vie politique d'Athènes.",
+   "id": "hist-athenes-25"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 26,
+   "notion": "Périclès",
+   "plus": "Piège : c'est la cité qui paie, pas les riches.",
+   "recto": "Misthos",
+   "type": "Définition",
+   "verso": "Une indemnité versée sur fonds publics aux citoyens qui siègent dans les institutions, pour que les plus pauvres puissent participer.",
+   "id": "hist-athenes-26"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 27,
+   "notion": "Périclès",
+   "plus": "Démocratie et impérialisme sont liés : c'est souvent le cœur d'un sujet de développement construit.",
+   "recto": "Comment l'empire athénien finance-t-il la démocratie ?",
+   "type": "Mise en relation",
+   "verso": "Le tribut des alliés alimente le trésor d'Athènes. Il paie en partie le misthos, la flotte (qui fait vivre les rameurs pauvres) et les grands travaux de l'Acropole.",
+   "id": "hist-athenes-27"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 28,
+   "notion": "Analyse de documents",
+   "recto": "L'oraison funèbre de Périclès, rapportée par Thucydide : quelle limite pour l'historien ?",
+   "type": "Méthode",
+   "verso": "Le discours est réécrit par Thucydide et prononcé pour honorer les morts : il idéalise Athènes. Il faut le confronter à la réalité (exclusions, domination des alliés).",
+   "id": "hist-athenes-28"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 29,
+   "notion": "Limites de la démocratie",
+   "recto": "Combien de citoyens compte Athènes au Ve s., et pour combien d'habitants ?",
+   "type": "Chiffre",
+   "verso": "Environ 40 000 citoyens pour 250 000 à 300 000 habitants, soit environ 15 % de la population. On compte aussi environ 110 000 esclaves.",
+   "id": "hist-athenes-29"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 30,
+   "notion": "Limites de la démocratie",
+   "recto": "-451",
+   "type": "Date",
+   "verso": "Loi de Périclès sur la citoyenneté : il faut être né d'un père ET d'une mère athéniens.",
+   "id": "hist-athenes-30"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 31,
+   "notion": "Limites de la démocratie",
+   "recto": "Qui est exclu de la citoyenneté à Athènes ?",
+   "type": "Pourquoi ?",
+   "verso": "Les femmes, les métèques, les esclaves et les jeunes de moins de 18 ans. Seuls les hommes libres, majeurs, nés de parents athéniens sont citoyens.",
+   "id": "hist-athenes-31"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 32,
+   "notion": "Limites de la démocratie",
+   "recto": "Métèque",
+   "type": "Définition",
+   "verso": "Un étranger libre installé à Athènes : il paie une taxe et peut servir dans l'armée, mais il ne vote pas et ne peut pas posséder de terre.",
+   "id": "hist-athenes-32"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 33,
+   "notion": "Limites de la démocratie",
+   "plus": "Piège : Platon ne défend pas l'oligarchie (le pouvoir des riches).",
+   "recto": "Que reproche Platon à la démocratie ?",
+   "type": "Acteur",
+   "verso": "Pour lui, gouverner est une science réservée à ceux qui savent. Il défend le gouvernement des sages, les philosophes.",
+   "id": "hist-athenes-33"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 34,
+   "notion": "Déclin",
+   "recto": "-431 / -404",
+   "type": "Date",
+   "verso": "Guerre du Péloponnèse entre Athènes et Sparte. Défaite d'Athènes en -404 : flotte détruite, Ligue de Délos dissoute.",
+   "id": "hist-athenes-34"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 35,
+   "notion": "Déclin",
+   "recto": "Les Trente (-404/-403)",
+   "type": "Définition",
+   "verso": "Un régime oligarchique imposé par Sparte après la défaite d'Athènes. La démocratie est rétablie dès -403.",
+   "id": "hist-athenes-35"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 36,
+   "notion": "Déclin",
+   "plus": "Piège : -338 n'est pas encore la fin de la démocratie.",
+   "recto": "-338 et -322",
+   "type": "Date",
+   "verso": "-338 : Philippe II de Macédoine bat les cités grecques à Chéronée. -322 : fin de la démocratie athénienne, imposée par la Macédoine.",
+   "id": "hist-athenes-36"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 37,
+   "notion": "Repères",
+   "recto": "Remets dans l'ordre : Ligue de Délos, Clisthène, Marathon, transfert du trésor, Salamine.",
+   "type": "Chronologie",
+   "verso": "Clisthène (-508/-507), Marathon (-490), Salamine (-480), Ligue de Délos (-478/-477), transfert du trésor (-454).",
+   "id": "hist-athenes-37"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 38,
+   "notion": "Repères",
+   "recto": "Remets dans l'ordre : défaite d'Athènes, loi sur la citoyenneté, mort de Périclès, début de la guerre du Péloponnèse.",
+   "type": "Chronologie",
+   "verso": "Loi sur la citoyenneté (-451), début de la guerre du Péloponnèse (-431), mort de Périclès (-429), défaite d'Athènes (-404).",
+   "id": "hist-athenes-38"
+  },
+  {
+   "deck": "hist-athenes",
+   "n": 39,
+   "notion": "Repères",
+   "plus": "Une bonne accroche pour une introduction de développement construit.",
+   "recto": "En une phrase : quel est le paradoxe d'Athènes au Ve s. ?",
+   "type": "Problématique",
+   "verso": "La cité qui invente la démocratie pour ses citoyens est aussi une puissance impérialiste qui domine ses alliés, et cette domination finance en partie sa démocratie.",
+   "id": "hist-athenes-39"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 1,
+   "notion": "La République",
+   "plus": "La fondation légendaire de Rome par Romulus est datée de -753.",
+   "recto": "-509",
+   "type": "Date",
+   "verso": "Fin de la royauté et début de la République romaine.",
+   "id": "hist-rome-01"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 2,
+   "notion": "La République",
+   "plus": "Principe : un pouvoir partagé et limité dans le temps, pour empêcher le retour d'un roi.",
+   "recto": "Comment fonctionne la République romaine ?",
+   "type": "Institution",
+   "verso": "Des magistrats élus pour un an par les comices (assemblées de citoyens), dont 2 consuls, et un Sénat d'anciens magistrats, nommés à vie, qui les contrôle et les conseille.",
+   "id": "hist-rome-02"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 3,
+   "notion": "Les conquêtes",
+   "plus": "Rome domine désormais la Méditerranée, qu'elle appelle Mare nostrum.",
+   "recto": "-146",
+   "type": "Date",
+   "verso": "Destruction de Carthage, qui met fin aux guerres puniques. La même année, Corinthe est détruite et la Grèce passe sous contrôle romain.",
+   "id": "hist-rome-03"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 4,
+   "notion": "Les conquêtes",
+   "plus": "Piège : Pompée est assassiné en Égypte en -48 sur ordre de Ptolémée XIII, et non de Ptolémée XII.",
+   "recto": "Jules César",
+   "type": "Acteur",
+   "verso": "Général et homme politique : il conquiert la Gaule (-58/-51), bat Pompée dans la guerre civile, devient dictateur et est assassiné en -44.",
+   "id": "hist-rome-04"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 5,
+   "notion": "Les conquêtes",
+   "recto": "Vers 117",
+   "type": "Date",
+   "verso": "Sous l'empereur Trajan, l'Empire atteint son extension maximale, sur trois continents autour de la Méditerranée.",
+   "id": "hist-rome-05"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 6,
+   "notion": "Frontières et paix",
+   "plus": "Au-delà : les Germains au nord, les Parthes à l'est de l'Euphrate.",
+   "recto": "Le limes",
+   "type": "Définition",
+   "verso": "La frontière fortifiée de l'Empire : murs, fossés, camps et routes militaires (mur d'Hadrien, Rhin et Danube, Euphrate).",
+   "id": "hist-rome-06"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 7,
+   "notion": "Frontières et paix",
+   "recto": "Pax romana",
+   "type": "Définition",
+   "verso": "La paix intérieure qui règne dans l'Empire aux Ier et IIe siècles, protégée par le limes. Elle favorise le commerce et les échanges.",
+   "id": "hist-rome-07"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 8,
+   "notion": "Les échanges",
+   "plus": "Tout converge vers Ostie, le port de Rome.",
+   "recto": "Que fournissent les provinces à Rome ?",
+   "type": "Pourquoi ?",
+   "verso": "Du blé (Égypte, Afrique), de l'huile (Hispanie), du vin (Gaule), de l'ambre (Baltique). Hors de l'Empire : la soie de Chine, par la route de la soie et les Parthes, et les épices d'Inde.",
+   "id": "hist-rome-08"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 9,
+   "notion": "Le croquis",
+   "plus": "Toujours un titre et une légende organisée en parties.",
+   "recto": "Sur un croquis, quel figuré pour quoi ?",
+   "type": "Méthode",
+   "verso": "Ponctuel : villes, ports. Linéaire : frontières, routes, flux. De surface (couleurs) : territoires et étapes de la conquête.",
+   "id": "hist-rome-09"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 10,
+   "notion": "Auguste",
+   "recto": "-31",
+   "type": "Date",
+   "verso": "Bataille d'Actium : Octave bat Antoine et Cléopâtre et devient seul maître de Rome.",
+   "id": "hist-rome-10"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 11,
+   "notion": "Auguste",
+   "recto": "-27",
+   "type": "Date",
+   "verso": "Le Sénat donne à Octave le titre d'Auguste : début de l'Empire, sous la forme du Principat.",
+   "id": "hist-rome-11"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 12,
+   "notion": "Auguste",
+   "plus": "Le régime qu'il fonde s'appelle le Principat.",
+   "recto": "Princeps",
+   "type": "Définition",
+   "verso": "« Le premier » des citoyens : le titre choisi par Auguste pour ne pas paraître roi.",
+   "id": "hist-rome-12"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 13,
+   "notion": "Auguste",
+   "recto": "Quels pouvoirs Auguste concentre-t-il entre ses mains ?",
+   "type": "Pourquoi ?",
+   "verso": "Le commandement des armées (imperium), la puissance tribunicienne (inviolabilité et droit de veto), la religion (grand pontife) et la direction du Sénat (princeps).",
+   "id": "hist-rome-13"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 14,
+   "notion": "Auguste",
+   "plus": "Point de passage du programme : savoir présenter Auguste en 3 ou 4 phrases.",
+   "recto": "Pourquoi dit-on qu'Auguste garde une « façade républicaine » ?",
+   "type": "Mise en relation",
+   "verso": "Le Sénat, les magistrats et les comices existent toujours, mais tous les pouvoirs réels sont entre ses mains. Il refuse le titre de roi et se dit seulement le premier des citoyens.",
+   "id": "hist-rome-14"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 15,
+   "notion": "Auguste",
+   "recto": "Comment Auguste s'assure-t-il fidélité et prestige ?",
+   "type": "Pourquoi ?",
+   "verso": "Par des dons aux soldats, des distributions de blé et des jeux pour le peuple, de grands monuments et la propagande (le poète Virgile, les monnaies).",
+   "id": "hist-rome-15"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 16,
+   "notion": "Analyse de documents",
+   "plus": "Réflexe : qui parle, et dans quel but ?",
+   "recto": "Les Res Gestae, récit de ses actes écrit par Auguste : quelle limite pour l'historien ?",
+   "type": "Méthode",
+   "verso": "C'est un bilan de propagande rédigé par l'empereur lui-même : il met en avant ses victoires et ses dons, et passe sous silence les violences des guerres civiles.",
+   "id": "hist-rome-16"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 17,
+   "notion": "Auguste",
+   "recto": "Apothéose et culte impérial",
+   "type": "Définition",
+   "verso": "Après sa mort, Auguste est divinisé (divus Augustus). Le culte impérial, rendu à l'empereur et à Rome, se diffuse dans les provinces et soude l'Empire.",
+   "id": "hist-rome-17"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 18,
+   "notion": "Intégration",
+   "plus": "Exemple en Gaule : Nîmes, avec ses arènes et la Maison carrée, et le pont du Gard.",
+   "recto": "Romanisation",
+   "type": "Définition",
+   "verso": "La diffusion du latin, du droit et du mode de vie romains dans les provinces : villes sur le modèle de Rome (forum, thermes, amphithéâtre), routes, aqueducs.",
+   "id": "hist-rome-18"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 19,
+   "notion": "Intégration",
+   "recto": "Syncrétisme",
+   "type": "Définition",
+   "verso": "Le mélange de croyances : les Gaulois associent leurs dieux aux dieux romains, et Rome adopte des cultes orientaux comme celui d'Isis.",
+   "id": "hist-rome-19"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 20,
+   "notion": "Intégration",
+   "recto": "212",
+   "type": "Date",
+   "verso": "Édit de Caracalla : la citoyenneté romaine est accordée à tous les hommes libres de l'Empire.",
+   "id": "hist-rome-20"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 21,
+   "notion": "Intégration",
+   "plus": "Sujet type de développement construit : « Être citoyen à Athènes et à Rome ».",
+   "recto": "Athènes et Rome : deux conceptions opposées de la citoyenneté. Explique.",
+   "type": "Mise en relation",
+   "verso": "Athènes ferme sa citoyenneté (loi de -451 : deux parents athéniens). Rome l'ouvre peu à peu aux peuples conquis, jusqu'à l'édit de Caracalla (212), pour les intégrer.",
+   "id": "hist-rome-21"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 22,
+   "notion": "Constantin",
+   "recto": "312",
+   "type": "Date",
+   "verso": "Bataille du pont Milvius : Constantin bat son rival Maxence. Selon la tradition, il a combattu sous le signe du Christ.",
+   "id": "hist-rome-22"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 23,
+   "notion": "Constantin",
+   "recto": "Le chrisme",
+   "type": "Définition",
+   "verso": "Le monogramme du Christ, formé des lettres grecques X (khi) et P (rhô). Constantin en fait son emblème.",
+   "id": "hist-rome-23"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 24,
+   "notion": "Constantin",
+   "plus": "Piège : le christianisme n'est pas encore la religion officielle.",
+   "recto": "313",
+   "type": "Date",
+   "verso": "Édit de Milan : tolérance religieuse, notamment pour les chrétiens.",
+   "id": "hist-rome-24"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 25,
+   "notion": "Constantin",
+   "recto": "325",
+   "type": "Date",
+   "verso": "Concile de Nicée, réuni par Constantin : les évêques fixent le dogme (Jésus vrai Dieu et vrai homme) et condamnent l'arianisme.",
+   "id": "hist-rome-25"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 26,
+   "notion": "Constantin",
+   "plus": "Point de passage du programme : savoir le présenter en 3 ou 4 phrases.",
+   "recto": "Constantin",
+   "type": "Acteur",
+   "verso": "Empereur de 306 à 337 : il légalise le christianisme (313), réunit le concile de Nicée (325) et fonde Constantinople (330). Il se fait baptiser avant de mourir.",
+   "id": "hist-rome-26"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 27,
+   "notion": "Fin de l'Empire",
+   "recto": "392",
+   "type": "Date",
+   "verso": "Théodose fait du christianisme la seule religion autorisée : les cultes païens sont interdits.",
+   "id": "hist-rome-27"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 28,
+   "notion": "Fin de l'Empire",
+   "plus": "Piège : le partage date de 395, et non de 392.",
+   "recto": "395",
+   "type": "Date",
+   "verso": "À la mort de Théodose, l'Empire est partagé définitivement entre Orient et Occident.",
+   "id": "hist-rome-28"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 29,
+   "notion": "Fin de l'Empire",
+   "recto": "Que deviennent les deux moitiés de l'Empire ?",
+   "type": "Pourquoi ?",
+   "verso": "L'Occident subit les migrations germaniques (sac de Rome en 410) et disparaît en 476. L'Orient devient l'Empire byzantin, autour de Constantinople.",
+   "id": "hist-rome-29"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 30,
+   "notion": "Repères",
+   "recto": "Remets dans l'ordre : édit de Caracalla, Actium, édit de Milan, destruction de Carthage, partage de l'Empire.",
+   "type": "Chronologie",
+   "verso": "Destruction de Carthage (-146), Actium (-31), édit de Caracalla (212), édit de Milan (313), partage de l'Empire (395).",
+   "id": "hist-rome-30"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 31,
+   "notion": "Repères",
+   "recto": "Remets dans l'ordre : Auguste, République, conquête de la Gaule, fin de l'Empire d'Occident, Trajan.",
+   "type": "Chronologie",
+   "verso": "République (-509), conquête de la Gaule (-58/-51), Auguste (-27), Trajan et l'extension maximale (vers 117), fin de l'Empire d'Occident (476).",
+   "id": "hist-rome-31"
+  },
+  {
+   "deck": "hist-rome",
+   "n": 32,
+   "notion": "Repères",
+   "plus": "Une bonne accroche pour une introduction de développement construit.",
+   "recto": "En une phrase : comment Rome tient-elle un empire aussi vaste ?",
+   "type": "Problématique",
+   "verso": "Par la force (armée, limes), par l'intégration (citoyenneté, romanisation, culte impérial) et par les échanges qui relient les provinces à Rome.",
+   "id": "hist-rome-32"
+  }
+ ]
+}

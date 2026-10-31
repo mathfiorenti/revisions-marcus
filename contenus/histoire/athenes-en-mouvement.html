@@ -1,0 +1,978 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Athènes en mouvement</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:wght@400;600;700;800&display=swap">
+<style>
+/* Layout : format « story » vertical 9:16 centré, scènes plein cadre, barres de progression en haut, commandes en bas.
+   Univers visuel unique (céramique à figures noires) : fond brun-noir, terre cuite, os. Thème sombre assumé. */
+:root{
+  --night:#16100b; --clay:#d8743f; --clay-deep:#a9502a; --bone:#f2e6d2; --bone-dim:#b9a88f;
+  --olive:#9bb06a; --sea:#2c4a57; --blood:#e2553f;
+  --display:"Marcellus","Times New Roman",serif; --body:"Source Sans 3",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;overscroll-behavior:none}
+body{background:var(--night);color:var(--bone);font-family:var(--body);margin:0;-webkit-tap-highlight-color:transparent;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px;
+  display:flex;justify-content:center;align-items:center}
+.stage{position:relative;height:100%;max-height:1100px;aspect-ratio:9/16;max-width:100%;container-type:size;touch-action:pan-y;
+  background:radial-gradient(120% 70% at 50% 0%,#2a1c12 0%,var(--night) 70%);border-radius:18px;overflow:hidden;
+  box-shadow:0 0 0 1px #3a2a1d;user-select:none;-webkit-user-select:none}
+/* frise à grecque */
+.meander{position:absolute;left:0;right:0;height:3cqh;opacity:.55;
+  background:linear-gradient(var(--clay),var(--clay)) top/100% 2px no-repeat,linear-gradient(var(--clay),var(--clay)) bottom/100% 2px no-repeat,
+  repeating-linear-gradient(90deg,var(--clay) 0 2px,transparent 2px 9px,var(--clay) 9px 11px,transparent 11px 18px) center/100% 45% no-repeat}
+.progress{position:absolute;top:1.6cqh;left:3cqw;right:3cqw;display:flex;gap:1cqw;z-index:5}
+.progress i{flex:1;height:4px;border-radius:2px;background:#ffffff2a;overflow:hidden}
+.progress i b{display:block;height:100%;width:0;background:var(--bone)}
+.scene{position:absolute;inset:0;padding:7cqh 7cqw 13cqh;display:flex;flex-direction:column;gap:2.2cqh;opacity:0;pointer-events:none;transition:opacity .45s}
+.scene.on{opacity:1;pointer-events:auto}
+.kicker{font-size:3cqw;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--clay)}
+h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.05;text-wrap:balance}
+h1{font-size:12cqw} h2{font-size:8.4cqw}
+.lead{font-size:4.4cqw;line-height:1.35;color:var(--bone);margin:0}
+.dim{color:var(--bone-dim)}
+.clay{color:var(--clay)}
+.date{font-family:var(--display);color:var(--clay)}
+.caption{position:relative;display:flex;flex-direction:column;gap:1.2cqh}
+.caption p{margin:0;font-size:4.1cqw;line-height:1.35}
+.caption p b{color:var(--clay)}
+.stage-fill{flex:1;min-height:0;position:relative}
+/* moteur d'animation */
+.a{opacity:0}
+.on .a{animation:var(--anim,fu) var(--t,.8s) cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
+.cap{opacity:0}
+.on .cap{animation:fu .7s cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
+.dr{stroke-dasharray:1;stroke-dashoffset:1}
+.on .dr{animation:draw var(--t,1.6s) ease-in-out var(--d,0s) both}
+@keyframes fu{from{opacity:0;transform:translateY(2.5cqh)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}70%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes capshow{0%{opacity:0;transform:translateY(1cqh)}8%{opacity:1;transform:none}90%{opacity:1}100%{opacity:0}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.9);opacity:.35}}
+.paused *, .paused *::before{animation-play-state:paused!important}
+/* commandes */
+.controls{position:absolute;left:0;right:0;bottom:0;padding:2cqh 4cqw 2.5cqh;display:flex;align-items:center;gap:3cqw;z-index:6;
+  background:linear-gradient(transparent,#16100bf0 40%)}
+.controls button{all:unset;cursor:pointer;width:11cqw;height:11cqw;max-width:52px;max-height:52px;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid #f2e6d255;color:var(--bone);font-size:4.4cqw}
+.controls button:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.controls .ttl{flex:1;font-size:3.4cqw;color:var(--bone-dim);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hint{position:absolute;bottom:14cqh;left:0;right:0;text-align:center;font-size:3cqw;color:var(--bone-dim);z-index:4}
+
+/* scène 1 : cités */
+.dots{display:grid;grid-template-columns:repeat(30,1fr);gap:.55cqw;align-content:start}
+.dots i{aspect-ratio:1;border-radius:50%;background:var(--bone-dim);opacity:0}
+.on .dots i{animation:fade .4s var(--d) both}
+.dots i.ath{background:var(--clay);position:relative}
+.on .dots i.ath::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--clay);animation:pulse 1.4s 3.2s infinite}
+.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:2cqw;text-align:center}
+.icons div{border:1px solid #f2e6d233;border-radius:3cqw;padding:2cqw 1cqw;font-size:3cqw;line-height:1.2}
+.icons svg{width:9cqw;height:9cqw;display:block;margin:0 auto 1cqw;stroke:var(--clay);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* scène 3 : Délos */
+.ring{position:relative;width:100%;max-width:80cqw;aspect-ratio:1;margin:0 auto;container-type:inline-size}
+.node{position:absolute;border-radius:50%}
+.ally{width:4.4cqw;height:4.4cqw;margin:-2.2cqw 0 0 -2.2cqw;background:var(--bone-dim)}
+.hub{width:13cqw;height:13cqw;margin:-6.5cqw 0 0 -6.5cqw;display:grid;place-items:center;font-family:var(--display);font-size:3.4cqw;text-align:center;line-height:1}
+.hub.ath{background:var(--clay);color:var(--night)} .hub.del{background:var(--sea);color:var(--bone);width:11cqw;height:11cqw;margin:-5.5cqw 0 0 -5.5cqw;font-size:3cqw}
+.coin{position:absolute;width:2.6cqw;height:2.6cqw;margin:-1.3cqw 0 0 -1.3cqw;border-radius:50%;background:#f0c35a;box-shadow:0 0 6px #f0c35a99;opacity:0}
+.on .coin{animation:coin 1.5s ease-in var(--d) both}
+@keyframes coin{0%{opacity:0;transform:none}10%{opacity:1}90%{opacity:1;transform:translate(var(--dx),var(--dy))}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+.chest{position:absolute;width:7cqw;height:5.5cqw;margin:-2.75cqw 0 0 -3.5cqw;border-radius:1cqw;background:#f0c35a;opacity:0}
+.on .chest{animation:chest 2.2s ease-in-out 6.2s both}
+@keyframes chest{0%{opacity:0;transform:none}15%{opacity:1;transform:none}85%{opacity:1;transform:translate(var(--dx),var(--dy))}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+.ringsvg{position:absolute;inset:0;width:100%;height:100%}
+.chain{stroke:var(--bone-dim);stroke-width:.4;opacity:.35}
+.on .chain{animation:redden 1s 8.6s both}
+@keyframes redden{to{stroke:var(--blood);opacity:.9;stroke-width:.7}}
+
+/* scène 4 : institutions */
+.inst{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2cqw;text-align:center;font-size:3.1cqw;line-height:1.2}
+.box{border-radius:2.4cqw;padding:2cqw 1.4cqw;color:var(--night)}
+.box b{display:block;font-family:var(--display);font-weight:400;font-size:4.2cqw;margin-bottom:.6cqw}
+.mag{background:var(--clay);grid-column:1/-1}
+.boule,.heliee{background:#e0b25e}
+.eccl{background:var(--bone);grid-column:1/-1}
+.cit{background:var(--olive);grid-column:1/-1}
+.arw{grid-column:1/-1;color:var(--bone-dim);font-size:3cqw}
+
+/* scène 5 : Périclès */
+.parth{width:100%;height:auto;max-width:100%}
+.col{fill:var(--bone);transform-box:fill-box;transform-origin:bottom;transform:scaleY(0)}
+.on .col{animation:rise .7s cubic-bezier(.2,.7,.2,1) var(--d) both}
+@keyframes rise{to{transform:scaleY(1)}}
+.counter{font-family:var(--display);font-size:16cqw;line-height:1;color:var(--clay);font-variant-numeric:tabular-nums}
+
+/* scène 6 : waffle */
+.waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:1.1cqw;width:78cqw;margin:0 auto}
+.waffle i{aspect-ratio:1;border-radius:1cqw;background:#ffffff14;transform:scale(.2);opacity:0}
+.on .waffle i{animation:pop .45s var(--d) both}
+.waffle i.c{background:var(--clay)} .waffle i.o{background:#6d6153} .waffle i.s{background:var(--bone)}
+.legend{display:grid;grid-template-columns:auto 1fr auto;gap:1.2cqh 3cqw;align-items:center;font-size:3.8cqw}
+.legend i{width:4cqw;height:4cqw;border-radius:1cqw;display:block}
+.legend span:last-child{font-variant-numeric:tabular-nums;color:var(--bone-dim)}
+
+/* scène 7 : déclin */
+.ruins{display:flex;justify-content:space-around;align-items:flex-end;height:30cqh;border-bottom:3px solid var(--bone-dim)}
+.pillar{width:9cqw;height:26cqh;background:linear-gradient(90deg,#d9cbb3,var(--bone) 40%,#c9b99e);border-radius:1cqw 1cqw 0 0;transform-origin:bottom right}
+.on .pillar.f{animation:fall 1.3s cubic-bezier(.55,0,.8,.4) var(--d) both}
+@keyframes fall{0%{transform:none}25%{transform:rotate(4deg)}100%{transform:translateY(3cqh) rotate(84deg);opacity:.5}}
+.steps{display:flex;flex-direction:column;gap:1.4cqh}
+.steps div{display:grid;grid-template-columns:17cqw 1fr;gap:3cqw;font-size:3.9cqw;line-height:1.25}
+.steps .date{font-size:5cqw}
+
+/* scène 8 : quiz */
+.cards{display:flex;flex-direction:column;gap:2cqh}
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:block;border:1.5px solid #f2e6d244;border-radius:3cqw;padding:2.4cqw 4cqw;font-size:3.7cqw;line-height:1.28;background:#ffffff08}
+.card:focus-visible{outline:2px solid var(--clay)}
+.card .ans{display:none;color:var(--clay);font-weight:700;margin-top:1.2cqh}
+.card.open{border-color:var(--clay)} .card.open .ans{display:block}
+.card small{display:block;color:var(--bone-dim);font-size:3cqw;margin-top:1cqh}
+
+/* scène 9 : fin */
+.words{display:flex;flex-wrap:wrap;gap:2cqw}
+.words span{border:1.5px solid var(--clay);border-radius:99px;padding:1cqh 3.5cqw;font-size:4cqw}
+.links{display:flex;flex-direction:column;gap:1.4cqh}
+.links a{display:block;border-radius:3cqw;padding:2.2cqw 4cqw;background:#ffffff0d;color:var(--bone);text-decoration:none;font-size:3.8cqw;border:1px solid #f2e6d22a}
+.links a b{color:var(--clay)}
+.replay{all:unset;cursor:pointer;text-align:center;border-radius:3cqw;padding:2.4cqw;background:var(--clay);color:var(--night);font-weight:800;font-size:4cqw}
+
+/* Rome */
+.era{display:flex;height:9cqh;border-radius:2cqw;overflow:hidden}
+.era .seg{display:flex;align-items:center;justify-content:center;font-size:3.2cqw;font-weight:700;color:var(--bone);transform-origin:left}
+@keyframes grow{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:none}}
+.map{position:relative;width:100%;aspect-ratio:1/.82;container-type:inline-size;flex-shrink:0}
+.map svg{position:absolute;inset:0;width:100%;height:100%}
+.chip{position:absolute;transform:translate(-50%,-50%);font-size:3.3cqw;font-weight:700;padding:.6cqw 2cqw;border-radius:99px;color:#16100b;white-space:nowrap;opacity:0}
+.on .chip{animation:chipin .5s cubic-bezier(.2,.7,.2,1) var(--d) both}
+@keyframes chipin{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.chip.ghost{background:transparent;color:var(--bone-dim);border:1px solid #f2e6d240;font-weight:600}
+.chip.threat{background:transparent;color:var(--blood);font-family:var(--display);font-size:4cqw;font-weight:400}
+.romedot{position:absolute;width:4cqw;height:4cqw;margin:-2cqw 0 0 -2cqw;border-radius:50%;background:var(--blood);box-shadow:0 0 0 3px #16100b}
+.romedot::after{content:"";position:absolute;inset:0;border-radius:50%;background:var(--blood)}
+.on .romedot::after{animation:pulse 1.6s .6s infinite}
+.goods{position:absolute;font-size:2.8cqw;font-weight:700;color:#f0c35a;white-space:nowrap;margin:-1.5cqw 0 0 -3cqw;opacity:0}
+.on .goods{animation:coin 2.2s ease-in-out var(--d) both}
+.half{position:absolute;top:0;bottom:0;left:0;width:56%;background:linear-gradient(90deg,#e2553f30,#e2553f10);opacity:0}
+.on .half{animation:fade 1.2s 4.4s both}
+.aug{position:relative;height:42cqw;display:grid;place-items:center}
+.medal{width:34cqw;height:34cqw;border-radius:50%;border:3px solid #f0c35a;display:grid;place-content:center;text-align:center;background:radial-gradient(#3a2a1d,#16100b);z-index:2}
+.medal span{font-family:var(--display);font-size:5.4cqw;letter-spacing:.08em;color:#f0c35a}
+.medal small{font-size:3cqw;color:var(--bone-dim)}
+.pw{position:absolute;padding:1.2cqw 3cqw;border-radius:2cqw;background:var(--clay);color:#16100b;font-weight:800;font-size:3.4cqw;opacity:0}
+.on .pw{animation:absorb 2.6s cubic-bezier(.5,0,.3,1) var(--d) both}
+@keyframes absorb{0%{opacity:0;transform:translate(var(--x),var(--y)) scale(.6)}20%{opacity:1;transform:translate(var(--x),var(--y)) scale(1)}55%{opacity:1;transform:translate(var(--x),var(--y)) scale(1)}100%{opacity:0;transform:translate(0,0) scale(.3)}}
+.people{display:grid;grid-template-columns:repeat(12,1fr);gap:1.2cqw;width:84cqw;margin:0 auto}
+.people i{aspect-ratio:1;border-radius:50% 50% 30% 30%;background:#4a3c30}
+.on .people i.t{animation:tint .5s var(--d) both}
+.people i.sl{background:#2c241c;outline:1px dashed #6d6153}
+@keyframes tint{to{background:var(--clay)}}
+@media (prefers-reduced-motion:reduce){.chip,.goods,.pw{animation:none!important;opacity:1!important}.goods,.pw{display:none}.people i.t{background:var(--clay)}.half{opacity:1}.era .seg{opacity:1!important;transform:none!important}}
+@media (prefers-reduced-motion:reduce){
+  .a,.on .a,.dots i,.waffle i{animation:none!important;opacity:1!important;transform:none!important}
+  .dr{stroke-dashoffset:0!important;animation:none!important}.col{transform:none!important;animation:none!important}
+  .cap{animation:none!important;opacity:1!important}
+  .coin,.chest{display:none}.scene{transition:none}
+}
+/* smartphone : plein écran ; tablette : colonne 9:16 sur toute la hauteur */
+@media (max-width:600px){
+  body{padding:0 env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+  .stage{width:100%;height:100%;aspect-ratio:auto;max-height:none;border-radius:0;box-shadow:none}
+}
+@media (min-width:601px) and (pointer:coarse){ .stage{max-height:none} }
+.controls button{min-width:44px;min-height:44px}
+.controls .vbtn{all:unset;cursor:pointer;flex:1;min-width:0;min-height:44px;box-sizing:border-box;display:flex;align-items:center;gap:2cqw;padding:0 4cqw;border-radius:99px;
+  background:var(--clay);color:#16100b;font-weight:800;font-size:3.6cqw;white-space:nowrap;overflow:hidden;animation:vb 1.8s ease-in-out 2}
+.controls .vbtn[hidden]{display:none}
+.vbtn span{overflow:hidden;text-overflow:ellipsis}
+.vbtn:focus-visible{outline:2px solid var(--bone);outline-offset:2px}
+@keyframes vb{50%{transform:scale(1.04)}}
+.vlayer{position:absolute;inset:0;z-index:20;background:var(--night);display:flex;flex-direction:column;gap:2.4cqh;padding:5cqh 5cqw 4cqh;overflow-y:auto}
+.vlayer[hidden]{display:none}
+.vhead{display:flex;align-items:flex-start;gap:3cqw}
+.vhead .k{font-size:3cqw;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--clay)}
+.vhead h3{font-family:var(--display);font-weight:400;font-size:6.4cqw;line-height:1.1;margin:.6cqh 0 0}
+.vclose{all:unset;cursor:pointer;flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1.5px solid #f2e6d266;color:var(--bone);font-size:20px;margin-left:auto}
+.vclose:focus-visible{outline:2px solid var(--clay)}
+.vlayer video{width:100%;aspect-ratio:16/9;background:#000;border-radius:2.4cqw;display:block;flex:none}
+.vsrc{font-size:3.1cqw;color:var(--bone-dim);margin:0}
+.vkeys{margin:0;padding:3cqw 4cqw;border-radius:3cqw;background:#ffffff0a;border:1px solid #f2e6d222;font-size:3.9cqw;line-height:1.4}
+.vkeys b{display:block;color:var(--clay);font-size:3cqw;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1cqh}
+.vkeys ul{margin:0;padding:0 0 0 4cqw}
+.vkeys li{margin:.6cqh 0}
+.vwarn{font-size:3.2cqw;color:var(--bone-dim);margin:0;font-style:italic}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:2cqw}
+.thumb{all:unset;cursor:pointer;display:block;font-size:2.6cqw;line-height:1.2;color:var(--bone-dim);text-align:center}
+.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:1.6cqw;display:block;margin-bottom:.6cqh;border:1px solid #f2e6d233}
+.thumb:focus-visible img{outline:2px solid var(--clay)}
+/* ===== v5 : départ, voix, points de contrôle ===== */
+.start{display:flex;flex-direction:column;gap:1.6cqh;margin-top:1cqh}
+.sbtn{all:unset;cursor:pointer;box-sizing:border-box;min-height:48px;display:flex;align-items:center;justify-content:center;gap:2.5cqw;border-radius:99px;
+  background:var(--clay);color:#16100b;font-weight:800;font-size:4.2cqw;padding:1.4cqh 5cqw}
+.sbtn.ghost{background:transparent;color:var(--bone);border:1.5px solid #f2e6d255;font-weight:600}
+.sbtn:focus-visible,.cpnext:focus-visible{outline:2px solid var(--bone);outline-offset:3px}
+#vox{font-size:0}
+#vox svg{width:20px;height:20px}
+@keyframes slideL{from{opacity:0;transform:translateX(-12cqw)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(12cqw)}to{opacity:1;transform:none}}
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:2cqw;align-items:center}
+.gen{border:1.5px solid #f2e6d240;border-radius:3cqw;padding:2cqw 3cqw;display:flex;flex-direction:column;gap:.4cqh;font-size:3.3cqw;color:var(--bone-dim)}
+.gen b{font-family:var(--display);font-weight:400;font-size:5.4cqw;color:var(--bone)}
+.vs{font-family:var(--display);color:var(--blood);font-size:6cqw}
+.score{font-family:var(--display);font-size:5.4cqw;color:var(--bone)}
+.score b{color:var(--clay);font-size:8cqw;font-weight:400}
+.score small{display:block;font-family:var(--body);font-size:3.3cqw;color:var(--bone-dim)}
+/* points de contrôle */
+.cpscene{background:radial-gradient(90% 50% at 50% 100%,#3a1f12 0%,transparent 70%)}
+.cpdot{display:inline-block;width:2.2cqw;height:2.2cqw;border-radius:50%;background:var(--clay);margin-right:2cqw;vertical-align:middle;box-shadow:0 0 0 0 var(--clay)}
+.on .cpdot{animation:ring 1.6s ease-out infinite}
+@keyframes ring{0%{box-shadow:0 0 0 0 #d8743f99}100%{box-shadow:0 0 0 3.5cqw #d8743f00}}
+.cp{flex:1;min-height:0;display:flex;flex-direction:column;gap:2cqh;position:relative}
+.cpfoot{display:flex;align-items:center;gap:3cqw;min-height:48px}
+.cpfb{flex:1;margin:0;font-size:3.8cqw;line-height:1.3;color:var(--bone-dim)}
+.cpfb.ok{color:var(--olive)} .cpfb.ko{color:var(--blood)}
+.cpnext{all:unset;cursor:pointer;min-height:48px;padding:0 6cqw;border-radius:99px;background:var(--clay);color:#16100b;font-weight:800;font-size:4cqw;animation:pop .5s both}
+.cpnext[hidden]{display:none}
+.chipq{all:unset;cursor:pointer;box-sizing:border-box;min-height:44px;display:inline-flex;align-items:center;justify-content:center;text-align:center;
+  padding:1.2cqh 3.6cqw;border-radius:3cqw;background:var(--bone);color:#16100b;font-weight:700;font-size:3.9cqw;line-height:1.2;box-shadow:0 .6cqh 0 #b9a88f}
+.chipq:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.chipq:active{transform:translateY(.4cqh);box-shadow:0 .2cqh 0 #b9a88f}
+.shake{animation:shake .42s both!important}
+@keyframes shake{20%,60%{transform:translateX(-2.2cqw)}40%,80%{transform:translateX(2.2cqw)}}
+.ko-flash{background:var(--blood)!important;color:var(--bone)!important}
+.ghostfly{position:absolute;z-index:15;pointer-events:none;margin:0}
+/* ordre */
+.tl{position:relative;display:flex;flex-direction:column;gap:1.2cqh;padding-left:7cqw}
+.tl::before{content:"";position:absolute;left:2.2cqw;top:1cqh;bottom:1cqh;width:3px;border-radius:2px;background:linear-gradient(var(--clay),#d8743f33)}
+.slot{position:relative;display:flex;align-items:center;gap:3cqw;min-height:6.4cqh;border:1.5px dashed #f2e6d244;border-radius:3cqw;padding:.6cqh 3cqw;transition:border-color .3s,background .3s}
+.slot::before{content:"";position:absolute;left:-6.3cqw;width:3.2cqw;height:3.2cqw;border-radius:50%;background:var(--night);border:3px solid #d8743f66;transition:background .3s,border-color .3s}
+.slot .sd{font-family:var(--display);font-size:5cqw;color:#f2e6d244;min-width:12cqw;transition:color .3s}
+.slot .st{font-size:3.9cqw;font-weight:600}
+.slot.ok{border-style:solid;border-color:var(--olive);background:#9bb06a1a}
+.slot.ok::before{background:var(--olive);border-color:var(--olive)}
+.slot.ok .sd{color:var(--clay)}
+.slot.ok .st{animation:fade .4s both}
+.slot.next{border-color:var(--clay)}
+.pool{display:flex;flex-wrap:wrap;gap:2.4cqw;justify-content:center}
+/* association */
+.prompt{align-self:center;max-width:100%;position:relative}
+.prompt .chipq{background:#f0c35a;box-shadow:0 .6cqh 0 #a98227;cursor:default;font-size:4.2cqw;padding:1.6cqh 4.5cqw;animation:pop .45s both}
+.prompt .chipq.out{animation:none;opacity:0}
+.targets{display:grid;gap:2.4cqw;flex:1;min-height:0;align-content:start}
+.targets.c3{grid-template-columns:repeat(3,1fr)} .targets.c4{grid-template-columns:repeat(2,1fr)}
+.tgt{all:unset;cursor:pointer;box-sizing:border-box;border:1.5px solid #f2e6d240;border-radius:3cqw;padding:2cqh 2cqw 1.4cqh;display:flex;flex-direction:column;align-items:center;gap:.8cqh;text-align:center;
+  background:#ffffff08;transition:border-color .3s,background .3s,transform .2s;min-height:44px}
+.tgt:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.tgt svg{width:14cqw;height:12cqw;stroke:var(--bone);fill:none;stroke-width:2;stroke-linejoin:round}
+.tgt b{font-family:var(--display);font-weight:400;font-size:5cqw}
+.tgt.num b{font-size:9cqw;color:var(--clay)}
+.tgt .got{font-size:3cqw;color:var(--olive);font-weight:700;line-height:1.2}
+.tgt.ok{border-color:var(--olive);background:#9bb06a1f}
+.tgt.ok svg{stroke:var(--olive)}
+.tgt.glow{animation:glow .7s ease-out}
+@keyframes glow{0%{box-shadow:0 0 0 0 #9bb06aaa}100%{box-shadow:0 0 0 4cqw #9bb06a00}}
+.cpmap{position:relative;width:100%;aspect-ratio:1/.82;container-type:inline-size}
+.cpmap svg{position:absolute;inset:0;width:100%;height:100%}
+.cpmap .tgt{position:absolute;transform:translate(-50%,-50%);padding:.8cqh 2.6cqw;border-radius:99px;min-height:40px;justify-content:center;background:#16100bcc;flex-direction:row;font-weight:700;font-size:3.6cqw;white-space:nowrap}
+.cpmap .tgt.threat{color:var(--blood);border-color:#e2553f66}
+.cpmap .tgt.ok{background:var(--olive);color:#16100b}
+.cpmap .tgt.shake{animation:shakec .42s both!important}
+@keyframes shakec{20%,60%{transform:translate(calc(-50% - 2cqw),-50%)}40%,80%{transform:translate(calc(-50% + 2cqw),-50%)}}
+/* vrai / faux */
+.tfwrap{flex:1;min-height:0;display:flex;flex-direction:column;gap:2cqh;perspective:900px}
+.tfcard{position:relative;flex:1;max-height:40cqh;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.2,1)}
+.tfcard.in{animation:cardin .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes cardin{from{opacity:0;transform:translateX(30cqw) rotate(6deg)}to{opacity:1;transform:none}}
+.tfcard.flip{transform:rotateY(180deg)}
+.tfface{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:4cqw;padding:5cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqh}
+.tffront{background:var(--bone);color:#16100b;font-size:5.2cqw;font-weight:700;line-height:1.3;box-shadow:0 1cqh 0 #b9a88f}
+.tffront small{font-size:3cqw;font-weight:800;letter-spacing:.14em;color:var(--clay-deep);text-transform:uppercase}
+.tfback{transform:rotateY(180deg);background:#22301c;border:2px solid var(--olive);font-size:4.2cqw;line-height:1.35}
+.tfback.bad{background:#341a14;border-color:var(--blood)}
+.tfback b{font-family:var(--display);font-weight:400;font-size:7cqw}
+.tfback.bad b{color:var(--blood)} .tfback:not(.bad) b{color:var(--olive)}
+.tfbtns{display:grid;grid-template-columns:1fr 1fr;gap:3cqw}
+.tfbtns .chipq{min-height:52px;font-size:4.6cqw}
+.tfbtns .chipq.v{background:var(--olive);box-shadow:0 .6cqh 0 #6b7c45}
+.tfbtns .chipq.f{background:var(--blood);color:var(--bone);box-shadow:0 .6cqh 0 #9c3727}
+.tfcount{font-size:3.3cqw;color:var(--bone-dim);text-align:center;margin:0}
+/* confettis */
+.conf{position:absolute;left:50%;top:40%;width:2.2cqw;height:3.4cqw;border-radius:.5cqw;z-index:16;pointer-events:none;animation:conf 1.2s cubic-bezier(.2,.7,.4,1) both}
+@keyframes conf{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.tfcard{transition:none}.conf{display:none}.on .cpdot{animation:none}}
+.controls .nextbig{width:auto;max-width:none;height:auto;min-height:48px;border-radius:99px;padding:0 4.5cqw;gap:1.5cqw;display:flex;align-items:center;
+  font-size:3.9cqw;font-weight:800;border:1.5px solid #f2e6d255;background:transparent;color:var(--bone);flex:none;transition:background .3s,color .3s,border-color .3s}
+.controls .nextbig.ready{background:var(--bone);color:#16100b;border-color:var(--bone);animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{0%,100%{transform:none}50%{transform:translateX(1.2cqw)}}
+.controls .vbtn{flex:1;font-size:3.4cqw;padding:0 3cqw}
+@media (prefers-reduced-motion:reduce){.controls .nextbig.ready{animation:none}}
+.controls{flex-wrap:wrap;row-gap:1.6cqh}
+.controls .vbar{all:unset;cursor:pointer;box-sizing:border-box;order:-1;flex:1 1 100%;display:flex;align-items:center;gap:3cqw;padding:1.2cqw;padding-right:3cqw;
+  border-radius:3.5cqw;background:linear-gradient(90deg,#d8743f33,#d8743f14);border:1.5px solid var(--clay);
+  animation:vbin .6s cubic-bezier(.2,.7,.2,1) .4s both, vbglow 2.2s ease-out 1.4s 3}
+.controls .vbar[hidden]{display:none}
+.controls .vbar:focus-visible{outline:2px solid var(--bone);outline-offset:2px}
+@keyframes vbin{from{opacity:0;transform:translateY(3cqh)}to{opacity:1;transform:none}}
+@keyframes vbglow{0%{box-shadow:0 0 0 0 #d8743faa}100%{box-shadow:0 0 0 3cqw #d8743f00}}
+.vthumb{position:relative;flex:none;width:24cqw;aspect-ratio:16/9;border-radius:2cqw;overflow:hidden;background:#000}
+.vthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.vthumb i{position:absolute;inset:0;display:grid;place-items:center;background:#0005}
+.vthumb i svg{width:8cqw;height:8cqw;padding:2cqw;box-sizing:border-box;border-radius:50%;background:var(--clay);color:#16100b}
+.vtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:.3cqh}
+.vtxt small{font-size:2.8cqw;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--clay)}
+.vtxt b{font-size:3.7cqw;color:var(--bone);line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.vgo{flex:none;font-size:3.3cqw;font-weight:800;color:#16100b;background:var(--clay);border-radius:99px;padding:1cqh 3cqw}
+.scene.hasclip{padding-bottom:28cqh}
+@media (prefers-reduced-motion:reduce){.controls .vbar{animation:none}}
+@container (min-aspect-ratio: 1/2){
+  .scene{gap:1.5cqh;padding-top:6.5cqh}
+  .scene.hasclip{padding-bottom:26cqh}
+  .map{width:70%;align-self:center}
+  .caption{gap:.8cqh}.caption p{font-size:3.7cqw;line-height:1.3}
+  .people{width:62cqw}.ring{max-width:58cqw}
+  .aug{height:30cqw}.medal{width:26cqw;height:26cqw}
+  .words span{padding:.6cqh 3cqw;font-size:3.6cqw}
+  .vthumb{width:19cqw}
+  .stage-fill{max-height:34cqh}
+}
+</style>
+
+<div class="stage" id="stage">
+  <div class="progress" id="progress"></div>
+
+  <!-- 0 · Titre -->
+  <section class="scene on" data-t="0" data-key="titre" data-title="La Méditerranée antique">
+    <div class="meander" style="top:5cqh"></div>
+    <div style="flex:1"></div>
+    <div class="kicker a" style="--d:.2s">Histoire · Seconde · Chapitre 1</div>
+    <h1 class="a" style="--d:.5s">Athènes<br>et <span class="clay">Rome</span></h1>
+    <p class="lead a" style="--d:1.3s">La Méditerranée antique : une cité grecque invente la démocratie, une cité d'Italie bâtit un empire sur trois continents.</p>
+    <div class="start a" style="--d:2s"><button class="sbtn" id="startVoice"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Commencer avec la voix</button><button class="sbtn ghost" id="startMute">Sans la voix</button></div>
+    <p class="dim a" style="--d:2.6s;font-size:3.3cqw;margin:0">Écoute, lis, puis touche « Suivant » quand tu es prêt · ↻ pour réécouter · bouton orange = extrait vidéo · 6 points de contrôle</p>
+    <div style="flex:1"></div>
+  </section>
+
+  <!-- 1 · Grèce des cités -->
+  <section class="scene" data-t="11000" data-key="cites" data-voice="cites" data-title="Athènes · La Grèce des cités">
+    <div class="kicker a">Athènes · La Grèce des cités</div>
+    <h2 class="a" style="--d:.2s"><span class="clay">750</span> cités-États</h2>
+    <div class="dots" id="dots"></div>
+    <div class="caption">
+      <p class="cap" style="--d:.6s;--dur:2.8s">Chaque point est une <b>cité-État</b> : un petit État indépendant autour d'une ville.</p>
+      <p class="cap" style="--d:3.4s;--dur:3s">L'une d'elles va dominer les autres : <b>Athènes</b>.</p>
+      <p class="cap last" style="--d:6.4s;--dur:99s">Divisés politiquement, les Grecs partagent pourtant une <b>culture commune</b> :</p>
+    </div>
+    <div class="icons">
+      <div class="a" style="--anim:pop;--d:7s"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/></svg>la langue grecque</div>
+      <div class="a" style="--anim:pop;--d:7.6s"><svg viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4"/></svg>Homère, Hésiode</div>
+      <div class="a" style="--anim:pop;--d:8.2s"><svg viewBox="0 0 24 24"><path d="M3 20a9 9 0 0 1 18 0"/><path d="M7 20a5 5 0 0 1 10 0"/><circle cx="12" cy="6" r="2"/></svg>le théâtre</div>
+      <div class="a" style="--anim:pop;--d:8.8s"><svg viewBox="0 0 24 24"><circle cx="7" cy="10" r="3.5"/><circle cx="17" cy="10" r="3.5"/><circle cx="12" cy="15" r="3.5"/></svg>les jeux (Olympie)</div>
+    </div>
+  </section>
+
+  <!-- 2 · Guerres médiques -->
+  <section class="scene" data-t="14000" data-key="mediques" data-voice="mediques" data-title="Athènes · Les guerres médiques">
+    <div class="kicker a">Athènes · Les guerres médiques</div>
+    <h2 class="a" style="--d:.2s">Grecs <span class="dim">contre</span> <span class="clay">Perses</span></h2>
+    <div class="stage-fill">
+      <svg viewBox="0 0 360 300" style="width:100%;height:100%" aria-label="Carte animée des guerres médiques">
+        <path d="M0 20 C40 30 70 10 110 40 C130 70 100 100 125 130 C140 160 110 200 120 240 C90 260 60 250 0 290 Z" fill="#3a2a1d"/>
+        <path d="M360 0 L255 0 C240 40 270 70 250 110 C235 150 265 190 245 240 C255 270 290 280 360 300 Z" fill="#3a2a1d"/>
+        <text x="40" y="275" fill="#b9a88f" font-size="13" font-family="Marcellus">GRÈCE</text>
+        <text x="268" y="285" fill="#b9a88f" font-size="12" font-family="Marcellus">EMPIRE PERSE</text>
+        <text x="160" y="270" fill="#2c4a57" font-size="12" font-style="italic">mer Égée</text>
+        <!-- lieux -->
+        <circle cx="100" cy="175" r="5" fill="#d8743f"/><text x="60" y="194" fill="#f2e6d2" font-size="11">Athènes</text>
+        <circle cx="118" cy="140" r="3.5" fill="#f2e6d2"/><text x="124" y="137" fill="#f2e6d2" font-size="10">Marathon</text>
+        <circle cx="78" cy="85" r="3.5" fill="#f2e6d2"/><text x="14" y="80" fill="#f2e6d2" font-size="10">Thermopyles</text>
+        <circle cx="88" cy="203" r="3.5" fill="#f2e6d2"/><text x="40" y="222" fill="#f2e6d2" font-size="10">Salamine</text>
+        <!-- 1re guerre -->
+        <path class="dr" pathLength="1" style="--d:1s;--t:1.8s" d="M300 140 L130 140" stroke="#e2553f" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <g class="a" style="--anim:pop;--d:2.9s;transform-origin:120px 140px;transform-box:view-box"><path d="M108 128 L132 152 M132 128 L108 152" stroke="#9bb06a" stroke-width="5" stroke-linecap="round"/></g>
+        <text class="a" style="--d:3s" x="150" y="160" fill="#e2553f" font-size="11" font-family="Marcellus">-490 · Darius</text>
+        <!-- 2e guerre -->
+        <path class="dr" pathLength="1" style="--d:5.4s;--t:2.2s" d="M310 50 C230 40 150 60 90 85 C80 110 95 140 100 165" stroke="#e2553f" stroke-width="9" fill="none" stroke-linecap="round" opacity=".9"/>
+        <text class="a" style="--d:5.6s" x="190" y="38" fill="#e2553f" font-size="11" font-family="Marcellus">-480 · Xerxès</text>
+        <g class="a" style="--anim:pop;--d:7.7s;transform-origin:100px 168px;transform-box:view-box"><path d="M100 150 C110 160 112 170 100 180 C88 170 92 160 100 150 Z" fill="#f0c35a"/><path d="M100 160 C105 166 104 172 100 176 C96 172 96 166 100 160 Z" fill="#e2553f"/></g>
+        <!-- trières -->
+        <g class="a" style="--d:9.4s">
+          <path d="M60 200 l22 0 l-4 6 l-14 0z" fill="#f2e6d2"/><path d="M66 212 l22 0 l-4 6 l-14 0z" fill="#f2e6d2"/><path d="M98 206 l22 0 l-4 6 l-14 0z" fill="#f2e6d2"/>
+        </g>
+        <g class="a" style="--anim:pop;--d:10.2s;transform-origin:110px 205px;transform-box:view-box"><circle cx="110" cy="205" r="20" fill="none" stroke="#9bb06a" stroke-width="3"/></g>
+      </svg>
+    </div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:4.2s"><span class="date">-490</span> Le roi perse Darius débarque à <b>Marathon</b> : les hoplites athéniens le repoussent.</p>
+      <p class="cap" style="--d:5.2s;--dur:3.9s"><span class="date">-480</span> Xerxès revient avec une armée géante : les 300 Spartiates tombent aux <b>Thermopyles</b>, Athènes est incendiée.</p>
+      <p class="cap last" style="--d:9.2s;--dur:99s">Mais la flotte athénienne gagne à <b>Salamine</b> : la puissance d'Athènes sera <b>maritime</b>.</p>
+    </div>
+  </section>
+
+  <!-- 3 · Ligue de Délos -->
+  <section class="scene" data-t="13500" data-key="delos" data-voice="delos" data-title="Athènes · La Ligue de Délos">
+    <div class="kicker a">Athènes · La thalassocratie</div>
+    <h2 class="a" style="--d:.2s">De l'<span class="clay">alliance</span> à l'empire</h2>
+    <div class="ring" id="ring">
+      <svg class="ringsvg" viewBox="0 0 100 100" id="chains"></svg>
+    </div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:5s"><span class="date">-478</span> <b>Ligue de Délos</b> : les alliés versent un <b>tribut</b> pour une flotte commune contre les Perses.</p>
+      <p class="cap" style="--d:6s;--dur:2.6s">Le trésor de la Ligue part à <b>Athènes</b>.</p>
+      <p class="cap last" style="--d:8.8s;--dur:99s">Le tribut devient obligatoire. Monnaie athénienne imposée, révoltes punies : c'est un <b>empire</b>.</p>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp1" data-voice="cp1" data-title="Point de contrôle 1/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 1/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Remets dans l'<span class="clay">ordre</span></h2>
+    <div class="cp" id="cp1"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp1fb" aria-live="polite"></p><button class="cpnext" id="cp1next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- 4 · Institutions -->
+  <section class="scene" data-t="13000" data-key="demo" data-voice="demo" data-title="Athènes · La démocratie">
+    <div class="kicker a">Athènes · La démocratie</div>
+    <h2 class="a" style="--d:.2s"><span class="clay">dêmos</span> + kratos</h2>
+    <p class="lead a" style="--d:.7s;font-size:3.9cqw"><span class="date">-508</span> Clisthène met fin à la tyrannie et crée les <b class="clay">dèmes</b>. Le pouvoir passe aux citoyens.</p>
+    <div class="inst">
+      <div class="box mag a" style="--d:8.4s"><b>Magistrats</b>dont 10 <u>stratèges élus</u> : font appliquer les lois, dirigent l'armée</div>
+      <div class="arw a" style="--d:8s">▲ élit · tire au sort · contrôle</div>
+      <div class="box boule a" style="--anim:pop;--d:6.2s"><b>Boulè</b>500 tirés au sort<br>préparent les lois</div>
+      <div class="a" style="--d:6.6s;align-self:center;font-size:3cqw;color:var(--bone-dim)">◀ tire au sort ▶</div>
+      <div class="box heliee a" style="--anim:pop;--d:7s"><b>Héliée</b>6 000 tirés au sort<br>rendent la justice</div>
+      <div class="box eccl a" style="--d:3.6s"><b>Ecclésia</b>tous les citoyens, sur la Pnyx : <u>votent les lois</u>, la guerre, l'ostracisme</div>
+      <div class="arw a" style="--d:3.2s">▲</div>
+      <div class="box cit a" style="--d:2.2s"><b>≈ 40 000 citoyens</b></div>
+    </div>
+    <p class="a" style="--d:10s;font-size:3.5cqw;margin:0;line-height:1.35"><b class="clay">Isonomie</b> : égalité de tous devant la loi.<br><b class="clay">Ostracisme</b> : exil d'un citoyen qui menace la démocratie.</p>
+  </section>
+
+  <!-- 5 · Périclès -->
+  <section class="scene" data-t="13000" data-key="pericles" data-voice="pericles" data-title="Athènes · Périclès">
+    <div class="kicker a">Athènes · Point de passage</div>
+    <h2 class="a" style="--d:.2s">Le siècle de <span class="clay">Périclès</span></h2>
+    <div style="display:flex;align-items:baseline;gap:3cqw">
+      <div class="counter" id="counter">-443</div>
+      <div class="a" style="--d:.5s;font-size:3.8cqw;line-height:1.25">stratège réélu<br>chaque année<br><span class="dim">jusqu'en -429</span></div>
+    </div>
+    <svg class="parth" viewBox="0 0 200 110" aria-label="Le Parthénon se construit">
+      <path class="dr" pathLength="1" style="--d:5.2s;--t:1.4s" d="M14 38 L100 8 L186 38 Z" fill="none" stroke="#f2e6d2" stroke-width="2.5" stroke-linejoin="round"/>
+      <rect class="a" style="--anim:fade;--d:5s" x="12" y="38" width="176" height="7" fill="#d8743f"/>
+      <g id="cols"></g>
+      <rect class="a" style="--anim:fade;--d:3s" x="6" y="96" width="188" height="5" fill="#b9a88f"/>
+      <rect class="a" style="--anim:fade;--d:3s" x="0" y="101" width="200" height="6" fill="#8f806b"/>
+    </svg>
+    <div class="caption">
+      <p class="cap" style="--d:3s;--dur:4.2s">Grands travaux : l'<b>Acropole</b> et le Parthénon, les <b>Longs Murs</b> vers le Pirée.</p>
+      <p class="cap" style="--d:7.2s;--dur:2.9s">Le <b>misthos</b> : une indemnité pour que les citoyens pauvres puissent siéger.</p>
+      <p class="cap last" style="--d:10.1s;--dur:99s">Payé avec quoi ? En partie avec le <b>tribut des alliés</b>. La démocratie vit de l'empire.</p>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp2" data-voice="cp2" data-title="Point de contrôle 2/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 2/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Qui fait <span class="clay">quoi</span> ?</h2>
+    <div class="cp" id="cp2"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp2fb" aria-live="polite"></p><button class="cpnext" id="cp2next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- 6 · Citoyenneté -->
+  <section class="scene" data-t="13000" data-key="citoyens" data-voice="citoyens" data-title="Athènes · Qui est citoyen ?">
+    <div class="kicker a">Athènes · Les limites</div>
+    <h2 class="a" style="--d:.2s">Qui vote <span class="clay">vraiment</span> ?</h2>
+    <div class="waffle" id="waffle"></div>
+    <div class="legend">
+      <i class="a" style="--d:2s;background:var(--clay)"></i><span class="a" style="--d:2s"><b>Citoyens</b> : hommes, majeurs, libres, deux parents athéniens</span><span class="a" style="--d:2s">≈ 40 000</span>
+      <i class="a" style="--d:5.2s;background:#6d6153"></i><span class="a" style="--d:5.2s">Femmes, enfants, <b>métèques</b> (étrangers libres)</span><span class="a" style="--d:5.2s">exclus</span>
+      <i class="a" style="--d:7.6s;background:var(--bone)"></i><span class="a" style="--d:7.6s"><b>Esclaves</b></span><span class="a" style="--d:7.6s">≈ 110 000</span>
+    </div>
+    <p class="a dim" style="--d:9.4s;font-size:3.4cqw;margin:0">1 carré ≈ 3 000 habitants (estimations). <b class="clay">Platon</b> critique : gouverner est une science, pas donnée à tout le monde.</p>
+  </section>
+
+  <!-- 7 · Déclin -->
+  <section class="scene" data-t="12000" data-key="declin" data-voice="declin" data-title="Athènes · Le déclin">
+    <div class="kicker a">Athènes · Le déclin</div>
+    <h2 class="a" style="--d:.2s">L'empire <span class="clay">s'effondre</span></h2>
+    <div class="ruins">
+      <div class="pillar f" style="--d:2.2s"></div><div class="pillar f" style="--d:4.6s"></div><div class="pillar f" style="--d:7s"></div><div class="pillar f" style="--d:9.2s"></div>
+    </div>
+    <div class="steps">
+      <div class="a" style="--d:1.2s"><span class="date">-431</span><span>Guerre du <b>Péloponnèse</b> contre Sparte (-431 à -404).</span></div>
+      <div class="a" style="--d:3.6s"><span class="date">-404</span><span>Défaite : armée anéantie, <b>Ligue de Délos dissoute</b>, oligarchie (les Quatre-Cents, les Trente).</span></div>
+      <div class="a" style="--d:6s"><span class="date">-338</span><span><b>Chéronée</b> : Philippe II de Macédoine domine la Grèce.</span></div>
+      <div class="a" style="--d:8.2s"><span class="date">-322</span><span><b>Fin de la démocratie</b> athénienne.</span></div>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp3" data-voice="cp3" data-title="Point de contrôle 3/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 3/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Vrai ou <span class="clay">faux</span> ?</h2>
+    <div class="cp" id="cp3"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp3fb" aria-live="polite"></p><button class="cpnext" id="cp3next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- R0 · Transition Rome -->
+  <section class="scene" data-t="9000" data-key="rome" data-voice="rome" data-title="Rome · De la République à l'Empire">
+    <div class="kicker a">Partie II · Rome</div>
+    <h2 class="a" style="--d:.2s">De la <span class="clay">République</span> à l'Empire</h2>
+    <div class="era">
+      <div class="seg a" style="--anim:grow;--d:.8s;flex:244;background:#6d5a7a"><span>Monarchie</span></div>
+      <div class="seg a" style="--anim:grow;--d:1.6s;flex:482;background:#9a4a5c"><span>République</span></div>
+      <div class="seg a" style="--anim:grow;--d:2.6s;flex:503;background:var(--clay)"><span>Empire</span></div>
+    </div>
+    <div class="steps">
+      <div class="a" style="--d:1s"><span class="date">-753</span><span>Fondation légendaire de Rome (Romulus)</span></div>
+      <div class="a" style="--d:1.8s"><span class="date">-509</span><span>Début de la <b>République</b></span></div>
+      <div class="a" style="--d:2.8s"><span class="date">-146</span><span>Destruction de <b>Carthage</b></span></div>
+      <div class="a" style="--d:3.6s"><span class="date">-44</span><span>Assassinat de <b>Jules César</b></span></div>
+      <div class="a" style="--d:4.4s"><span class="date">-27</span><span><b>Auguste</b> : début de l'Empire</span></div>
+      <div class="a" style="--d:5.2s"><span class="date">395</span><span>Partage Orient / Occident</span></div>
+      <div class="a" style="--d:6s"><span class="date">476</span><span>Fin de l'Empire d'Occident</span></div>
+    </div>
+  </section>
+
+  <!-- R1 · Conquêtes -->
+  <section class="scene" data-t="13000" data-key="conquetes" data-voice="conquetes" data-title="Rome · Les conquêtes">
+    <div class="kicker a">Rome · Le croquis</div>
+    <h2 class="a" style="--d:.2s"><i>Mare</i> <span class="clay">Nostrum</span></h2>
+    <div class="map" data-mode="conq"></div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:2.7s"><b style="color:#f2a08f">Jusqu'au II<sup>e</sup> s. av.</b> : Italie, Sicile, Hispanie, Carthage détruite en -146.</p>
+      <p class="cap" style="--d:3.5s;--dur:2.5s"><b style="color:#f6c27a">Fin de la République</b> : Grèce, Gaule (César, -58/-51), Syrie, Égypte (-30).</p>
+      <p class="cap" style="--d:6s;--dur:2.6s"><b style="color:#f4e27a">I<sup>er</sup> s.</b> Bretagne (43) · <b style="color:#a8d38a">II<sup>e</sup> s.</b> Dacie (106), apogée sous Trajan (117).</p>
+      <p class="cap last" style="--d:8.6s;--dur:99s">Le <b><i>limes</i></b> protège les frontières face aux Germains, aux Daces et aux Parthes.</p>
+    </div>
+  </section>
+
+  <!-- R2 · Échanges -->
+  <section class="scene" data-t="13000" data-key="echanges" data-voice="echanges" data-title="Rome · Les échanges">
+    <div class="kicker a">Rome · Un carrefour</div>
+    <h2 class="a" style="--d:.2s">Tout mène à <span class="clay">Rome</span></h2>
+    <div class="map" data-mode="flux"></div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:5s">Les régions se complètent : <b>blé</b> d'Égypte et d'Afrique, <b>huile</b> et <b>vin</b> d'Hispanie et de Gaule, <b>épices</b> d'Orient.</p>
+      <p class="cap last" style="--d:6.4s;--dur:99s">Au-delà du <i>limes</i> : ambre du Nord, or et ivoire du Sahara, poivre d'Inde, <b>soie de Chine</b> (via les Parthes).</p>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp4" data-voice="cp4" data-title="Point de contrôle 4/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 4/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Lis le <span class="clay">croquis</span></h2>
+    <div class="cp" id="cp4"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp4fb" aria-live="polite"></p><button class="cpnext" id="cp4next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- R2b · République -->
+  <section class="scene" data-t="12000" data-key="republique" data-voice="republique" data-title="Rome · La République">
+    <div class="kicker a">Rome · La République</div>
+    <h2 class="a" style="--d:.2s">Le pouvoir <span class="clay">partagé</span>… puis disputé</h2>
+    <div class="inst" style="grid-template-columns:1fr 1fr">
+      <div class="box a" style="--anim:pop;--d:.8s;background:#9a4a5c;color:var(--bone)"><b>Sénat</b>≈ 300 anciens magistrats<br>contrôle les magistrats</div>
+      <div class="box a" style="--anim:pop;--d:1.4s;background:#e0b25e"><b>Comices</b>assemblées des citoyens<br>élisent les magistrats</div>
+      <div class="box mag a" style="--d:2.2s"><b>Magistrats</b>élus pour 1 an : 2 consuls, préteurs, questeurs, édiles, tribuns de la plèbe</div>
+    </div>
+    <div class="duel">
+      <div class="gen a" style="--anim:slideL;--d:4.4s"><b>César</b><span>conquête de la Gaule</span><span>dictateur à vie</span></div>
+      <div class="vs a" style="--anim:pop;--d:5.4s">VS</div>
+      <div class="gen a" style="--anim:slideR;--d:4.4s"><b>Pompée</b><span>victoire sur les pirates</span><span>assassiné en Égypte</span></div>
+    </div>
+    <p class="a" style="--d:7s;font-size:3.9cqw;margin:0">Guerre civile : <span class="date">-44</span> <b>César est assassiné</b>.</p>
+  </section>
+
+  <!-- R3 · Auguste -->
+  <section class="scene" data-t="13000" data-key="auguste" data-voice="auguste" data-title="Rome · Auguste">
+    <div class="kicker a">Rome · Point de passage</div>
+    <h2 class="a" style="--d:.2s">Auguste <span class="clay">prend tout</span></h2>
+    <div class="steps" style="flex-direction:row;justify-content:space-between">
+      <div class="a" style="--d:.6s;display:block;text-align:center"><span class="date">-44</span><br><span style="font-size:3.3cqw">César assassiné</span></div>
+      <div class="a" style="--d:1.2s;display:block;text-align:center"><span class="date">-31</span><br><span style="font-size:3.3cqw">Actium</span></div>
+      <div class="a" style="--d:1.8s;display:block;text-align:center"><span class="date">-27</span><br><span style="font-size:3.3cqw">Principat</span></div>
+    </div>
+    <div class="aug">
+      <div class="medal a" style="--anim:pop;--d:2.4s"><span>AVGVSTVS</span><small>princeps</small></div>
+      <div class="pw" style="--x:-30cqw;--y:-17cqw;--d:3.4s">politique</div>
+      <div class="pw" style="--x:30cqw;--y:-17cqw;--d:4.2s">militaire</div>
+      <div class="pw" style="--x:-30cqw;--y:17cqw;--d:5s">religieux</div>
+      <div class="pw" style="--x:30cqw;--y:17cqw;--d:5.8s">judiciaire</div>
+    </div>
+    <div class="caption">
+      <p class="cap" style="--d:2.6s;--dur:4.6s">Il se dit simple <b>princeps</b>, « le premier » des citoyens… mais concentre <b>tous les pouvoirs</b>.</p>
+      <p class="cap last" style="--d:7.4s;--dur:99s">Sénat et magistrats existent toujours, vidés de leur pouvoir. Propagande (Virgile), puis <b>apothéose</b> : naissance du <b>culte impérial</b>.</p>
+    </div>
+  </section>
+
+  <!-- R4 · Intégration -->
+  <section class="scene" data-t="13000" data-key="integration" data-voice="integration" data-title="Rome · Un empire qui intègre">
+    <div class="kicker a">Rome · Citoyenneté</div>
+    <h2 class="a" style="--d:.2s">Rome <span class="clay">ouvre</span> sa citoyenneté</h2>
+    <div class="people" id="people"></div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:2.6s">D'abord les seuls hommes libres de <b>Rome</b>…</p>
+      <p class="cap" style="--d:3.4s;--dur:3s">… puis de toute l'<b>Italie</b> (I<sup>er</sup> s. av. J.-C.)…</p>
+      <p class="cap last" style="--d:6.4s;--dur:99s"><span class="date">212</span> <b>Édit de Caracalla</b> : tous les hommes libres de l'Empire. L'inverse d'Athènes, qui fermait sa citoyenneté.</p>
+    </div>
+    <div class="words">
+      <span class="a" style="--anim:pop;--d:9s">romanisation (latin, villes)</span><span class="a" style="--anim:pop;--d:9.5s">Pax Romana</span><span class="a" style="--anim:pop;--d:10s">syncrétisme</span><span class="a" style="--anim:pop;--d:10.5s">culte d'Isis</span>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp5" data-voice="cp5" data-title="Point de contrôle 5/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 5/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Remets dans l'<span class="clay">ordre</span></h2>
+    <div class="cp" id="cp5"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp5fb" aria-live="polite"></p><button class="cpnext" id="cp5next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- R5 · Constantin -->
+  <section class="scene" data-t="13000" data-key="constantin" data-voice="constantin" data-title="Rome · Constantin">
+    <div class="kicker a">Rome · Point de passage</div>
+    <h2 class="a" style="--d:.2s">Constantin et la <span class="clay">croix</span></h2>
+    <svg viewBox="0 0 120 120" style="height:22cqh;align-self:center" aria-label="Le chrisme de Constantin">
+      <circle class="dr" pathLength="1" style="--d:.4s;--t:1.4s" cx="60" cy="60" r="55" fill="none" stroke="#b9a88f" stroke-width="2"/>
+      <path class="dr" pathLength="1" style="--d:1.2s;--t:1s" d="M28 28 L92 92" fill="none" stroke="#d8743f" stroke-width="7" stroke-linecap="round"/>
+      <path class="dr" pathLength="1" style="--d:1.6s;--t:1s" d="M92 28 L28 92" fill="none" stroke="#d8743f" stroke-width="7" stroke-linecap="round"/>
+      <path class="dr" pathLength="1" style="--d:2.1s;--t:1.2s" d="M60 108 L60 14 C88 14 88 52 60 52" fill="none" stroke="#f2e6d2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="steps">
+      <div class="a" style="--d:3s"><span class="date">312</span><span>Victoire sur Maxence, attribuée au Dieu des chrétiens</span></div>
+      <div class="a" style="--d:4.4s"><span class="date">313</span><span><b>Édit de Milan</b> : tolérance religieuse</span></div>
+      <div class="a" style="--d:5.8s"><span class="date">324</span><span>Seul empereur, capitale à <b>Byzance</b></span></div>
+      <div class="a" style="--d:7.2s"><span class="date">325</span><span><b>Concile de Nicée</b> : Trinité, contre l'arianisme</span></div>
+      <div class="a" style="--d:8.8s"><span class="date">392</span><span>Théodose : <b>religion officielle</b>, les autres cultes interdits</span></div>
+    </div>
+  </section>
+
+  <!-- R6 · Fin -->
+  <section class="scene" data-t="12000" data-key="fin" data-voice="fin" data-title="Rome · La fin de l'Occident">
+    <div class="kicker a">Rome · Recomposition</div>
+    <h2 class="a" style="--d:.2s">Un empire <span class="clay">coupé en deux</span></h2>
+    <div class="map" data-mode="split"></div>
+    <div class="caption">
+      <p class="cap" style="--d:.8s;--dur:3.4s"><span class="date">395</span> Partage définitif : l'<b>Orient</b> deviendra l'Empire byzantin.</p>
+      <p class="cap" style="--d:4.4s;--dur:3.4s">L'<b>Occident</b> subit les migrations germaniques, poussées par les Huns. <span class="date">410</span> sac de Rome.</p>
+      <p class="cap last" style="--d:8s;--dur:99s"><span class="date">476</span> <b>Fin de l'Empire romain d'Occident</b> : fin de l'Antiquité.</p>
+    </div>
+  </section>
+
+  <section class="scene cpscene" data-t="0" data-key="cp6" data-voice="cp6" data-title="Point de contrôle 6/6">
+    <div class="kicker a"><span class="cpdot"></span>Point de contrôle 6/6</div>
+    <h2 class="a" style="--d:.2s;font-size:7.2cqw">Quelle <span class="clay">date</span> ?</h2>
+    <div class="cp" id="cp6"></div>
+    <div class="cpfoot"><p class="cpfb" id="cp6fb" aria-live="polite"></p><button class="cpnext" id="cp6next" hidden>Continuer</button></div>
+  </section>
+
+  <!-- 9 · Fin -->
+  <section class="scene" data-t="0" data-key="bilan" data-voice="bilan" data-title="Bilan">
+    <div class="kicker a">L'empreinte</div>
+    <h2 class="a" style="--d:.2s">Ce que l'Antiquité nous <span class="clay">laisse</span></h2>
+    <div class="score a" style="--anim:pop;--d:.4s" id="score"></div>
+    <div class="words">
+      <span class="a" style="--anim:pop;--d:.6s">citoyenneté</span><span class="a" style="--anim:pop;--d:.9s">vote</span><span class="a" style="--anim:pop;--d:1.2s">débat public</span><span class="a" style="--anim:pop;--d:1.5s">égalité devant la loi</span><span class="a" style="--anim:pop;--d:1.8s">contrôle des dirigeants</span><span class="a" style="--anim:pop;--d:2.1s">droit</span><span class="a" style="--anim:pop;--d:2.4s">latin</span><span class="a" style="--anim:pop;--d:2.7s">villes et routes</span><span class="a" style="--anim:pop;--d:3s">christianisme</span>
+    </div>
+    <p class="lead a" style="--d:2.3s;font-size:4cqw">Attention à l'<b class="clay">anachronisme</b> : ni suffrage universel ni droits de l'Homme, et l'esclavage existe.</p>
+    <div class="a" style="--d:3s"><div class="kicker" style="margin-bottom:1.2cqh">Les 7 extraits vidéo</div><div class="thumbs" id="thumbs"></div></div>
+    <button class="replay a" style="--d:3.4s" id="replay">Revoir depuis le début</button>
+  </section>
+
+  <div class="vlayer" id="vlayer" hidden role="dialog" aria-modal="true" aria-labelledby="vtitle">
+    <div class="vhead"><div><div class="k" id="vkick">Extrait vidéo</div><h3 id="vtitle"></h3></div><button class="vclose" id="vclose" aria-label="Fermer la vidéo">✕</button></div>
+    <video id="vplayer" controls playsinline preload="metadata"></video>
+    <p class="vsrc" id="vsrc"></p>
+    <div class="vkeys"><b>À retenir en regardant</b><ul id="vlist"></ul></div>
+    <p class="vwarn" id="vwarn" hidden></p>
+  </div>
+
+  <div class="controls">
+    <button id="prev" aria-label="Scène précédente">◀</button>
+    <button id="play" aria-label="Réécouter la scène"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button id="vox" aria-label="Couper la voix" aria-pressed="true"></button>
+    <span class="ttl" id="ttl"></span>
+    <button class="vbar" id="vbtn" hidden><span class="vthumb"><img id="vbarImg" alt=""><i><svg width="16" height="16" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5l9 5.5-9 5.5z" fill="currentColor"/></svg></i></span><span class="vtxt"><small id="vbtnTxt">Extrait vidéo</small><b id="vbarTitle"></b></span><span class="vgo">Regarder</span></button>
+    <button id="next" class="nextbig" aria-label="Scène suivante">Suivant<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+</div>
+
+<script>
+const stage=document.getElementById('stage');
+const scenes=[...stage.querySelectorAll('.scene')];
+const prog=document.getElementById('progress');
+scenes.forEach(()=>{const i=document.createElement('i');i.appendChild(document.createElement('b'));prog.appendChild(i)});
+const bars=[...prog.querySelectorAll('b')];
+
+/* scène 1 : 750 points */
+(function(){const d=document.getElementById('dots');const ath=412;let h='';
+ for(let k=0;k<750;k++){const delay=(Math.random()*2.2+0.4).toFixed(2);h+=`<i${k===ath?' class="ath"':''} style="--d:${k===ath?3.2:delay}s"></i>`}d.innerHTML=h})();
+
+/* scène 3 : anneau des alliés */
+(function(){const ring=document.getElementById('ring'),svg=document.getElementById('chains');
+ const A={x:50,y:50},D={x:70,y:68};const n=12;let lines='';
+ const hubA=document.createElement('div');hubA.className='node hub ath a';hubA.style.cssText=`left:${A.x}%;top:${A.y}%;--anim:pop;--d:.4s`;hubA.textContent='Athènes';
+ const hubD=document.createElement('div');hubD.className='node hub del a';hubD.style.cssText=`left:${D.x}%;top:${D.y}%;--anim:pop;--d:.7s`;hubD.textContent='Délos';
+ for(let k=0;k<n;k++){const ang=k/n*Math.PI*2-Math.PI/2;const x=50+42*Math.cos(ang),y=50+42*Math.sin(ang);
+  const al=document.createElement('div');al.className='node ally a';al.style.cssText=`left:${x}%;top:${y}%;--anim:pop;--d:${(1+k*.08).toFixed(2)}s`;ring.appendChild(al);
+  lines+=`<line class="chain" x1="${x}" y1="${y}" x2="${A.x}" y2="${A.y}"/>`;
+  [[D,1.6+k*.18],[A,8.6+k*.15]].forEach(([T,dl])=>{const c=document.createElement('i');c.className='coin';
+   c.style.cssText=`left:${x}%;top:${y}%;--dx:${(T.x-x).toFixed(1)}cqw;--dy:${(T.y-y).toFixed(1)}cqw;--d:${dl.toFixed(2)}s`;ring.appendChild(c)})}
+ svg.innerHTML=lines;
+ const ch=document.createElement('i');ch.className='chest';ch.style.cssText=`left:${D.x}%;top:${D.y}%;--dx:${A.x-D.x}cqw;--dy:${A.y-D.y}cqw`;
+ ring.appendChild(hubD);ring.appendChild(hubA);ring.appendChild(ch)})();
+
+/* scène 5 : colonnes */
+(function(){const g=document.getElementById('cols');let h='';for(let k=0;k<8;k++){const x=20+k*21;h+=`<rect class="col" x="${x}" y="45" width="11" height="51" rx="1.5" style="--d:${(.9+k*.22).toFixed(2)}s"/>`}g.innerHTML=h})();
+
+/* scène 6 : gaufre 100 carrés */
+(function(){const w=document.getElementById('waffle');let h='';
+ for(let k=0;k<100;k++){const c=k<13?'c':k<63?'o':'s';const d=k<13?2+k*.12:k<63?5+(k-13)*.04:7.4+(k-63)*.04;h+=`<i class="${c}" style="--d:${d.toFixed(2)}s"></i>`}w.innerHTML=h})();
+
+
+/* Rome : cartes schématiques */
+(function(){
+ const R={x:47,y:42};
+ const reg=[["Italie",47,33,1,1],["Sicile",50,56,1,1.5],["Hispanie",13,48,1,2],["Carthage",34,63,1,2.5],["Grèce",64,48,2,3.6],["Gaule",25,22,2,4.1],["Syrie",88,52,2,4.6],["Égypte",78,78,2,5.1],["Bretagne",17,6,3,6.2],["Dacie",68,18,4,7.2]];
+ const col={1:"#f2a08f",2:"#f6c27a",3:"#f4e27a",4:"#a8d38a"};
+ const sea='<svg viewBox="0 0 100 82" preserveAspectRatio="none"><path d="M8 48 C14 40 28 38 40 44 C46 38 52 46 58 44 C66 40 76 44 84 46 C92 48 94 60 86 64 C76 68 62 64 50 66 C40 68 26 64 16 60 C8 58 4 52 8 48 Z" fill="#2c4a57" opacity=".75"/>';
+ document.querySelectorAll('.map').forEach(m=>{
+  const mode=m.dataset.mode;let h=sea;
+  if(mode==="conq"){
+   h+='<path class="dr" pathLength="1" style="--d:8.6s;--t:1.8s" d="M18 12 C30 14 46 10 58 12 C68 13 76 14 82 18 M92 34 L94 66 M12 74 C30 78 54 80 72 78" fill="none" stroke="#e2553f" stroke-width="1.1" stroke-dasharray="1" vector-effect="non-scaling-stroke"/></svg>';
+   reg.forEach(([n,x,y,p,d])=>h+=`<span class="chip" style="left:${x}%;top:${y/0.82}%;background:${col[p]};--d:${d}s">${n}</span>`);
+   [["Germains",42,3,9.4],["Daces",86,8,9.8],["Parthes",90,30,10.2]].forEach(([n,x,y,d])=>h+=`<span class="chip threat" style="left:${x}%;top:${y/0.82}%;--d:${d}s">${n}</span>`);
+  }else if(mode==="flux"){
+   h+='</svg>';
+   const src=[["Égypte","blé",78,78,1],["Afrique","blé, huile",34,66,1.6],["Hispanie","huile, vin",13,48,2.2],["Gaule","vin",25,22,2.8],["Orient","épices",86,50,3.4]];
+   src.forEach(([n,g,x,y,d])=>{h+=`<span class="chip ghost" style="left:${x}%;top:${y/0.82}%;--d:${d-.6}s">${n}</span>`;
+     for(let k=0;k<2;k++)h+=`<span class="goods" style="left:${x}%;top:${y/0.82}%;--dx:${(R.x-x).toFixed(1)}cqw;--dy:${((R.y-y)).toFixed(1)}cqw;--d:${(d+k*1.4).toFixed(1)}s">${g}</span>`});
+   const ext=[["ambre, fourrures",40,2,6.6,0,14],["or, ivoire",52,80,7.2,0,-12],["poivre (Inde)",90,66,7.8,-6,-8],["soie (Chine)",86,8,8.4,-12,10]];
+   ext.forEach(([g,x,y,d,dx,dy])=>h+=`<span class="goods" style="left:${x}%;top:${y/0.82}%;--dx:${dx}cqw;--dy:${dy}cqw;--d:${d}s;color:var(--olive)">${g}</span><span class="chip ghost" style="left:${x}%;top:${y/0.82}%;--d:${d+1.6}s">${g}</span>`);
+   h+=`<span class="chip" style="left:${R.x}%;top:${(R.y-7)/0.82}%;background:var(--bone);--d:.4s">Rome · port d'Ostie</span>`;
+  }else{
+   h+='<path class="dr" pathLength="1" style="--d:.8s;--t:1.4s" d="M56 0 L56 82" fill="none" stroke="#f2e6d2" stroke-width="1" stroke-dasharray="1" vector-effect="non-scaling-stroke"/></svg><div class="half"></div>';
+   h+=`<span class="chip" style="left:26%;top:4%;background:var(--bone);--d:1.4s">OCCIDENT · Rome</span><span class="chip" style="left:76%;top:4%;background:#f0c35a;--d:1.8s">ORIENT · Constantinople</span>`;
+   [["Germains",14,24,4.6],["410 : sac de Rome",34,33,5.4],["Huns",44,18,5],["476",26,74,8.2]].forEach(([n,x,y,d])=>h+=`<span class="chip threat" style="left:${x}%;top:${y/0.82}%;--d:${d}s">${n}</span>`);
+   h+=`<span class="chip ghost" style="left:78%;top:${74/0.82}%;--d:3s">→ Empire byzantin</span>`;
+  }
+  if(mode!=="split")h+=`<span class="romedot" style="left:${R.x}%;top:${R.y/0.82}%"></span>`;
+  else h+=`<span class="romedot" style="left:${R.x}%;top:${R.y/0.82}%"></span><span class="romedot" style="left:73%;top:${36/0.82}%;background:#f0c35a"></span>`;
+  m.innerHTML=h});
+ const p=document.getElementById('people');let h='';
+ for(let k=0;k<96;k++){const sl=k%7===3;let d=null;
+  if(!sl){if(k<6)d=.9+k*.15;else if(k<30)d=3.4+(k-6)*.06;else d=6.4+(k-30)*.03}
+  h+=sl?'<i class="sl"></i>':`<i class="t" style="--d:${d.toFixed(2)}s"></i>`}
+ p.innerHTML=h;
+})();
+/* extraits vidéo */
+const B="/_blob/";
+const CLIPS={
+ "mediques":{v:"44d88b4240599654852462cbeb16d5ce",p:"fd96c6660e0ae9e039d4ab4dafacd599",t:"La bataille de Salamine",d:"46 s",s:"Coursitout, « Histoire - La bataille de Salamine », YouTube, 2021",k:["Le détroit est trop étroit : la flotte perse, plus nombreuse, ne peut plus manœuvrer.","Les trières athéniennes, rapides et munies d'un éperon, font la différence.","Pour ton cours : la puissance d'Athènes sera maritime."]},
+ "demo":{v:"eded0e5c57d177bb0b27a0e38d76c963",p:"f84bc4f4d147cf189ed221fab0568d2a",t:"Boulè, Ecclésia, Héliée",d:"1 min",s:"Julien Ferrand, « La démocratie athénienne en 180 secondes », YouTube, 2022",k:["Boulè : 500 citoyens tirés au sort préparent les lois.","Ecclésia : tous les citoyens, sur la Pnyx, votent les lois, la guerre et la paix.","Héliée : le tribunal, des citoyens tirés au sort."],w:"Vidéo pensée pour la 6e, donc simplifiée. Ton cours retient environ 40 000 citoyens."},
+ "conquetes":{v:"a9a9a2d19635b092fbfc309fe46e6508",p:"0b89330afb00491f7b589f2ce46cf3aa",t:"D'Auguste à Trajan, l'empire s'étend",d:"1 min",s:"L'Histoire par les cartes, « Origine, expansion et déclin de l'Empire romain », YouTube, 2016",k:["Auguste annexe l'Égypte et fixe la frontière sur le Rhin, le Danube et l'Euphrate.","Claude conquiert la Bretagne (43), Trajan la Dacie : extension maximale en 117.","Hadrien arrête l'expansion et fortifie le limes."]},
+ "auguste":{v:"94aa474fa44c88bf4815587a87a10e72",p:"e3685fb9ae052294cc39716cd3a8181e",t:"Octave devient Auguste",d:"1 min 18",s:"Absolute Histoire et Civilisations, « Comment l'Empire romain a-t-il été créé ? », YouTube, 2025",k:["Il prend le nom d'Imperator Caesar Augustus.","Il se fait nommer princeps, « le premier » du Sénat : le régime s'appelle le Principat.","Les provinces sont partagées entre le Sénat et l'empereur."]},
+ "integration":{v:"5fba20f23986f59659277832e437d5fb",p:"60cdc5717c367f445297e4919d5869c9",t:"Romanisation et édit de Caracalla",d:"1 min 28",s:"Salle104, « L'Empire romain : conquêtes, paix romaine et romanisation », YouTube, 2020",k:["Des villes sur le modèle de Rome : forum, amphithéâtre d'Arles, thermes.","La Maison carrée de Nîmes est un temple du culte impérial.","212 : Caracalla donne la citoyenneté à tous les hommes libres de l'Empire."],w:"Vidéo pensée pour la 6e : ajoute le vocabulaire du cours (romanisation, syncrétisme)."},
+ "constantin":{v:"670de376260362c2178751680d30535e",p:"637106b7411d1ce3f8f77ed259404628",t:"312 : le songe et le pont Milvius",d:"1 min 12",s:"Famille Chrétienne, podcast « Sacrée histoire », « 312, la conversion de Constantin bouscule l'Empire », YouTube, 2024",k:["La nuit avant la bataille, Constantin fait un songe.","Il fait peindre le chrisme (les premières lettres grecques du nom du Christ) sur les boucliers.","Victoire au pont Milvius contre Maxence : début de sa conversion."],w:"Extrait audio d'un podcast : l'image reste fixe, écoute le récit."},
+ "fin":{v:"fb5f262b8fa2ebe8134a5090f538c366",p:"466ba3336b1afdb1c94b1e309b950ee9",t:"395 puis 476 : la fin de l'Occident",d:"1 min 06",s:"L'Histoire par les cartes, « Origine, expansion et déclin de l'Empire romain », YouTube, 2016",k:["395 : à la mort de Théodose, l'Empire est partagé entre ses deux fils.","Les peuples germaniques s'installent et fondent des royaumes.","476 : le dernier empereur d'Occident est déposé ; l'Orient dure jusqu'en 1453."]}
+};
+const vlayer=document.getElementById('vlayer'),vplayer=document.getElementById('vplayer'),vbtn=document.getElementById('vbtn');
+let wasPlaying=false,swallow=false;
+function openClip(key){const c=CLIPS[key];if(!c)return;
+  wasPlaying=playing;setPlaying(false);vo.pause();
+  document.getElementById('vkick').textContent='Extrait · '+c.d;
+  document.getElementById('vtitle').textContent=c.t;
+  document.getElementById('vsrc').textContent='Source : '+c.s;
+  const ul=document.getElementById('vlist');ul.textContent='';
+  c.k.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li)});
+  const w=document.getElementById('vwarn');w.hidden=!c.w;w.textContent=c.w||'';
+  vplayer.poster=B+c.p;vplayer.src=B+c.v;vlayer.hidden=false;vlayer.scrollTop=0;
+  const pr=vplayer.play();if(pr&&pr.catch)pr.catch(()=>{});
+  document.getElementById('vclose').focus({preventScroll:true});}
+function closeClip(){vplayer.pause();vplayer.removeAttribute('src');vplayer.load();vlayer.hidden=true;if(wasPlaying)setPlaying(true)}
+document.getElementById('vclose').onclick=e=>{e.stopPropagation();closeClip()};
+vlayer.addEventListener('click',e=>e.stopPropagation());
+vbtn.onclick=e=>{e.stopPropagation();openClip(scenes[cur].dataset.key)};
+function updateVbtn(){const c=CLIPS[scenes[cur].dataset.key];vbtn.hidden=!c;
+  if(c){document.getElementById('vbtnTxt').textContent='Vidéo · '+c.d;document.getElementById('vbarTitle').textContent=c.t;document.getElementById('vbarImg').src=B+c.p;
+    vbtn.style.animation='none';void vbtn.offsetWidth;vbtn.style.animation=''}}
+Object.keys(CLIPS).forEach(k=>{const sc=document.querySelector('.scene[data-key="'+k+'"]');if(sc)sc.classList.add('hasclip')});
+(function(){const th=document.getElementById('thumbs');
+  Object.entries(CLIPS).forEach(([k,c])=>{const b=document.createElement('button');b.className='thumb';
+    const im=document.createElement('img');im.alt='';im.loading='lazy';im.src=B+c.p;b.appendChild(im);b.append(c.t);
+    b.onclick=e=>{e.stopPropagation();openClip(k)};th.appendChild(b)})})();
+/* gestes : glisser pour changer de scène, appui long pour mettre en pause */
+let tx=0,ty=0,tt=0,hold=null,held=false;
+stage.addEventListener('touchstart',e=>{if(!vlayer.hidden||e.target.closest('.controls'))return;const t=e.touches[0];tx=t.clientX;ty=t.clientY;tt=Date.now();held=false;
+},{passive:true});
+stage.addEventListener('touchmove',e=>{const t=e.touches[0];if(Math.abs(t.clientX-tx)>12||Math.abs(t.clientY-ty)>12)clearTimeout(hold)},{passive:true});
+stage.addEventListener('touchend',e=>{clearTimeout(hold);if(!vlayer.hidden||e.target.closest('.controls'))return;
+  if(held){held=false;setPlaying(true);swallow=true;return}
+  const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;
+  if(started&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3&&Date.now()-tt<700){swallow=true;dx<0?go(cur+1):go(cur-1)}});
+const VOICE={"intro":["8091395ebe453d2fbaf8ac6c4ec85113",9.6],"cites":["d79149c74465d7e7ff5780d3c0800a2d",16.5],"mediques":["98b0bc7eec28ffa06facfce619da6554",15.5],"delos":["63b49cdf957fa2422963a27d6e9f75a4",15.7],"cp1":["51da093281a67723537be03d03f3439d",5.2],"demo":["2eecc624cec65260df0a1e4cc5b29b2c",15.7],"pericles":["14223d469652abb6e75037cee72e4bbb",14.2],"cp2":["cc73ed741350bc0ecbe473936fa1920f",3.9],"citoyens":["2464775332760477cf37a08f0e5f1fc4",12.5],"declin":["d57b849d3781650ada49af594ddf854d",15.0],"cp3":["15201feb0e713a02f51aaf37df6bdb64",3.4],"rome":["a75248a4508062add0c2e8f10a637123",10.3],"conquetes":["3b018356ffbcab3957b2574abbb2a7ab",15.0],"echanges":["95b31f1757db839924f5c2696b2bea90",12.6],"cp4":["930c55711a5c8f16f703a77822e3e6be",4.9],"republique":["cbcb197609952da10a0b30be9e093c5b",15.2],"auguste":["d59e8ec944d9bd048458fe0b15142edf",18.5],"integration":["fe0a1f8655bb1394a5b740c3b25edc73",13.3],"cp5":["adebacbe5d602137623cfe95447275f4",3.6],"constantin":["68e8f250336968e1ee960f2bd858c7c5",18.4],"fin":["3ca3ed988a6b1a8794330324e7b3ed61",14.5],"cp6":["c787494500fa76864616bcd1b3851a5b",3.8],"bilan":["2152670177dc34b17726712485a5cd9f",11.8],"ok1":["6dca04ff14f0ad3222ac9d761796b82a",1.0],"ok2":["67a3dc8f7adbb724a986edfcdbb574c5",0.9],"ok3":["9ca122ff2dc82da5f777393214ff33fb",0.8],"ko1":["eec850df91fe9be508df123745c96b4a",0.9],"ko2":["56a3d24561dd687ad24eaab5b4fcd51f",1.7],"done":["add1bbad97e5e73fe1e307ca329655a4",1.5]};
+/* ===== voix ===== */
+let started=false,voiceOn=false,voiceDone=true,voiceEndAt=0;
+const vo=new Audio();vo.preload='auto';const fx=new Audio();fx.preload='auto';
+vo.addEventListener('ended',()=>{voiceDone=true;voiceEndAt=performance.now();const cb=vo._cb;vo._cb=null;cb&&cb()});
+vo.addEventListener('error',()=>{voiceDone=true;voiceEndAt=0;const cb=vo._cb;vo._cb=null;cb&&cb()});
+function say(key,cb){const v=VOICE[key];if(!voiceOn||!v){voiceDone=true;cb&&cb();return}
+  voiceDone=false;vo._cb=cb||null;vo.src='/_blob/'+v[0];
+  if(playing&&vlayer.hidden){const pr=vo.play();if(pr&&pr.catch)pr.catch(()=>{voiceDone=true;const c=vo._cb;vo._cb=null;c&&c()})}}
+function stopVoice(){vo._cb=null;try{vo.pause()}catch(e){}voiceDone=true;voiceEndAt=0}
+function voiceReady(now){return !voiceOn||(voiceDone&&now-voiceEndAt>900)}
+function effT(i){const T=+scenes[i].dataset.t,v=VOICE[scenes[i].dataset.voice];return voiceOn&&v?Math.max(T,v[1]*1000+1300):T}
+function sayFx(keys){if(!voiceOn)return;const k=keys[Math.floor(Math.random()*keys.length)];fx.src='/_blob/'+VOICE[k][0];const pr=fx.play();if(pr&&pr.catch)pr.catch(()=>{})}
+/* sons courts (WebAudio) */
+let actx=null;
+function blip(ok){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime;
+  const seq=ok?[[660,0],[990,.09]]:[[190,0],[150,.12]];
+  seq.forEach(([f,dt])=>{const o=actx.createOscillator(),g=actx.createGain();o.type=ok?'triangle':'square';o.frequency.value=f;
+    g.gain.setValueAtTime(0.0001,t+dt);g.gain.exponentialRampToValueAtTime(ok?.18:.07,t+dt+.02);g.gain.exponentialRampToValueAtTime(0.0001,t+dt+.16);
+    o.connect(g).connect(actx.destination);o.start(t+dt);o.stop(t+dt+.18)})}catch(e){}}
+const ICO_ON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const ICO_OFF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const voxBtn=document.getElementById('vox');
+function setVoice(on){voiceOn=on;voxBtn.innerHTML=on?ICO_ON:ICO_OFF;voxBtn.setAttribute('aria-pressed',on);voxBtn.setAttribute('aria-label',on?'Couper la voix':'Activer la voix')}
+setVoice(false);
+voxBtn.onclick=e=>{e.stopPropagation();setVoice(!voiceOn);if(!voiceOn)stopVoice();else if(started&&scenes[cur].dataset.voice){start=performance.now();elapsed=0;say(scenes[cur].dataset.voice)}};
+function begin(withVoice){started=true;setVoice(withVoice);try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  setPlaying(true);if(withVoice)say('intro',()=>{if(cur===0)go(1)});else go(1)}
+document.getElementById('startVoice').onclick=e=>{e.stopPropagation();begin(true)};
+document.getElementById('startMute').onclick=e=>{e.stopPropagation();begin(false)};
+
+/* ===== points de contrôle ===== */
+const SCORE={};
+function resetScore(){Object.keys(SCORE).forEach(k=>delete SCORE[k]);Object.values(CP).forEach(c=>c.reset())}
+function showScore(){const el=document.getElementById('score');let ok=0,n=0;Object.values(SCORE).forEach(x=>{ok+=x.ok;n+=x.n});
+  if(!n){el.innerHTML='<small>Fais les points de contrôle pour obtenir ton score.</small>';return}
+  const r=ok/n,msg=r===1?'Parfait, tout juste du premier coup.':r>=.75?'Très bien. Relis les points ratés dans tes fiches.':r>=.5?'Correct. Revois les scènes des questions ratées.':'Reprends la fiche depuis le début, tranquillement.';
+  el.innerHTML='<b>'+ok+'</b> / '+n+' du premier coup<small>'+msg+'</small>'}
+function flyTo(el,target,done){if(reduce){done&&done();return}
+  const sr=stage.getBoundingClientRect(),a=el.getBoundingClientRect(),b=target.getBoundingClientRect();
+  const g=el.cloneNode(true);g.classList.add('ghostfly');g.removeAttribute('id');
+  Object.assign(g.style,{left:(a.left-sr.left)+'px',top:(a.top-sr.top)+'px',width:a.width+'px',height:a.height+'px',transition:'transform .55s cubic-bezier(.3,.7,.2,1),opacity .55s'});
+  stage.appendChild(g);el.style.visibility='hidden';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=`translate(${b.left-a.left+(b.width-a.width)/2}px,${b.top-a.top+(b.height-a.height)/2}px) scale(.6)`;g.style.opacity='.2'}));
+  setTimeout(()=>{g.remove();done&&done()},560)}
+function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');setTimeout(()=>el.classList.remove('shake'),450)}
+function confetti(box){if(reduce)return;const cols=['#d8743f','#f0c35a','#9bb06a','#f2e6d2'];
+  for(let i=0;i<18;i++){const c=document.createElement('i');c.className='conf';const a=Math.random()*Math.PI*2,r=20+Math.random()*30;
+    c.style.cssText=`background:${cols[i%4]};--x:${(Math.cos(a)*r).toFixed(1)}cqw;--y:${(Math.sin(a)*r-10).toFixed(1)}cqw;--r:${Math.round(Math.random()*540)}deg`;box.appendChild(c);setTimeout(()=>c.remove(),1300)}}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function cpUI(key){return{box:document.getElementById(key),fb:document.getElementById(key+'fb'),nx:document.getElementById(key+'next')}}
+function feedback(u,txt,cls){u.fb.textContent=txt;u.fb.className='cpfb '+(cls||'')}
+function finish(key,u,ok,n){SCORE[key]={ok,n};blip(true);setTimeout(()=>sayFx(['done']),350);confetti(u.box);
+  feedback(u,'Validé ! '+ok+' / '+n+' du premier coup.','ok');u.nx.hidden=false;u.nx.focus({preventScroll:true})}
+function interact(){if(!voiceDone)stopVoice()}
+const TEMPLE='<svg viewBox="0 0 48 40"><path d="M4 14 24 3l20 11z"/><path d="M6 14h36M9 18v14M19 18v14M29 18v14M39 18v14M4 35h40"/></svg>';
+const ASSEMB='<svg viewBox="0 0 48 40"><path d="M4 34a20 20 0 0 1 40 0z"/><path d="M12 34a12 12 0 0 1 24 0M20 34a4 4 0 0 1 8 0"/></svg>';
+const BALANCE='<svg viewBox="0 0 48 40"><path d="M24 4v30M14 36h20M8 10h32M8 10l-5 12h10zM40 10l-5 12h10zM3 22a5 3 0 0 0 10 0M35 22a5 3 0 0 0 10 0"/></svg>';
+function OrderCP(key,items){const u=cpUI(key);let next,err;
+  function build(){next=0;err=[];u.box.innerHTML='';u.nx.hidden=true;feedback(u,'Touche le plus ancien en premier.');
+    const tl=document.createElement('div');tl.className='tl a';tl.style.setProperty('--d','.5s');
+    items.forEach(()=>{const s=document.createElement('div');s.className='slot';s.innerHTML='<span class="sd">?</span><span class="st"></span>';tl.appendChild(s)});
+    const pool=document.createElement('div');pool.className='pool a';pool.style.setProperty('--d','.9s');
+    let order=shuffle(items.map((_,i)=>i));if(order.every((v,i)=>v===i))order.reverse();
+    order.forEach(i=>{const b=document.createElement('button');b.className='chipq';b.textContent=items[i].t;b.onclick=e=>{e.stopPropagation();pick(i,b)};pool.appendChild(b)});
+    u.box.append(tl,pool);mark()}
+  function mark(){[...u.box.querySelectorAll('.slot')].forEach((s,i)=>s.classList.toggle('next',i===next))}
+  function pick(i,b){interact();if(next>=items.length)return;
+    if(i===next){const slot=u.box.querySelectorAll('.slot')[next];const it=items[i];next++;blip(true);
+      flyTo(b,slot,()=>{b.remove();slot.classList.add('ok');slot.querySelector('.sd').textContent=it.d;slot.querySelector('.st').textContent=it.t;mark();
+        if(next===items.length){finish(key,u,items.length-err.filter(Boolean).length,items.length)}else feedback(u,'Oui ! Et ensuite ?','ok')})}
+    else{err[next]=true;blip(false);shake(b);b.classList.add('ko-flash');setTimeout(()=>b.classList.remove('ko-flash'),450);sayFx(['ko1','ko2']);feedback(u,'Pas encore : cherche plus ancien.','ko')}}
+  build();return{reset:build,enter(){}}}
+function MatchCP(key,targets,prompts,mode){const u=cpUI(key);let k,err,pr;
+  function build(){k=0;err=[];u.box.innerHTML='';u.nx.hidden=true;
+    const pw=document.createElement('div');pw.className='prompt a';pw.style.setProperty('--d','.4s');pr=document.createElement('span');pr.className='chipq';pw.appendChild(pr);
+    let wrap;
+    if(mode==='map'){wrap=document.createElement('div');wrap.className='cpmap a';wrap.style.setProperty('--d','.7s');
+      wrap.innerHTML='<svg viewBox="0 0 100 82" preserveAspectRatio="none"><path d="M8 48 C14 40 28 38 40 44 C46 38 52 46 58 44 C66 40 76 44 84 46 C92 48 94 60 86 64 C76 68 62 64 50 66 C40 68 26 64 16 60 C8 58 4 52 8 48 Z" fill="#2c4a57" opacity=".75"/><path d="M92 30 L94 66" stroke="#e2553f" stroke-width="1.2" stroke-dasharray="2 1.5" fill="none" vector-effect="non-scaling-stroke"/><circle cx="47" cy="42" r="1.6" fill="#e2553f"/></svg>'}
+    else{wrap=document.createElement('div');wrap.className='targets a '+(targets.length===3?'c3':'c4');wrap.style.setProperty('--d','.7s')}
+    targets.forEach((t,i)=>{const b=document.createElement('button');b.className='tgt'+(t.num?' num':'')+(t.threat?' threat':'');
+      if(mode==='map'){b.textContent=t.label;b.style.left=t.x+'%';b.style.top=(t.y/0.82)+'%'}
+      else{b.innerHTML=(t.icon||'')+'<b></b><span class="got"></span>';b.querySelector('b').textContent=t.label}
+      b.onclick=e=>{e.stopPropagation();tap(i,b)};wrap.appendChild(b)});
+    u.box.append(pw,wrap);showPrompt()}
+  function showPrompt(){pr.classList.remove('out');pr.style.visibility='';pr.textContent=prompts[k].t;pr.style.animation='none';void pr.offsetWidth;pr.style.animation='';
+    feedback(u,(k+1)+' / '+prompts.length+' · touche la bonne réponse.')}
+  function tap(i,b){interact();if(k>=prompts.length)return;
+    if(i===prompts[k].a){blip(true);const kk=k;k++;b.classList.add('glow');
+      flyTo(pr,b,()=>{b.classList.add('ok');if(mode!=='map'){const g=b.querySelector('.got');g.textContent=(g.textContent?g.textContent+' · ':'')+'✓ '+prompts[kk].s}
+        if(k===prompts.length){pr.classList.add('out');finish(key,u,prompts.length-err.filter(Boolean).length,prompts.length)}else{feedback(u,'Oui !','ok');setTimeout(showPrompt,350)}})
+      if(Math.random()<.5)sayFx(['ok1','ok2','ok3'])}
+    else{err[k]=true;blip(false);shake(b);sayFx(['ko1','ko2']);feedback(u,'Pas tout à fait, essaie encore.','ko')}}
+  build();return{reset:build,enter(){}}}
+function TfCP(key,items){const u=cpUI(key);let k,ok,card,btns,cnt;
+  function build(){k=0;ok=0;u.box.innerHTML='';u.nx.hidden=true;feedback(u,'');
+    const w=document.createElement('div');w.className='tfwrap a';w.style.setProperty('--d','.4s');
+    cnt=document.createElement('p');cnt.className='tfcount';
+    card=document.createElement('div');card.className='tfcard';card.innerHTML='<div class="tfface tffront"><small></small><span></span></div><div class="tfface tfback"><b></b><span></span></div>';
+    btns=document.createElement('div');btns.className='tfbtns';
+    [['Vrai',true,'v'],['Faux',false,'f']].forEach(([l,v,c])=>{const b=document.createElement('button');b.className='chipq '+c;b.textContent=l;b.onclick=e=>{e.stopPropagation();answer(v)};btns.appendChild(b)});
+    w.append(cnt,card,btns);u.box.appendChild(w);show()}
+  function show(){const it=items[k];card.classList.remove('flip');card.querySelector('.tffront small').textContent='Affirmation '+(k+1)+' / '+items.length;
+    card.querySelector('.tffront span').textContent=it.t;card.classList.remove('in');void card.offsetWidth;card.classList.add('in');
+    btns.style.visibility='';cnt.textContent='';feedback(u,'Vrai ou faux ?')}
+  function answer(v){interact();const it=items[k];if(card.classList.contains('flip'))return;const good=v===it.v;if(good)ok++;
+    blip(good);sayFx(good?['ok1','ok2','ok3']:['ko1','ko2']);
+    const back=card.querySelector('.tfback');back.classList.toggle('bad',!good);back.querySelector('b').textContent=good?'Exact !':'Raté';back.querySelector('span').textContent=it.e;
+    card.classList.remove('in');card.classList.add('flip');btns.style.visibility='hidden';
+    feedback(u,good?'Bonne réponse.':'Lis bien l\'explication.',good?'ok':'ko');
+    setTimeout(()=>{k++;if(k<items.length){show()}else{finish(key,u,ok,items.length)}},good?2400:3600)}
+  build();return{reset:build,enter(){}}}
+const CP={
+ cp1:OrderCP('cp1',[{t:'Marathon',d:'-490'},{t:'Salamine',d:'-480'},{t:'Ligue de Délos',d:'-478'}]),
+ cp2:MatchCP('cp2',[{label:'Boulè',icon:TEMPLE},{label:'Ecclésia',icon:ASSEMB},{label:'Héliée',icon:BALANCE}],
+   [{t:'Vote les lois, la guerre et l\'ostracisme',a:1,s:'vote les lois'},{t:'Prépare les lois (500 citoyens tirés au sort)',a:0,s:'prépare les lois'},{t:'Rend la justice',a:2,s:'rend la justice'}]),
+ cp3:TfCP('cp3',[{t:'Les métèques peuvent voter à l\'Ecclésia.',v:false,e:'Seuls les citoyens votent. Les métèques sont des étrangers libres, exclus de la vie politique.'},
+   {t:'Le tribut des alliés de la Ligue de Délos finance en partie les travaux de l\'Acropole.',v:true,e:'La démocratie athénienne vit en partie de son empire.'},
+   {t:'À la fin de la guerre du Péloponnèse, Athènes domine Sparte.',v:false,e:'C\'est l\'inverse : Athènes est vaincue par Sparte en -404.'}]),
+ cp4:MatchCP('cp4',[{label:'Bretagne',x:17,y:8},{label:'Gaule',x:25,y:24},{label:'Hispanie',x:14,y:50},{label:'Égypte',x:78,y:76},{label:'Germains',x:46,y:10,threat:1},{label:'Parthes',x:86,y:24,threat:1}],
+   [{t:'Le grenier à blé de Rome',a:3},{t:'Conquise par César (-58 à -51)',a:1},{t:'Le peuple qui menace à l\'est de l\'Euphrate',a:5}],'map'),
+ cp5:OrderCP('cp5',[{t:'César assassiné',d:'-44'},{t:'Bataille d\'Actium',d:'-31'},{t:'Auguste : début de l\'Empire',d:'-27'},{t:'Édit de Caracalla',d:'212'}]),
+ cp6:MatchCP('cp6',[{label:'313',num:1},{label:'392',num:1},{label:'395',num:1},{label:'476',num:1}],
+   [{t:'Édit de Milan : tolérance religieuse',a:0,s:'Milan'},{t:'Le christianisme devient religion officielle',a:1,s:'religion officielle'},{t:'Partage définitif de l\'Empire',a:2,s:'partage'},{t:'Fin de l\'Empire romain d\'Occident',a:3,s:'fin de l\'Occident'}])
+};
+['cp1','cp2','cp3','cp4','cp5','cp6'].forEach(k=>{document.getElementById(k+'next').onclick=e=>{e.stopPropagation();go(cur+1)}});
+/* lecteur */
+let cur=0,start=0,elapsed=0,playing=true;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const playBtn=document.getElementById('play'),ttl=document.getElementById('ttl'),counter=document.getElementById('counter');
+function go(n){
+  n=Math.max(0,Math.min(scenes.length-1,n));
+  scenes.forEach(s=>s.classList.remove('on'));void stage.offsetWidth;
+  cur=n;scenes[n].classList.add('on');elapsed=0;start=performance.now();
+  stopVoice();if(scenes[n].dataset.voice&&started)say(scenes[n].dataset.voice);
+  if(scenes[n].classList.contains('cpscene'))CP[scenes[n].dataset.key]&&CP[scenes[n].dataset.key].enter();
+  if(scenes[n].dataset.key==='bilan')showScore();
+  bars.forEach((b,i)=>b.style.width=i<=n?'100%':'0%');
+  ttl.textContent=scenes[n].dataset.title;nextBtn.classList.remove('ready');nextBtn.hidden=(n===scenes.length-1||n===0);
+  updateVbtn();
+}
+function setPlaying(p){playing=p;stage.classList.toggle('paused',!p);if(!p)vo.pause();else if(voiceOn&&!voiceDone&&vlayer.hidden)vo.play().catch(()=>{});
+  if(p)start=performance.now()-elapsed}
+const nextBtn=document.getElementById('next');
+function tick(now){
+  if(playing)elapsed=now-start;
+  if(started&&!nextBtn.classList.contains('ready')&&cur<scenes.length-1&&!scenes[cur].classList.contains('cpscene')){
+    const T=+scenes[cur].dataset.t||3000,minT=Math.min(T*.75,9000);
+    if(elapsed>=minT&&voiceReady(now))nextBtn.classList.add('ready')}
+  if(scenes[cur].dataset.key==="pericles"){const yrs=Math.min(14,Math.max(0,Math.floor((elapsed-600)/170)));counter.textContent=reduce?'-443 → -429':String(-443+yrs)}
+  requestAnimationFrame(tick)}
+document.getElementById('next').onclick=e=>{e.stopPropagation();go(cur+1)};
+document.getElementById('prev').onclick=e=>{e.stopPropagation();go(cur-1)};
+playBtn.onclick=e=>{e.stopPropagation();if(started)go(cur)};
+document.getElementById('replay').onclick=e=>{e.stopPropagation();resetScore();setPlaying(true);go(1)};
+stage.querySelectorAll('.card').forEach(c=>c.onclick=e=>{e.stopPropagation();c.classList.toggle('open')});
+stage.addEventListener('click',e=>{
+  if(swallow){swallow=false;return}
+  if(!vlayer.hidden||e.target.closest('button,a,.controls'))return;
+  if(scenes[cur].classList.contains('cpscene')||!started)return;
+  const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;if(x<.25)go(cur-1);else if(x>.65)go(cur+1)});
+document.addEventListener('keydown',e=>{if(!vlayer.hidden){if(e.key==='Escape')closeClip();return}if(!started)return;if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(playing)setPlaying(false);vplayer.pause()}});
+go(0);requestAnimationFrame(tick);
+</script>
+
+</body></html>

@@ -1,0 +1,519 @@
+/* Révisions Marcus — appli de révision installable (PWA).
+   Contenus : catalogue.json + dossier contenus/. Progression : locale d'abord, synchronisée avec Supabase grâce au code famille. */
+(function () {
+"use strict";
+const CFG = window.REV_CONFIG || {};
+const $ = (s, r = document) => r.querySelector(s);
+const app = $("#app");
+
+/* ---------------- utilitaires ---------------- */
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k === "style" && typeof v === "object") for (const [p, val] of Object.entries(v)) e.style.setProperty(p, val);
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return e;
+}
+function svg(name) { const w = document.createElement("span"); w.innerHTML = ICONS[name] || ICONS.doc; return w.firstChild; }
+function ymd(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function today() { return ymd(new Date()); }
+function addDays(s, n) { const [y, m, d] = s.split("-").map(Number); return ymd(new Date(y, m - 1, d + n)); }
+function frDate(s, opts) { return new Date(s + (s.length === 10 ? "T12:00" : "")).toLocaleDateString("fr-FR", opts || { weekday: "long", day: "numeric", month: "long" }); }
+function plural(n, one, many) { return n + " " + (n > 1 ? (many || one + "s") : one); }
+function shuffle(a) { a = a.slice(); for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; }
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+let toastT;
+function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 3200); }
+function isDark() { const t = document.documentElement.dataset.theme; return t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches); }
+function subjColor(m) { return m ? (isDark() ? m.couleurNuit || m.couleur : m.couleur) : "var(--accent)"; }
+
+/* ---------------- pictogrammes ---------------- */
+const ICONS = {
+  colonne: '<svg viewBox="0 0 24 24"><path d="M4 6.5 12 3l8 3.5M4.5 7h15M6 7v11M10 7v11M14 7v11M18 7v11M4 18h16M3 21h18"/></svg>',
+  plume: '<svg viewBox="0 0 24 24"><path d="M20 4C11 4 6 10 5 19M20 4c0 7-4 11-11 12M5 19l-1.5 1.5M9 10h5"/></svg>',
+  graphique: '<svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16l3.5-4 3 2.5L20 8"/><circle cx="20" cy="8" r="1"/></svg>',
+  compas: '<svg viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="1.6"/><path d="M11 6 6 20M13 6l5 14M8.2 14h7.6"/></svg>',
+  fiole: '<svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5.2 9A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-3L14 9V3M7.5 15h9"/></svg>',
+  feuille: '<svg viewBox="0 0 24 24"><path d="M5 19c0-9 5-14 15-15-1 10-6 15-15 15ZM5 19l7-7"/></svg>',
+  globe: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 3.8 5.2 3.8 8.5s-1.2 6.1-3.8 8.5c-2.6-2.4-3.8-5.2-3.8-8.5s1.2-6.1 3.8-8.5Z"/></svg>',
+  bulle: '<svg viewBox="0 0 24 24"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9h8M8 12h5"/></svg>',
+  fiche: '<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 14.5h7M9 18h4"/></svg>',
+  flashcards: '<svg viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="13" height="13.5" rx="2"/><path d="M7.5 6.5V5a1.8 1.8 0 0 1 1.8-1.8H19a1.5 1.5 0 0 1 1.5 1.5V15a1.8 1.8 0 0 1-1.8 1.8h-2.2"/></svg>',
+  quiz: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.6M12 16.8v.2"/></svg>',
+  animation: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="m10 9 5 3-5 3z"/></svg>',
+  entrainement: '<svg viewBox="0 0 24 24"><path d="M5 20h14M7 16.5l9.5-9.5 2 2L9 18.5H7z"/><path d="M14.5 9l2 2"/></svg>',
+  corrige: '<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="m9 13 2.2 2.2L16 10.5"/></svg>',
+  video: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>',
+  doc: '<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/></svg>',
+  back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
+  print: '<svg viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4.5A1.5 1.5 0 0 1 3 15.5v-5A1.5 1.5 0 0 1 4.5 9h15a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H17"/><path d="M7 14h10v7H7z"/></svg>',
+  share: '<svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>',
+  zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8M10.5 8v5M8 10.5h5"/></svg>',
+  speak: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
+  expand: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>'
+};
+const KIND = {
+  fiche: { label: "Fiche", icon: "fiche", verbe: "Lire" },
+  flashcards: { label: "Flashcards", icon: "flashcards", verbe: "Réviser" },
+  quiz: { label: "Quiz", icon: "quiz", verbe: "Jouer" },
+  animation: { label: "Fiche animée", icon: "animation", verbe: "Regarder" },
+  entrainement: { label: "Entraînement", icon: "entrainement", verbe: "S'entraîner" },
+  corrige: { label: "Corrigé", icon: "corrige", verbe: "Lire" },
+  video: { label: "Vidéo", icon: "video", verbe: "Regarder" }
+};
+
+/* ---------------- données ---------------- */
+const S = { cat: null, matieres: [], byRes: {}, decks: {}, cards: {}, loaded: false };
+async function loadCatalogue() {
+  let cat;
+  try { cat = await (await fetch("catalogue.json", { cache: "no-cache" })).json(); }
+  catch (e) { cat = lsGet("rev.cat", null); if (!cat) throw e; }
+  lsSet("rev.cat", cat);
+  S.cat = cat; S.matieres = cat.matieres;
+  for (const m of cat.matieres) for (const c of m.chapitres) for (const r of c.ressources) S.byRes[r.id] = { r, c, m };
+  const fcs = Object.values(S.byRes).filter(x => x.r.type === "flashcards");
+  await Promise.all(fcs.map(async ({ r, c, m }) => {
+    try {
+      const d = await (await fetch(r.fichier)).json();
+      for (const [id, dk] of Object.entries(d.decks)) S.decks[id] = { id, ...dk, matiere: m, chapitre: c, res: r };
+      for (const card of d.cards) S.cards[card.id] = card;
+    } catch (e) { console.warn("flashcards", r.fichier, e); }
+  }));
+  S.loaded = true;
+}
+
+/* ---------------- progression locale + synchro ---------------- */
+const P = Object.assign({ cards: {}, days: {}, seen: {}, sessions: [] }, lsGet("rev.progress", {}));
+const SYNC = { code: lsGet("rev.code", ""), state: "off", last: lsGet("rev.lastSync", null), timer: null, busy: false };
+const DEVICE = (() => { const u = navigator.userAgent; return /iPad|Macintosh.*Mobile|Macintosh/.test(u) && navigator.maxTouchPoints > 1 ? "iPad" : /iPhone/.test(u) ? "iPhone" : /Android/.test(u) ? "Android" : "Ordinateur"; })();
+function saveLocal() { lsSet("rev.progress", P); scheduleSync(); }
+function markSeen(id) { P.seen[id] = Date.now(); saveLocal(); }
+function merge(remote) {
+  if (!remote) return false;
+  let changed = false;
+  for (const [id, rc] of Object.entries(remote.cards || {})) { const lc = P.cards[id]; if (!lc || (rc.ts || 0) > (lc.ts || 0)) { P.cards[id] = rc; changed = true; } }
+  for (const [d, n] of Object.entries(remote.days || {})) if ((P.days[d] || 0) < n) { P.days[d] = n; changed = true; }
+  for (const [id, t] of Object.entries(remote.seen || {})) if ((P.seen[id] || 0) < t) { P.seen[id] = t; changed = true; }
+  const have = new Set(P.sessions.map(s => s.id));
+  for (const s of remote.sessions || []) if (!have.has(s.id)) { P.sessions.push(s); changed = true; }
+  P.sessions.sort((a, b) => a.t - b.t); if (P.sessions.length > 300) P.sessions = P.sessions.slice(-300);
+  return changed;
+}
+async function rpc(fn, body) {
+  const r = await fetch(CFG.supabaseUrl + "/rest/v1/rpc/" + fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey, Authorization: "Bearer " + CFG.supabaseKey }, body: JSON.stringify(body) });
+  if (!r.ok) { const t = await r.text(); const err = new Error(t); err.status = r.status; err.badCode = /code invalide/.test(t); throw err; }
+  return r.json();
+}
+async function syncNow(opts) {
+  if (!SYNC.code || SYNC.busy || !navigator.onLine) { if (!navigator.onLine && SYNC.code) SYNC.state = "offline"; return; }
+  SYNC.busy = true;
+  try {
+    const remote = await rpc("lire_progression", { code: SYNC.code, p_profil: CFG.profil });
+    if (remote && remote.donnees) merge(remote.donnees);
+    lsSet("rev.progress", P);
+    await rpc("ecrire_progression", { code: SYNC.code, p_donnees: P, p_appareil: DEVICE, p_profil: CFG.profil });
+    SYNC.state = "ok"; SYNC.last = Date.now(); lsSet("rev.lastSync", SYNC.last); SYNC.lastRemote = remote;
+    if (opts && opts.rerender) render();
+  } catch (e) {
+    SYNC.state = e.badCode ? "badcode" : "error";
+  } finally { SYNC.busy = false; }
+}
+function scheduleSync() { clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 2500); }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { clearTimeout(SYNC.timer); syncNow(); } else syncNow({ rerender: !sess }); });
+addEventListener("online", () => syncNow());
+
+/* ---------------- flashcards : répétition espacée ---------------- */
+const INT = [0, 1, 2, 4, 8, 16, 30], NEW_PER_DAY = 15, MAX_SESSION = 40, MASTER = 4;
+function deckOf(c) { return S.decks[c.deck] || { titre: c.deck, ordre: 99 }; }
+function sortedCards(filter) { return Object.values(S.cards).filter(c => !filter || filter(c)).sort((a, b) => (deckOf(a).ordre || 99) - (deckOf(b).ordre || 99) || String(a.deck).localeCompare(String(b.deck)) || (a.n || 0) - (b.n || 0)); }
+function pc(id) { return P.cards[id]; }
+function dueList(f) { const t = today(); return sortedCards(f).filter(c => { const p = pc(c.id); return p && p.l && p.d && p.d <= t; }); }
+function newToday() { const t = today(); return Object.values(P.cards).filter(p => p.f === t).length; }
+function newList(f) { const left = Math.max(0, NEW_PER_DAY - newToday()); return sortedCards(f).filter(c => !pc(c.id) || !pc(c.id).l).slice(0, left); }
+function streak() { let d = today(); if (!P.days[d]) d = addDays(d, -1); let n = 0; while (P.days[d]) { n++; d = addDays(d, -1); } return n; }
+function mastered(f) { return sortedCards(f).filter(c => (pc(c.id) || {}).b >= MASTER).length; }
+function notionStats() {
+  const m = {};
+  for (const c of Object.values(S.cards)) { const p = pc(c.id); if (!p) continue; const k = c.notion || "Divers"; const o = m[k] || (m[k] = { notion: k, deck: deckOf(c), ok: 0, ko: 0, mid: 0 }); o.ok += p.ok || 0; o.ko += p.ko || 0; o.mid += p.mid || 0; }
+  return Object.values(m).map(o => { const n = o.ok + o.ko + o.mid; return { ...o, n, rate: n ? (o.ok + o.mid * .5) / n : 1 }; }).filter(o => o.n >= 3 && o.rate < .75).sort((a, b) => a.rate - b.rate);
+}
+
+/* ---------------- routeur ---------------- */
+let sess = null, cleanup = null;
+function route() { const raw = location.hash.replace(/^#\/?/, ""); const [path, qs] = raw.split("?"); return { parts: path.split("/").filter(Boolean).map(decodeURIComponent), q: new URLSearchParams(qs || "") }; }
+function go(hash) { if (location.hash === hash) render(); else location.hash = hash; }
+addEventListener("hashchange", render);
+function setTab(name) { for (const a of document.querySelectorAll(".tabbar a")) { if (a.dataset.tab === name) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); } }
+function render() {
+  if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
+  document.body.classList.remove("immersive");
+  if (!S.loaded) { app.replaceChildren(h("div", { class: "loading" }, "Chargement…")); return; }
+  const { parts, q } = route();
+  const v = parts[0] || "";
+  if (v !== "session") { sess = null; hush(); }
+  let view;
+  if (v === "") { setTab("accueil"); view = vHome(); }
+  else if (v === "m") { setTab("accueil"); view = vSubject(parts[1]); }
+  else if (v === "r") { view = vResource(parts[1]); if (!view) return; }
+  else if (v === "cartes") { setTab("cartes"); view = vCards(q.get("deck")); }
+  else if (v === "session") { setTab("cartes"); view = vSession(q); }
+  else if (v === "suivi") { setTab("suivi"); view = vStats(); }
+  else if (v === "reglages") { setTab("reglages"); view = vSettings(); }
+  else { setTab("accueil"); view = vHome(); }
+  app.replaceChildren(view);
+  if (v !== "r") window.scrollTo({ top: 0 });
+}
+function topbar(label, href) {
+  return h("div", { class: "topbar" }, h("button", { class: "back", onclick: () => (history.length > 1 && !href ? history.back() : go(href || "#/")) }, svg("back"), label || "Retour"));
+}
+
+/* ---------------- vues ---------------- */
+function greeting() { const hr = new Date().getHours(); return hr < 5 ? "Encore debout" : hr < 12 ? "Bonjour" : hr < 18 ? "Salut" : "Bonsoir"; }
+function counts(m) { let n = 0; for (const c of m.chapitres) n += c.ressources.length; return n; }
+function isNew(dateStr) { return dateStr && dateStr >= addDays(today(), -7); }
+
+function vHome() {
+  const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw), total = Object.keys(S.cards).length;
+  const st = streak();
+  const todayBox = h("section", { class: "today" },
+    h("div", { class: "due" }, h("b", null, todo), h("span", null, todo === 0 ? (total ? "Rien à revoir aujourd'hui. Reviens demain !" : "Pas encore de cartes") : (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui") + (nw ? " · dont " + plural(nw, "nouvelle") : ""))),
+    h("div", { class: "stats" }, h("span", null, h("strong", null, st), " ", st > 1 ? "jours d'affilée" : "jour d'affilée"), h("span", null, h("strong", null, mastered()), " cartes maîtrisées sur ", h("strong", null, total))),
+    h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, due && !nw ? "Réviser mes cartes" : nw && !due ? "Découvrir les nouvelles cartes" : "Commencer"))
+  );
+  const grid = h("div", { class: "subjects" }, S.matieres.map(m => {
+    const n = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute));
+    return h("a", { class: "subject" + (n ? "" : " empty"), href: "#/m/" + m.id, style: { "--subj": subjColor(m) } },
+      recent ? h("span", { class: "new" }, "Nouveau") : null,
+      h("span", { class: "pic" }, svg(m.pictogramme)),
+      h("h3", null, m.nom),
+      h("span", { class: "meta" }, n ? plural(m.chapitres.length, "chapitre") + " · " + plural(n, "support") : "Bientôt"));
+  }));
+  const recents = [];
+  for (const m of S.matieres) for (const c of m.chapitres) for (const r of c.ressources) if (r.type !== "video") recents.push({ m, c, r });
+  recents.sort((a, b) => (b.c.ajoute || "").localeCompare(a.c.ajoute || ""));
+  const unseen = recents.filter(x => !P.seen[x.r.id]).slice(0, 4);
+  return h("div", { class: "view" },
+    h("header", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))),
+    todayBox,
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid),
+    unseen.length ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Pas encore ouverts")),
+      h("div", { class: "feed" }, unseen.map(({ m, c, r }) => h("a", { href: "#/r/" + r.id, style: { "--subj": subjColor(m) } },
+        h("span", { class: "ico" }, svg(KIND[r.type].icon)),
+        h("span", null, h("div", { class: "t" }, r.titre), h("div", { class: "s" }, m.nom + " · " + c.titre)), svg("chev"))))) : null
+  );
+}
+
+function resTile(r, m) {
+  const k = KIND[r.type] || KIND.fiche;
+  return h("a", { class: "res" + (P.seen[r.id] ? " done" : ""), href: "#/r/" + r.id, style: { "--kind": r.type === "corrige" ? "var(--muted)" : subjColor(m) } },
+    h("span", { class: "seen", title: "Pas encore ouvert" }),
+    h("span", { class: "ico" }, svg(k.icon)),
+    h("span", null, h("span", { class: "kind-label" }, k.label), h("div", { class: "t" }, r.titre)),
+    h("span", { class: "s" }, r.detail || ""));
+}
+function vSubject(id) {
+  const m = S.matieres.find(x => x.id === id);
+  if (!m) return vHome();
+  const col = subjColor(m);
+  const body = m.chapitres.length ? [...m.chapitres].reverse().map(c => {
+    const main = c.ressources.filter(r => r.type !== "video"), vids = c.ressources.filter(r => r.type === "video");
+    return h("section", { class: "chapter", style: { "--subj": col } },
+      h("div", { class: "chapter-head" }, h("span", { class: "eyebrow" }, isNew(c.ajoute) ? "Nouveau · ajouté le " + frDate(c.ajoute, { day: "numeric", month: "long" }) : "Chapitre"), h("h2", null, c.titre), c.sousTitre ? h("span", { class: "small" }, c.sousTitre) : null),
+      h("div", { class: "res-grid" }, main.map(r => resTile(r, m))),
+      vids.length ? [h("div", { class: "subhead" }, "Vidéos"), h("div", { class: "videos" }, vids.map(r => resTile(r, m)))] : null);
+  }) : [h("div", { class: "empty-box" }, h("strong", null, "Rien pour l'instant"), "Les fiches, cartes et quiz de " + m.nom + " apparaîtront ici dès qu'un chapitre sera ajouté.")];
+  return h("div", { class: "view", style: { "--subj": col } },
+    topbar("Accueil", "#/"),
+    h("header", { class: "subj-head" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", null, h("div", { class: "eyebrow" }, "Seconde"), h("h1", { style: { marginTop: 0 } }, m.nom))),
+    ...body);
+}
+
+/* ---------------- lecteur ---------------- */
+function vResource(id) {
+  const x = S.byRes[id];
+  if (!x) return vHome();
+  const { r, m } = x;
+  if (r.type === "flashcards") { location.replace("#/cartes?deck=" + encodeURIComponent((r.decks || [])[0] || "")); return null; }
+  markSeen(r.id);
+  document.body.classList.add("immersive");
+  const back = () => (history.length > 1 ? history.back() : go("#/m/" + m.id));
+  const bar = h("div", { class: "reader-bar" }, h("button", { class: "icon-btn", onclick: back, "aria-label": "Retour" }, svg("back"), h("span", { class: "lbl" }, m.nom)), h("div", { class: "ttl" }, r.titre));
+  const body = h("div", { class: "reader-body" });
+  const wrap = h("div", { class: "reader", style: { "--subj": subjColor(m) } }, bar, body);
+  const url = r.fichier;
+  if (/\.pdf$/i.test(url)) {
+    let zoom = 0;
+    const pages = h("div", { class: "pages zoom-0" }, h("div", { class: "loading" }, "Ouverture de la fiche…"));
+    bar.append(
+      h("button", { class: "icon-btn", onclick: () => { zoom = 1 - zoom; pages.className = "pages zoom-" + zoom; } }, svg("zoom"), h("span", { class: "lbl" }, "Zoom")),
+      h("button", { class: "icon-btn", onclick: () => sharePdf(url, r.titre) }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
+    body.append(pages);
+    renderPdf(url, pages);
+  } else if (/\.html?$/i.test(url)) {
+    bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); if (f && f.requestFullscreen) f.requestFullscreen().catch(() => {}); else window.open(url, "_blank"); } }, svg("expand"), h("span", { class: "lbl" }, "Plein écran")));
+    body.append(h("iframe", { src: url, title: r.titre, allow: "fullscreen; autoplay", allowfullscreen: true }));
+  } else if (/\.(mp4|webm|m4v)$/i.test(url)) {
+    body.style.background = "#000";
+    body.append(h("video", { src: url, controls: true, playsinline: true, autoplay: true, preload: "metadata" }));
+  }
+  return wrap;
+}
+let pdfLib = null;
+function loadPdfLib() {
+  if (pdfLib) return pdfLib;
+  pdfLib = new Promise((res, rej) => { const s = document.createElement("script"); s.src = "vendor/pdf.min.js"; s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdf.worker.min.js"; res(window.pdfjsLib); }; s.onerror = rej; document.head.append(s); });
+  return pdfLib;
+}
+async function renderPdf(url, box) {
+  let cancelled = false; cleanup = () => { cancelled = true; };
+  try {
+    const lib = await loadPdfLib();
+    const doc = await lib.getDocument({ url, isEvalSupported: false }).promise;
+    if (cancelled) return;
+    box.replaceChildren();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const target = Math.min(Math.max(box.clientWidth || innerWidth, 600), 1300) * dpr;
+    for (let i = 1; i <= doc.numPages; i++) {
+      if (cancelled) return;
+      const page = await doc.getPage(i);
+      const base = page.getViewport({ scale: 1 });
+      const vp = page.getViewport({ scale: target / base.width });
+      const cv = h("canvas", { width: Math.floor(vp.width), height: Math.floor(vp.height), "aria-label": "Page " + i });
+      box.append(cv);
+      await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+    }
+  } catch (e) {
+    box.replaceChildren(h("div", { class: "loading" }, "Impossible d'afficher la fiche ici. ", h("a", { href: url, target: "_blank" }, "Ouvrir le PDF")));
+  }
+}
+async function sharePdf(url, title) {
+  try {
+    const blob = await (await fetch(url)).blob();
+    const file = new File([blob], (title || "fiche") + ".pdf", { type: "application/pdf" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  window.open(url, "_blank");
+}
+
+/* ---------------- flashcards : écrans ---------------- */
+let fcMode = lsGet("rev.fcMode", "rapide");
+function vCards(focus) {
+  const decks = Object.values(S.decks).sort((a, b) => (a.matiere.nom || "").localeCompare(b.matiere.nom || "") || (a.ordre || 99) - (b.ordre || 99));
+  const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw);
+  const modes = h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
+    ["rapide", "ecrite"].map(md => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: () => { fcMode = md; lsSet("rev.fcMode", md); render(); } },
+      md === "rapide" ? "Révision rapide" : "Réponse écrite", h("small", null, md === "rapide" ? "Tu réponds dans ta tête, tu retournes, tu te notes" : "Tu écris ta réponse, puis tu la compares à la carte"))));
+  const list = decks.length ? h("div", { class: "decks" }, decks.map(d => {
+    const cs = sortedCards(c => c.deck === d.id), n = cs.length;
+    const mm = cs.filter(c => (pc(c.id) || {}).b >= MASTER).length, seen = cs.filter(c => (pc(c.id) || {}).l).length;
+    const dueD = dueList(c => c.deck === d.id).length;
+    return h("div", { class: "deck", id: "deck-" + d.id, style: { "--subj": subjColor(d.matiere) } },
+      h("div", { class: "deck-main" }, h("span", { class: "chip" }, d.matiere.nom), h("h3", null, d.titre), d.sousTitre ? h("span", { class: "small" }, d.sousTitre) : null,
+        h("div", { class: "meter" }, h("i", { class: "m", style: { width: (n ? mm / n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (n ? (seen - mm) / n * 100 : 0) + "%" } })),
+        h("div", { class: "deck-meta" }, mm + " maîtrisée" + (mm > 1 ? "s" : "") + " · " + (seen - mm) + " en cours · " + (n - seen) + " nouvelle" + (n - seen > 1 ? "s" : "") + (dueD ? " · " + dueD + " à revoir" : ""))),
+      h("div", { class: "row", style: { flexDirection: "column", gap: "8px" } },
+        h("button", { class: "btn quiet", disabled: !n, onclick: () => go("#/session?mode=chapitre&deck=" + encodeURIComponent(d.id)) }, "Veille d'interro"),
+        dueD ? h("button", { class: "btn quiet", onclick: () => go("#/session?mode=jour&deck=" + encodeURIComponent(d.id)) }, "Juste celles du jour") : null));
+  })) : h("div", { class: "empty-box" }, h("strong", null, "Pas encore de cartes"), "Les flashcards arrivent ici à chaque nouveau chapitre.");
+  const ns = notionStats().slice(0, 6);
+  const view = h("div", { class: "view" },
+    h("header", null, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, "Tes cartes")),
+    h("section", { class: "today" },
+      h("div", { class: "due" }, h("b", null, todo), h("span", null, todo ? (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui") : "Rien à revoir aujourd'hui")),
+      modes,
+      h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, "Commencer"))),
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Par chapitre"), h("span", { class: "small" }, "Veille d'interro : tout le chapitre d'un coup")), list),
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Notions à retravailler")),
+      ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses, " + o.ko + " ratée" + (o.ko > 1 ? "s" : "")))))
+        : h("div", { class: "empty-box" }, h("strong", null, "Rien à signaler"), "Après quelques révisions, les notions qui résistent apparaissent ici.")));
+  if (focus) setTimeout(() => { const el = document.getElementById("deck-" + focus); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" }); }, 60);
+  return view;
+}
+
+function vSession(q) {
+  const mode = q.get("mode") || "jour", deck = q.get("deck");
+  if (!sess || sess.key !== location.hash) {
+    const f = deck ? c => c.deck === deck : null;
+    let queue;
+    if (mode === "chapitre") queue = shuffle(sortedCards(f).map(c => c.id));
+    else { const due = shuffle(dueList(f).map(c => c.id)), nw = newList(f).map(c => c.id); queue = []; let i = 0, j = 0; while (i < due.length || j < nw.length) { if (i < due.length) queue.push(due[i++]); if (i < due.length) queue.push(due[i++]); if (j < nw.length) queue.push(nw[j++]); } queue = queue.slice(0, MAX_SESSION); }
+    if (!queue.length) { setTimeout(() => go("#/cartes"), 0); return h("div"); }
+    sess = { key: location.hash, mode, deck, queue, i: 0, res: { ok: 0, mid: 0, ko: 0 }, missed: [], again: {}, start: Date.now() };
+  }
+  document.body.classList.add("immersive");
+  const el = {};
+  const wrap = h("div", { class: "view fc-wrap" },
+    h("div", { class: "topbar" }, h("button", { class: "back", onclick: () => quit() }, svg("back"), "Quitter"), el.track = h("div", { class: "track" }, h("i")), el.count = h("span", { class: "count" })),
+    h("div", { class: "stage" }, el.flash = h("div", { class: "flash", role: "button", tabindex: "0", "aria-label": "Retourner la carte", onclick: () => flip() },
+      h("div", { class: "face front" }, h("div", { class: "face-top" }, el.chipF = h("span", { class: "chip" }), el.notF = h("span", { class: "notion" })), el.recto = h("p", { class: "recto" }), el.hint = h("div", { class: "hint" })),
+      h("div", { class: "face back", "aria-live": "polite" }, h("div", { class: "face-top" }, el.chipB = h("span", { class: "chip" }), h("button", { class: "icon-btn", style: { padding: "4px 6px" }, onclick: e => { e.stopPropagation(); speak(el.verso.textContent); }, "aria-label": "Lire à voix haute" }, svg("speak"))), el.q = h("div", { class: "q" }), el.mine = h("div", { class: "mine" }), el.verso = h("p", { class: "verso" }), el.plus = h("div", { class: "plus" })))),
+    el.answer = h("div", { class: "answer" }, el.ta = h("textarea", { rows: "3", placeholder: "Écris ta réponse (ou dicte-la avec le micro du clavier)…", onkeydown: e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); flip(); } } }), h("button", { class: "btn", onclick: () => flip() }, "Voir la réponse")),
+    el.reveal = h("button", { class: "btn", onclick: () => flip() }, "Retourner la carte"),
+    el.grades = h("div", { class: "grades" },
+      h("button", { class: "g ko", onclick: () => grade("ko") }, "À revoir", h("small", null, "tout à l'heure")),
+      h("button", { class: "g mid", onclick: () => grade("mid") }, "Presque", h("small", null, "demain")),
+      el.okBtn = h("button", { class: "g ok", onclick: () => grade("ok") }, "Je savais", el.okL = h("small"))));
+  const end = h("div", { class: "view fc-wrap", hidden: true });
+  const root = h("div", null, wrap, end);
+
+  function show() {
+    const c = S.cards[sess.queue[sess.i]]; if (!c) return next();
+    const d = deckOf(c), col = subjColor(d.matiere);
+    wrap.style.setProperty("--subj", col);
+    for (const ch of [el.chipF, el.chipB]) ch.textContent = (d.matiere ? d.matiere.nom : "") + (c.type ? " · " + c.type : "");
+    el.notF.textContent = c.notion || "";
+    el.recto.textContent = c.recto || ""; el.recto.className = "recto" + (/^[\s\-–−0-9\/et]+$/.test(c.recto || "") && (c.recto || "").length < 16 ? " date" : "");
+    el.q.textContent = c.recto || ""; el.verso.textContent = c.verso || "";
+    el.plus.replaceChildren(); if (c.plus) { el.plus.append(h("b", null, "À retenir aussi · "), c.plus); el.plus.hidden = false; } else el.plus.hidden = true;
+    el.mine.hidden = true; el.ta.value = "";
+    el.flash.classList.remove("flipped");
+    const typed = fcMode === "ecrite";
+    el.answer.hidden = !typed; el.reveal.hidden = typed; el.grades.hidden = true;
+    el.hint.textContent = typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
+    const p = pc(c.id) || { b: 0 }, nb = Math.min(6, (p.b || 0) + 1);
+    el.okL.textContent = sess.mode === "chapitre" && p.l && p.d > today() ? "pas de changement" : INT[nb] <= 1 ? "demain" : "dans " + INT[nb] + " j";
+    const tot = sess.queue.length; el.count.textContent = Math.min(sess.i + 1, tot) + " / " + tot; el.track.firstChild.style.width = (sess.i / tot * 100) + "%";
+    hush();
+    if (typed) setTimeout(() => el.ta.focus({ preventScroll: true }), 50);
+  }
+  function flip() {
+    if (el.flash.classList.contains("flipped")) return;
+    const typed = fcMode === "ecrite";
+    if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; }
+    el.flash.classList.add("flipped"); el.reveal.hidden = true; el.grades.hidden = false;
+  }
+  function grade(g) {
+    if (!el.flash.classList.contains("flipped")) return;
+    const id = sess.queue[sess.i], t = today();
+    const p = Object.assign({ b: 0, d: null, ok: 0, ko: 0, mid: 0, l: null }, pc(id) || {}); const fresh = !p.l;
+    const scheduled = sess.mode === "jour" || fresh || !p.d || p.d <= t;
+    if (g === "ko") { p.b = 1; p.d = addDays(t, 1); }
+    else if (scheduled) { if (g === "ok") { p.b = Math.min(6, (p.b || 0) + 1); p.d = addDays(t, INT[p.b]); } else { p.b = Math.max(1, p.b || 0); p.d = addDays(t, 1); } }
+    p[g] = (p[g] || 0) + 1; p.l = t; p.ts = Date.now(); if (fresh) p.f = t;
+    P.cards[id] = p; P.days[t] = (P.days[t] || 0) + 1;
+    sess.res[g]++;
+    if (g === "ko") { if (!sess.missed.includes(id)) sess.missed.push(id); sess.again[id] = (sess.again[id] || 0) + 1; if (sess.again[id] <= 2) sess.queue.push(id); }
+    saveLocal(); next();
+  }
+  function next() { sess.i++; if (sess.i >= sess.queue.length) finish(); else show(); }
+  function logSession() {
+    const r = sess.res, n = r.ok + r.mid + r.ko; if (!n || sess.logged) return; sess.logged = true;
+    const d = sess.deck ? S.decks[sess.deck] : null;
+    P.sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), mode: sess.mode, deck: sess.deck || null, titre: d ? d.titre : "Cartes du jour", ok: r.ok, mid: r.mid, ko: r.ko, min: Math.max(1, Math.round((Date.now() - sess.start) / 60000)), app: DEVICE });
+    if (P.sessions.length > 300) P.sessions = P.sessions.slice(-300);
+    saveLocal();
+  }
+  function finish() {
+    logSession(); syncNow();
+    const r = sess.res, n = r.ok + r.mid + r.ko;
+    wrap.hidden = true; end.hidden = false;
+    end.replaceChildren(h("div", { class: "done" },
+      h("div", null, h("div", { class: "eyebrow" }, "Session terminée"), h("h2", { style: { fontSize: "1.6rem", marginTop: "4px" } }, !n ? "Session vide" : r.ok / n >= .85 ? "Excellent, tu maîtrises" : r.ok / n >= .6 ? "Bien joué" : "Tu progresses, continue demain")),
+      h("div", { class: "tally" }, h("div", { class: "ok" }, h("b", null, r.ok), "Je savais"), h("div", { class: "mid" }, h("b", null, r.mid), "Presque"), h("div", { class: "ko" }, h("b", null, r.ko), "À revoir")),
+      sess.missed.length ? h("div", null, h("p", { class: "small", style: { margin: "0 0 8px" } }, "Les cartes ratées reviennent demain :"), h("ul", { class: "missed" }, sess.missed.map(id => { const c = S.cards[id]; return c ? h("li", null, c.recto, h("span", null, c.verso)) : null; }))) : null,
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { sess = null; go("#/cartes"); } }, "Retour aux cartes"))));
+    window.scrollTo({ top: 0 });
+  }
+  function quit() { logSession(); sess = null; hush(); go("#/cartes"); }
+  const onKey = e => {
+    if (!sess || wrap.hidden) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === " " || e.key === "Enter") { if (!el.flash.classList.contains("flipped")) { e.preventDefault(); flip(); } }
+    else if (e.key === "1") grade("ko"); else if (e.key === "2") grade("mid"); else if (e.key === "3") grade("ok"); else if (e.key === "Escape") quit();
+  };
+  document.addEventListener("keydown", onKey);
+  cleanup = () => { document.removeEventListener("keydown", onKey); hush(); };
+  show();
+  return root;
+}
+
+/* ---------------- voix ---------------- */
+function frVoice() { try { const vs = speechSynthesis.getVoices() || []; const fr = vs.filter(v => /^fr/i.test(v.lang)); return fr.find(v => /fr[-_]FR/i.test(v.lang) && /(Amélie|Audrey|Marie|Thomas|Google|Premium|Enhanced|Natural)/i.test(v.name)) || fr.find(v => /fr[-_]FR/i.test(v.lang)) || fr[0] || null; } catch (e) { return null; } }
+function speak(t) { if (!("speechSynthesis" in window) || !t) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; const v = frVoice(); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
+function hush() { try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
+
+/* ---------------- suivi ---------------- */
+function vStats() {
+  const t = today(), days = [];
+  for (let i = 13; i >= 0; i--) { const d = addDays(t, -i); days.push({ d, n: P.days[d] || 0 }); }
+  const max = Math.max(5, ...days.map(x => x.n));
+  const last7 = days.slice(-7).reduce((s, x) => s + x.n, 0);
+  const seenList = Object.entries(P.seen).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([id, ts]) => ({ x: S.byRes[id], ts })).filter(o => o.x);
+  const sessions = P.sessions.slice(-8).reverse();
+  const ns = notionStats().slice(0, 8);
+  const syncLine = !SYNC.code ? h("span", { class: "pill off" }, "Progression gardée sur cet appareil seulement") : SYNC.state === "ok" ? h("span", { class: "pill" }, "Synchronisé" + (SYNC.last ? " · " + new Date(SYNC.last).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "")) : h("span", { class: "pill off" }, SYNC.state === "badcode" ? "Code famille refusé" : "Hors ligne · synchro au retour du réseau");
+  return h("div", { class: "view" },
+    h("header", null, h("div", { class: "eyebrow" }, "Suivi"), h("h1", null, "Où en est " + (CFG.prenom || "l'élève")), h("div", { style: { marginTop: "8px" } }, syncLine)),
+    h("div", { class: "kpis" },
+      h("div", { class: "kpi" }, h("b", null, streak()), h("span", null, "jours d'affilée")),
+      h("div", { class: "kpi" }, h("b", null, last7), h("span", null, "cartes révisées sur 7 jours")),
+      h("div", { class: "kpi" }, h("b", null, mastered()), h("span", null, "cartes maîtrisées sur " + Object.keys(S.cards).length)),
+      h("div", { class: "kpi" }, h("b", null, Object.keys(P.seen).length), h("span", null, "supports ouverts sur " + Object.keys(S.byRes).length))),
+    h("section", { class: "card" }, h("h2", null, "Cartes révisées, 14 derniers jours"),
+      h("div", { class: "bars", role: "img", "aria-label": days.map(x => frDate(x.d, { day: "numeric", month: "short" }) + " : " + x.n).join(", ") },
+        days.map(x => h("div", { title: frDate(x.d, { weekday: "short", day: "numeric" }) + " : " + x.n }, h("i", { class: x.n ? "" : "zero", style: { height: (x.n / max * 100) + "%" } }), h("span", null, frDate(x.d, { weekday: "narrow" })))))),
+    h("section", { class: "sec" }, h("h2", null, "Par chapitre"),
+      Object.values(S.decks).length ? h("div", { class: "decks" }, Object.values(S.decks).map(d => { const cs = sortedCards(c => c.deck === d.id), n = cs.length, mm = cs.filter(c => (pc(c.id) || {}).b >= MASTER).length, seen = cs.filter(c => (pc(c.id) || {}).l).length;
+        return h("div", { class: "deck", style: { "--subj": subjColor(d.matiere) } }, h("div", { class: "deck-main" }, h("span", { class: "chip" }, d.matiere.nom), h("h3", null, d.titre), h("div", { class: "meter" }, h("i", { class: "m", style: { width: (n ? mm / n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (n ? (seen - mm) / n * 100 : 0) + "%" } })), h("div", { class: "deck-meta" }, mm + " maîtrisées · " + (seen - mm) + " en cours · " + (n - seen) + " jamais vues"))); })) : null),
+    h("section", { class: "sec" }, h("h2", null, "Notions qui coincent"),
+      ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses")))) : h("div", { class: "empty-box" }, "Pas assez de réponses pour l'instant.")),
+    h("section", { class: "card" }, h("h2", null, "Dernières sessions"),
+      sessions.length ? h("ul", { class: "log" }, sessions.map(s => h("li", null, h("span", null, s.titre + " · " + s.ok + " sues, " + s.mid + " presque, " + s.ko + " à revoir"), h("span", null, new Date(s.t).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }) + (s.app ? " · " + s.app : ""))))) : h("p", { class: "small", style: { margin: 0 } }, "Aucune session pour l'instant.")),
+    h("section", { class: "card" }, h("h2", null, "Derniers supports ouverts"),
+      seenList.length ? h("ul", { class: "log" }, seenList.map(({ x, ts }) => h("li", null, h("span", null, x.m.nom + " · " + x.r.titre), h("span", null, new Date(ts).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }))))) : h("p", { class: "small", style: { margin: 0 } }, "Rien d'ouvert pour l'instant.")));
+}
+
+/* ---------------- réglages ---------------- */
+function vSettings() {
+  const input = h("input", { id: "code", inputmode: "text", autocomplete: "off", autocapitalize: "characters", spellcheck: "false", maxlength: "12", value: SYNC.code, placeholder: "XXXXXX" });
+  const status = h("div", { class: "small" });
+  const paint = () => { status.replaceChildren(!SYNC.code ? h("span", { class: "pill off" }, "Pas de code : la progression reste sur cet appareil") : SYNC.state === "badcode" ? h("span", { class: "pill off" }, "Code refusé") : SYNC.state === "ok" ? h("span", { class: "pill" }, "Synchronisation active") : h("span", { class: "pill off" }, "Code enregistré · synchro dès que possible")); };
+  paint();
+  const save = async () => {
+    const code = input.value.trim().toUpperCase();
+    if (!code) { SYNC.code = ""; lsSet("rev.code", ""); SYNC.state = "off"; paint(); return; }
+    try { const ok = await rpc("verifier_code", { code }); if (!ok) { SYNC.state = "badcode"; paint(); toast("Ce code n'est pas le bon."); return; } }
+    catch (e) { toast("Pas de réseau : réessaie dans un instant."); return; }
+    SYNC.code = code; lsSet("rev.code", code); await syncNow(); paint(); toast("Progression synchronisée.");
+  };
+  const theme = lsGet("rev.theme", "auto");
+  const seg = h("div", { class: "segmented", role: "group", "aria-label": "Apparence" }, [["auto", "Auto"], ["light", "Clair"], ["dark", "Sombre"]].map(([v, l]) => h("button", { "aria-pressed": theme === v ? "true" : "false", onclick: () => { lsSet("rev.theme", v); applyTheme(); render(); } }, l)));
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  return h("div", { class: "view" },
+    h("header", null, h("div", { class: "eyebrow" }, "Réglages"), h("h1", null, "Réglages")),
+    h("section", { class: "card" }, h("h2", null, "Code famille"),
+      h("p", { class: "small", style: { margin: 0 } }, "Le même code sur le téléphone et sur l'iPad : la progression se retrouve sur les deux, et le suivi est visible depuis n'importe quel appareil."),
+      h("div", { class: "field" }, h("label", { for: "code" }, "Code"), input), status,
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: save }, "Enregistrer"), SYNC.code ? h("button", { class: "btn quiet", onclick: async () => { await syncNow({ rerender: false }); paint(); toast(SYNC.state === "ok" ? "Synchronisé." : "Synchro impossible pour l'instant."); } }, "Synchroniser maintenant") : null)),
+    h("section", { class: "card" }, h("h2", null, "Apparence"), seg),
+    standalone ? null : h("section", { class: "card" }, h("h2", null, "Installer l'appli"),
+      h("div", { class: "install" }, h("b", null, "1"), h("span", null, "Sur iPhone ou iPad, ouvre cette page dans Safari."), h("b", null, "2"), h("span", null, "Touche le bouton Partager (le carré avec une flèche vers le haut)."), h("b", null, "3"), h("span", null, "Choisis « Sur l'écran d'accueil », puis « Ajouter »."), h("b", null, "4"), h("span", null, "Sur Android : menu ⋮ de Chrome, puis « Installer l'application ».")),
+      installEvt ? h("button", { class: "btn", onclick: async () => { installEvt.prompt(); installEvt = null; } }, "Installer maintenant") : null),
+    h("section", { class: "card" }, h("h2", null, "Mise à jour"),
+      h("p", { class: "small", style: { margin: 0 } }, "Les nouveaux contenus arrivent tout seuls à l'ouverture. Version des contenus : " + (S.cat && S.cat.version || "?") + "."),
+      h("div", { class: "row" }, h("button", { class: "btn quiet", onclick: async () => { try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch (e) {} location.reload(); } }, "Vérifier les mises à jour"))));
+}
+
+/* ---------------- thème, installation, service worker ---------------- */
+function applyTheme() { const t = lsGet("rev.theme", "auto"); if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t; }
+let installEvt = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js").then(reg => {
+    reg.addEventListener("updatefound", () => { const w = reg.installing; if (w) w.addEventListener("statechange", () => { if (w.state === "installed" && navigator.serviceWorker.controller) toast("Nouvelle version prête : elle s'appliquera à la prochaine ouverture."); }); });
+  }).catch(() => {}));
+}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => render());
+
+/* ---------------- démarrage ---------------- */
+applyTheme();
+render();
+loadCatalogue().then(() => { render(); syncNow({ rerender: true }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
+})();
