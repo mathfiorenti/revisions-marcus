@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a5bff"/>
+      <stop offset="0.55" stop-color="#2a3fc4"/>
+      <stop offset="1" stop-color="#1b2280"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.22" r="0.7">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0b0f3d" flood-opacity=".45"/>
+    </filter>
+    <clipPath id="card"><rect x="-190" y="-240" width="380" height="480" rx="44"/></clipPath>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+  <!-- petites étoiles -->
+  <g fill="#ffd36b">
+    <path d="M838 178l14 34 34 14-34 14-14 34-14-34-34-14 34-14z"/>
+    <path d="M182 830l9 22 22 9-22 9-9 22-9-22-22-9 22-9z" opacity=".9"/>
+  </g>
+  <circle cx="842" cy="760" r="10" fill="#ffffff" opacity=".5"/>
+  <circle cx="190" cy="262" r="8" fill="#ffffff" opacity=".45"/>
+  <!-- éventail de fiches aux couleurs des matières -->
+  <g transform="translate(505 540) scale(1.2)">
+    <g transform="rotate(-26) translate(-78 18)" filter="url(#sh)"><rect x="-190" y="-240" width="380" height="480" rx="44" fill="#a68cf0"/></g>
+    <g transform="rotate(-13) translate(-38 4)" filter="url(#sh)"><rect x="-190" y="-240" width="380" height="480" rx="44" fill="#e57b9f"/></g>
+    <g transform="rotate(12) translate(52 4)" filter="url(#sh)"><rect x="-190" y="-240" width="380" height="480" rx="44" fill="#f2b04a"/></g>
+    <!-- fiche de devant -->
+    <g transform="rotate(-3)" filter="url(#sh)">
+      <rect x="-190" y="-240" width="380" height="480" rx="44" fill="#fffdf8"/>
+      <g clip-path="url(#card)">
+        <g stroke="#cfdaee" stroke-width="7">
+          <line x1="-190" y1="-90" x2="190" y2="-90"/><line x1="-190" y1="-20" x2="190" y2="-20"/>
+          <line x1="-190" y1="50" x2="190" y2="50"/><line x1="-190" y1="120" x2="190" y2="120"/><line x1="-190" y1="190" x2="190" y2="190"/>
+        </g>
+        <line x1="-118" y1="-240" x2="-118" y2="240" stroke="#e07a6f" stroke-width="8"/>
+      </g>
+      <text x="22" y="92" text-anchor="middle" font-family="DejaVu Serif, Georgia, serif" font-weight="700" font-size="300" fill="#1d2330">M</text>
+      <!-- coche verte -->
+      <g transform="translate(118 -168)">
+        <circle r="56" fill="#1d9a63"/>
+        <path d="M-25 2l17 18 32-36" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+</svg>
