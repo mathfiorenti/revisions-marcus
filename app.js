@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 19 h 50"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 20 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -533,7 +533,7 @@ function vSession(q) {
       try {
         const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 15000);
         const r = await fetch(CFG.supabaseUrl + "/functions/v1/corriger", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey },
-          body: JSON.stringify({ code: SYNC.code, matiere: d.matiere ? d.matiere.nom : "", recto: c.recto, verso: c.verso, plus: c.plus || "", reponse: t }) });
+          body: JSON.stringify({ code: SYNC.code, matiere: d.matiere ? d.matiere.nom : "", recto: c.recto, verso: c.verso, plus: c.plus || "", reponse: t, deja: (sess.debuts || []).slice(-6) }) });
         clearTimeout(to);
         if (r.ok) ia = await r.json();
       } catch (e) {}
@@ -541,19 +541,20 @@ function vSession(q) {
     if (sess.note !== jeton) return;
     if (ia && ia.verdict) {
       n = { verdict: ia.verdict, ia: true, trouves: [], manquants: [] };
+      (sess.debuts = sess.debuts || []).push(String(ia.correction || "").split(/[.!,:;]/)[0].slice(0, 40));
       if (ia.alerte) { P.alertes = (P.alertes || []).concat([{ t: Date.now(), carte: c.id }]).slice(-50); saveLocal(); }
     } else n = noteOrale(t, c);
     sess.note = n;
     const lab = { ok: "Validé", mid: "Presque", ko: "À revoir" }[n.verdict];
     el.verdict.className = "verdict-o v-" + n.verdict;
-    el.verdict.replaceChildren(...[h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, n.ia ? "Correction par une IA (Claude) · tu peux choisir une autre note" : "Correction automatique par mots-clés · tu peux choisir une autre note")),
+    el.verdict.replaceChildren(...[h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, n.ia ? "Correction par une IA (Claude) · tu peux choisir une autre note" : !SYNC.code ? "Correction simple, sans IA : saisis le code famille dans Réglages pour la vraie correction" : "Correction simple, sans IA (pas de réseau) · tu peux choisir une autre note")),
       n.ia ? h("p", { class: "v-txt" }, ia.correction) : null,
       n.ia && ia.astuce ? h("p", { class: "v-astuce" }, "💡 " + ia.astuce) : null,
       !n.ia && (n.trouves.length || n.manquants.length) ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null,
       fcMode === "oral" && SR ? h("button", { class: "btn suite", onclick: () => grade(n.verdict, true) }, svg("mic"), "Carte suivante") : h("button", { class: "btn suite", onclick: () => grade(n.verdict, true) }, "Carte suivante")].filter(Boolean));
     setTimeout(() => el.verdict.scrollIntoView({ block: "nearest", behavior: "smooth" }), 300);
     for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains(n.verdict));
-    const dire = n.ia ? ({ ok: "Validé. ", mid: "Presque. ", ko: "" }[n.verdict] + ia.correction) : phraseRetour(n, c);
+    const dire = n.ia ? ia.correction : phraseRetour(n, c);
     speak(dire, () => { if (fcMode === "oral" && mainsLibres() && sess && sess.note === n) setTimeout(() => { if (sess && sess.note === n) grade(n.verdict); }, 900); });
   }
   function flip() {
@@ -561,7 +562,7 @@ function vSession(q) {
     const typed = fcMode === "ecrite";
     let aCorriger = null;
     if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; if (a) aCorriger = a; }
-    if (fcMode === "oral" && SR && !sess.note) { stopEcoute(); el.mine.textContent = "Tu as passé cette carte."; el.mine.hidden = false; sess.note = { verdict: "ko" }; for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains("ko")); speak("La réponse : " + S.cards[sess.queue[sess.i]].verso); }
+    if (fcMode === "oral" && SR && !sess.note) { stopEcoute(); el.mine.textContent = "Tu as passé cette carte."; el.mine.hidden = false; sess.note = { verdict: "ko" }; for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains("ko")); speak(choisir(["La réponse : ", "C\'était : ", "Retiens : ", "On attendait : "]) + S.cards[sess.queue[sess.i]].verso); }
     el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.oral.hidden = true; el.grades.hidden = false;
     if (aCorriger) evaluer(aCorriger);
   }
@@ -886,12 +887,17 @@ function noteOrale(reponse, carte) {
   const tot = termes.reduce((a, t) => a + t.poids, 0), ok = trouves.reduce((a, t) => a + t.poids, 0), score = ok / tot;
   return { verdict: score >= .5 ? "ok" : score >= .28 ? "mid" : "ko", score, trouves, manquants };
 }
+// Correction de secours (sans IA) : phrases variées, jamais deux fois la même d'affilée.
+const dernieresPhrases = [];
+function choisir(liste) {
+  const libres = liste.filter(x => !dernieresPhrases.includes(x)), p = (libres.length ? libres : liste)[Math.floor(Math.random() * (libres.length || liste.length))];
+  dernieresPhrases.push(p); if (dernieresPhrases.length > 6) dernieresPhrases.shift(); return p;
+}
 function phraseRetour(n, carte) {
-  const pick = a => a[Math.floor(Math.random() * a.length)];
   const manque = n.manquants.slice(0, 3).map(t => t.aff).join(", ");
-  if (n.verdict === "ok") return pick(["Bien joué !", "Exact !", "Parfait, c'est ça.", "Très bien !"]) + (n.manquants.length && manque ? " Pour être complet, ajoute : " + manque + "." : "");
-  if (n.verdict === "mid") return "Presque. Il te manquait : " + manque + ". La réponse : " + carte.verso;
-  return pick(["Pas tout à fait.", "Ce n'est pas ça.", "Raté, mais tu vas la retenir."]) + " La réponse : " + carte.verso;
+  if (n.verdict === "ok") return choisir(["Exact !", "Bien vu.", "Oui, c'est ça.", "Parfait.", "Bonne réponse.", "Tout bon.", "Validé !", "Impeccable.", "Juste !", "C'est bien ça."]) + (n.manquants.length && manque ? " " + choisir(["Pour être complet : ", "Tu peux ajouter : ", "En bonus : "]) + manque + "." : "");
+  if (n.verdict === "mid") return choisir(["Presque.", "Pas loin.", "Il manque un morceau.", "Bon début.", "Tu y es presque."]) + (manque ? " " + choisir(["Il manquait : ", "Ajoute : ", "Pense à : "]) + manque + "." : "") + " " + choisir(["La réponse : ", "On attendait : ", "Retiens : "]) + carte.verso;
+  return choisir(["Non, pas cette fois.", "Pas tout à fait.", "Ce n'est pas ça.", "Hmm, non.", "Raté pour celle-ci.", "Pas encore.", "On la reverra."]) + " " + choisir(["La réponse : ", "C'était : ", "Retiens : ", "La bonne réponse : "]) + carte.verso;
 }
 
 /* ---------------- suivi ---------------- */
