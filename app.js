@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 18 h 45"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 19 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -47,8 +47,8 @@ const ICONS = {
   bulle: '<svg viewBox="0 0 24 24"><path d="M4 5h16v10H10l-5 4v-4H4z"/><path d="M8 9h8M8 12h5"/></svg>',
   fiche: '<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 14.5h7M9 18h4"/></svg>',
   flashcards: '<svg viewBox="0 0 24 24"><rect x="3.5" y="6.5" width="13" height="13.5" rx="2"/><path d="M7.5 6.5V5a1.8 1.8 0 0 1 1.8-1.8H19a1.5 1.5 0 0 1 1.5 1.5V15a1.8 1.8 0 0 1-1.8 1.8h-2.2"/></svg>',
-  quiz: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.6M12 16.8v.2"/></svg>',
-  animation: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="m10 9 5 3-5 3z"/></svg>',
+  quiz: '<svg viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="m7 9 1.4 1.4L11 7.8M13.5 9.2H17M7 15l1.4 1.4L11 13.8M13.5 15.2H17"/></svg>',
+  animation: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="15" height="14" rx="2.5"/><path d="m8.5 9.2 4.5 2.8-4.5 2.8z"/><path d="M20.5 3.5v3M19 5h3M21 10.5v2M20 11.5h2"/></svg>',
   entrainement: '<svg viewBox="0 0 24 24"><path d="M5 20h14M7 16.5l9.5-9.5 2 2L9 18.5H7z"/><path d="M14.5 9l2 2"/></svg>',
   corrige: '<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="m9 13 2.2 2.2L16 10.5"/></svg>',
   video: '<svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>',
@@ -65,14 +65,15 @@ const ICONS = {
   close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   expand: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>'
 };
+// Chaque type de support a son pictogramme et sa couleur, identiques dans toutes les matières.
 const KIND = {
-  fiche: { label: "Fiche", icon: "fiche", verbe: "Lire" },
-  flashcards: { label: "Flashcards", icon: "flashcards", verbe: "Réviser" },
-  quiz: { label: "Quiz", icon: "quiz", verbe: "Jouer" },
-  animation: { label: "Fiche animée", icon: "animation", verbe: "Regarder" },
-  entrainement: { label: "Entraînement", icon: "entrainement", verbe: "S'entraîner" },
-  corrige: { label: "Corrigé", icon: "corrige", verbe: "Lire" },
-  video: { label: "Vidéo", icon: "video", verbe: "Regarder" }
+  fiche: { label: "Fiche de révision", icon: "fiche", hue: "#4f8cff", ordre: 1 },
+  flashcards: { label: "Flashcards", icon: "flashcards", hue: "#f5a524", ordre: 2 },
+  quiz: { label: "QCM", icon: "quiz", hue: "#2fbf71", ordre: 3 },
+  animation: { label: "Cours animé", icon: "animation", hue: "#d65ce0", ordre: 4 },
+  entrainement: { label: "Entraînement", icon: "entrainement", hue: "#ff7a45", ordre: 5 },
+  corrige: { label: "Corrigé", icon: "corrige", hue: "#8b95a7", ordre: 6 },
+  video: { label: "Vidéo", icon: "video", hue: "#ef5350", ordre: 7 }
 };
 
 /* ---------------- données ---------------- */
@@ -209,8 +210,8 @@ function render() {
   if (v === "") { setTab("accueil"); view = vHome(); }
   else if (v === "m") { setTab("accueil"); view = vSubject(parts[1]); }
   else if (v === "r") { view = vResource(parts[1]); if (!view) return; }
-  else if (v === "cartes") { setTab("cartes"); view = parts[1] ? vCardsSubject(parts[1], q.get("c")) : vCards(); }
-  else if (v === "session") { setTab("cartes"); view = vSession(q); }
+  else if (v === "cartes") { setTab("accueil"); view = parts[1] ? vCardsSubject(parts[1], q.get("c")) : vCards(); }
+  else if (v === "session") { setTab("accueil"); view = vSession(q); }
   else if (v === "ajouter") { setTab("accueil"); view = vAdd(q.get("m")); }
   else if (v === "suivi") { setTab("suivi"); view = vStats(); }
   else if (v === "reglages") { setTab("reglages"); view = vSettings(); }
@@ -218,8 +219,8 @@ function render() {
   app.replaceChildren(view);
   if (v !== "r") window.scrollTo({ top: 0 });
 }
-function topbar(label, href) {
-  return h("div", { class: "topbar" }, h("button", { class: "back", onclick: () => (history.length > 1 && !href ? history.back() : go(href || "#/")) }, svg("back"), label || "Retour"));
+function topbar(label, href, extra) {
+  return h("div", { class: "topbar" }, h("a", { class: "back", href: href || "#/" }, svg("back"), label || "Retour"), extra || null);
 }
 
 /* ---------------- vues ---------------- */
@@ -228,64 +229,60 @@ function counts(m) { let n = 0; for (const c of m.chapitres) n += c.ressources.l
 function isNew(dateStr) { return dateStr && dateStr >= addDays(today(), -7); }
 
 function vHome() {
-  const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw), total = Object.keys(S.cards).length;
-  const doneToday = P.days[today()] || 0, goal = doneToday + todo;
-  const st = streak();
-  const n = h("span");
-  const todayBox = h("section", { class: "today" },
-    ring(goal ? doneToday / goal : (total ? 1 : 0), 96, todo ? countUp(n, todo) : "✓"),
-    h("div", { class: "txt" },
-      h("div", { class: "big" }, todo === 0 ? (total ? (doneToday ? "Bravo, tout est revu pour aujourd'hui !" : "Rien à revoir aujourd'hui") : "Pas encore de cartes") : (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui")),
-      h("div", { class: "stats" }, nw ? h("span", null, h("strong", null, nw), " nouvelle" + (nw > 1 ? "s" : "")) : null, due ? h("span", null, h("strong", null, due), " à revoir") : null, h("span", null, h("strong", null, mastered()), " / " + total + " maîtrisées"))),
-    h("div", { class: "actions" }, h("a", { class: "btn", href: "#/cartes" }, "Réviser mes cartes")));
   const grid = h("div", { class: "subjects stagger" }, stag(S.matieres.map(m => {
-    const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute)), dks = decksOf(m);
-    const stt = dks.length ? chapStats(c => deckOf(c).matiere.id === m.id) : null;
+    const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute));
     return h("a", { class: "subject" + (nb ? "" : " empty"), href: "#/m/" + m.id, style: { "--subj": subjColor(m) } },
-      h("span", { class: "top" }, h("span", { class: "pic" }, svg(m.pictogramme)), recent ? h("span", { class: "new" }, "Nouveau") : stt && stt.n ? ring(stt.m / stt.n, 40, Math.round(stt.m / stt.n * 100) + "%") : null),
+      h("span", { class: "top" }, h("span", { class: "pic" }, svg(m.pictogramme)), recent ? h("span", { class: "new" }, "Nouveau") : null),
       h("h3", null, m.nom),
-      h("span", { class: "meta" }, nb ? plural(m.chapitres.length, "chapitre") + " · " + plural(nb, "support") + (stt && stt.due ? " · " + stt.due + " cartes à revoir" : "") : "Bientôt"));
+      h("span", { class: "meta" }, nb ? plural(m.chapitres.length, "chapitre") : "Bientôt"));
   })));
-  const recents = [];
-  for (const m of S.matieres) for (const c of m.chapitres) for (const r of c.ressources) if (r.type !== "video") recents.push({ m, c, r });
-  recents.sort((a, b) => (b.c.ajoute || "").localeCompare(a.c.ajoute || ""));
-  const unseen = recents.filter(x => !P.seen[x.r.id]).slice(0, 4);
   return h("div", { class: "view" }, ...stag([
-    h("header", { class: "hello" }, h("div", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))), flame(st)),
-    todayBox,
-    addCta(),
-    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid),
-    unseen.length ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "À découvrir")),
-      h("div", { class: "feed" }, unseen.map(({ m, c, r }) => h("a", { href: "#/r/" + r.id, style: { "--subj": subjColor(m) } },
-        h("span", { class: "ico" }, svg(KIND[r.type].icon)),
-        h("span", null, h("div", { class: "t" }, r.titre), h("div", { class: "s" }, m.nom + " · " + c.titre)), svg("chev"))))) : null
+    h("header", { class: "hello" },
+      h("div", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))),
+      h("a", { class: "mini-add", href: "#/ajouter", "aria-label": "J'ajoute un nouveau cours" }, svg("camera"), h("span", null, "Nouveau cours"))),
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid)
   ]));
 }
 
-function resTile(r, m) {
+function resHref(r, m, c) { return r.type === "flashcards" ? "#/cartes/" + m.id + "?c=" + encodeURIComponent(c.id) : "#/r/" + r.id; }
+// Titre de la cartouche sans répéter l'étiquette du type (« QCM Athènes et Rome » → « Athènes et Rome »).
+const VERBES = { fiche: "Lire la fiche", flashcards: "Réviser le chapitre", quiz: "Faire le QCM", animation: "Regarder", entrainement: "S'entraîner", corrige: "Lire le corrigé", video: "Regarder" };
+function titreTuile(r, k) {
+  if (r.type === "flashcards") return VERBES.flashcards;
+  const norm = w => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/s$/, "");
+  const mt = (r.titre || "").split(/\s+/), ml = k.label.split(/\s+/);
+  const memeDebut = ml.every((w, i) => mt[i] && norm(mt[i]) === norm(w));
+  if (!memeDebut) return r.titre;
+  const reste = mt.slice(ml.length).join(" ").replace(/^[·:–-]\s*/, "");
+  return reste && !/^[a-zà-ÿ]/.test(reste) ? reste : VERBES[r.type] || r.titre;
+}
+function resTile(r, m, c) {
   const k = KIND[r.type] || KIND.fiche;
-  return h("a", { class: "res" + (P.seen[r.id] ? " done" : ""), href: "#/r/" + r.id, style: { "--kind": r.type === "corrige" ? "var(--muted)" : subjColor(m) } },
-    h("span", { class: "seen", title: "Pas encore ouvert" }),
+  let sous = r.detail || "";
+  if (r.type === "flashcards") { const st = chapStats(x => deckOf(x).chapitre && deckOf(x).chapitre.id === c.id); sous = plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : ""); }
+  return h("a", { class: "tile" + (P.seen[r.id] || r.type === "flashcards" ? "" : " unseen"), href: resHref(r, m, c), style: { "--kind": k.hue } },
     h("span", { class: "ico" }, svg(k.icon)),
-    h("span", null, h("span", { class: "kind-label" }, k.label), h("div", { class: "t" }, r.titre)),
-    h("span", { class: "s" }, r.detail || ""));
+    h("span", { class: "kind" }, k.label),
+    h("span", { class: "t" }, titreTuile(r, k)),
+    h("span", { class: "s" }, sous));
 }
 function vSubject(id) {
   const m = S.matieres.find(x => x.id === id);
   if (!m) return vHome();
   const col = subjColor(m);
   const body = m.chapitres.length ? [...m.chapitres].reverse().map(c => {
-    const main = c.ressources.filter(r => r.type !== "video"), vids = c.ressources.filter(r => r.type === "video");
+    const main = c.ressources.filter(r => r.type !== "video").sort((a, b) => ((KIND[a.type] || {}).ordre || 9) - ((KIND[b.type] || {}).ordre || 9));
+    const vids = c.ressources.filter(r => r.type === "video");
     return h("section", { class: "chapter", style: { "--subj": col } },
-      h("div", { class: "chapter-head" }, h("span", { class: "eyebrow" }, isNew(c.ajoute) ? "Nouveau · ajouté le " + frDate(c.ajoute, { day: "numeric", month: "long" }) : "Chapitre"), h("h2", null, c.titre), c.sousTitre ? h("span", { class: "small" }, c.sousTitre) : null),
-      h("div", { class: "res-grid" }, main.map(r => resTile(r, m))),
-      vids.length ? [h("div", { class: "subhead" }, "Vidéos"), h("div", { class: "videos" }, vids.map(r => resTile(r, m)))] : null);
-  }) : [h("div", { class: "empty-box" }, h("strong", null, "Rien pour l'instant"), "Les fiches, cartes et quiz de " + m.nom + " apparaîtront ici dès qu'un chapitre sera ajouté.")];
+      h("div", { class: "chapter-head" }, h("span", { class: "eyebrow" }, isNew(c.ajoute) ? "Nouveau" : "Chapitre"), h("h2", null, c.titre), c.sousTitre ? h("span", { class: "small" }, c.sousTitre) : null),
+      h("div", { class: "tiles" }, main.map(r => resTile(r, m, c))),
+      vids.length ? h("details", { class: "vids" }, h("summary", null, svg("video"), plural(vids.length, "extrait vidéo", "extraits vidéo")),
+        h("div", { class: "vid-list" }, vids.map(r => h("a", { href: "#/r/" + r.id }, svg("video"), h("span", null, r.titre), svg("chev"))))) : null);
+  }) : [h("div", { class: "empty-box" }, h("strong", null, "Rien pour l'instant"), "Les fiches, cartes et QCM de " + m.nom + " apparaîtront ici dès qu'un chapitre sera ajouté.")];
   return h("div", { class: "view", style: { "--subj": col } },
-    ...stag([topbar("Accueil", "#/"),
-    h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Seconde"), h("h1", null, m.nom)),
-      decksOf(m).length ? h("a", { class: "btn tint", href: "#/cartes/" + m.id }, svg("flashcards"), "Cartes") : null),
-    ...body, addCta(m.id)]));
+    ...stag([topbar("Accueil", "#/", h("a", { class: "mini-add", href: "#/ajouter?m=" + m.id, "aria-label": "J'ajoute un nouveau cours en " + m.nom }, svg("camera"), h("span", null, "Nouveau cours"))),
+    h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Seconde"), h("h1", null, m.nom))),
+    ...body]));
 }
 
 /* ---------------- lecteur ---------------- */
@@ -296,7 +293,7 @@ function vResource(id) {
   if (r.type === "flashcards") { location.replace("#/cartes/" + m.id + "?c=" + encodeURIComponent(x.c.id)); return null; }
   markSeen(r.id);
   document.body.classList.add("immersive");
-  const back = () => (history.length > 1 ? history.back() : go("#/m/" + m.id));
+  const back = () => go("#/m/" + m.id);
   const bar = h("div", { class: "reader-bar" }, h("button", { class: "icon-btn", onclick: back, "aria-label": "Retour" }, svg("back"), h("span", { class: "lbl" }, m.nom)), h("div", { class: "ttl" }, r.titre));
   const body = h("div", { class: "reader-body" });
   const wrap = h("div", { class: "reader", style: { "--subj": subjColor(m) } }, bar, body);
@@ -368,63 +365,61 @@ async function sharePdf(url, title) {
 
 /* ---------------- flashcards : écrans ---------------- */
 let fcMode = lsGet("rev.fcMode", "oral");
+const MODES = [["oral", "mic", "À l'oral", "Tu parles, l'IA te corrige et te lit la correction."], ["rapide", "flashcards", "Dans ma tête", "Tu retournes la carte et tu te notes toi-même."], ["ecrite", "entrainement", "À l'écrit", "Tu écris ta réponse, l'IA te corrige."]];
 function modesBox() {
-  return h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
-    [["oral", "Je réponds à l'oral", "Je parle, l'IA me corrige et me lit la correction"], ["rapide", "Je réponds dans ma tête", "Je retourne la carte et je me note moi-même"], ["ecrite", "J'écris ma réponse", "J'écris, l'IA me corrige"]].map(([md, t, d]) => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
-      md === "oral" ? [svg("mic"), t] : t, h("small", null, d))));
+  const desc = h("p", { class: "seg-desc" }, (MODES.find(x => x[0] === fcMode) || MODES[0])[3]);
+  const seg = h("div", { class: "seg", role: "radiogroup", "aria-label": "Comment tu réponds" },
+    MODES.map(([md, ic, t, d]) => h("button", { type: "button", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of seg.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); desc.textContent = d; } }, svg(ic), t)));
+  return h("div", { class: "modes-box" }, h("div", { class: "lab" }, "Comment tu réponds ?"), seg, desc);
 }
 function vCards() {
-  const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw);
-  const doneToday = P.days[today()] || 0, n = h("span");
+  // Entrée « Cartes » : simple liste des matières qui ont des flashcards.
   const mats = S.matieres.filter(m => decksOf(m).length);
-  const ns = notionStats().slice(0, 6);
   return h("div", { class: "view" }, ...stag([
-    h("header", null, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, "Tes cartes")),
-    h("section", { class: "card", style: { gap: "10px" } }, h("div", { class: "small", style: { fontWeight: 700, color: "var(--ink)" } }, "Comment tu veux réviser ?"), modesBox()),
-    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Choisis ta matière")),
-      mats.length ? h("div", { class: "sec stagger", style: { gap: "10px" } }, stag(mats.map(m => {
-        const st = chapStats(c => deckOf(c).matiere.id === m.id), nch = new Set(decksOf(m).map(d => d.chapitre.id)).size;
-        return h("a", { class: "mat-card", href: "#/cartes/" + m.id, style: { "--subj": subjColor(m) } },
-          h("span", { class: "pic" }, svg(m.pictogramme)),
-          h("span", null, h("h3", null, m.nom), h("div", { class: "meta" }, plural(nch, "chapitre") + " · " + plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : "")), st.due ? h("span", { class: "due-pill" }, st.due + " à revoir") : null),
-          ring(st.n ? st.m / st.n : 0, 52, (st.n ? Math.round(st.m / st.n * 100) : 0) + "%"));
-      }))) : h("div", { class: "empty-box" }, h("strong", null, "Pas encore de cartes"), "Les flashcards arrivent ici à chaque nouveau chapitre.")),
-    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Notions à retravailler")),
-      ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses, " + o.ko + " ratée" + (o.ko > 1 ? "s" : "")))))
-        : h("div", { class: "empty-box" }, h("strong", null, "Rien à signaler"), "Après quelques révisions, les notions qui résistent apparaissent ici."))
+    topbar("Accueil", "#/"),
+    h("header", null, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, "Choisis ta matière")),
+    mats.length ? h("div", { class: "rows" }, mats.map(m => { const st = chapStats(c => deckOf(c).matiere.id === m.id);
+      return h("a", { class: "row-link", href: "#/cartes/" + m.id, style: { "--subj": subjColor(m) } }, h("span", { class: "pic" }, svg(m.pictogramme)), h("span", { class: "grow" }, h("b", null, m.nom), h("small", null, plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : ""))), svg("chev")); }))
+      : h("div", { class: "empty-box" }, h("strong", null, "Pas encore de cartes"), "Les flashcards arrivent ici à chaque nouveau chapitre.")
   ]));
 }
 function vCardsSubject(mid, focus) {
   const m = S.matieres.find(x => x.id === mid);
-  if (!m) return vCards();
+  if (!m) return vHome();
   const col = subjColor(m), dks = decksOf(m);
   const chaps = []; for (const d of dks) if (!chaps.find(c => c.id === d.chapitre.id)) chaps.push(d.chapitre);
   chaps.sort((a, b) => (b.ajoute || "").localeCompare(a.ajoute || ""));
-  const all = chapStats(c => deckOf(c).matiere.id === m.id);
-  const view = h("div", { class: "view", style: { "--subj": col } }, ...stag([
-    topbar("Cartes", "#/cartes"),
-    h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, m.nom), h("div", { class: "small" }, plural(all.n, "carte") + " · " + all.m + " maîtrisée" + (all.m > 1 ? "s" : ""))), ring(all.n ? all.m / all.n : 0, 60, (all.n ? Math.round(all.m / all.n * 100) : 0) + "%")),
-    h("section", { class: "card", style: { gap: "10px" } }, h("div", { class: "small", style: { fontWeight: 700, color: "var(--ink)" } }, "Mode de révision"), modesBox()),
-    ...chaps.map(ch => {
-      const f = c => deckOf(c).chapitre.id === ch.id, st = chapStats(f);
-      const parts = dks.filter(d => d.chapitre.id === ch.id).sort((a, b) => (a.ordre || 99) - (b.ordre || 99));
-      return h("section", { class: "chap-card" + (focus === ch.id ? " focus" : ""), id: "chap-" + ch.id },
-        h("div", { class: "chap-top" }, h("div", null, h("div", { class: "eyebrow" }, isNew(ch.ajoute) ? "Nouveau chapitre" : "Chapitre"), h("h2", null, ch.titre), h("div", { class: "deck-meta", style: { marginTop: "4px" } }, st.n + " cartes · " + st.m + " maîtrisées · " + (st.seen - st.m) + " en cours · " + (st.n - st.seen) + " nouvelles")), ring(st.n ? st.m / st.n : 0, 54, (st.n ? Math.round(st.m / st.n * 100) : 0) + "%")),
-        h("div", { class: "chap-actions" },
-          h("button", { class: "btn", onclick: () => go("#/session?mode=jour&c=" + encodeURIComponent(ch.id)) }, st.due ? "Réviser (" + st.due + " à revoir)" : "Réviser ce chapitre"),
-          h("button", { class: "btn tint", onclick: () => go("#/session?mode=chapitre&c=" + encodeURIComponent(ch.id)) }, "Veille d'interro · tout")),
-        parts.length > 1 ? h("div", { class: "parts" }, parts.map(d => {
-          const s2 = chapStats(c => c.deck === d.id);
-          return h("div", { class: "part" },
-            h("div", { class: "part-main" }, h("span", { class: "t" }, d.titre), d.sousTitre ? h("span", { class: "small" }, d.sousTitre) : null,
-              h("div", { class: "meter" }, h("i", { class: "m", style: { width: (s2.n ? s2.m / s2.n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (s2.n ? (s2.seen - s2.m) / s2.n * 100 : 0) + "%" } })),
-              h("div", { class: "deck-meta" }, s2.n + " cartes" + (s2.due ? " · " + s2.due + " à revoir" : ""))),
-            h("button", { class: "btn quiet", onclick: () => go("#/session?mode=chapitre&deck=" + encodeURIComponent(d.id)) }, "Juste cette partie"));
-        })) : null);
-    })
+  const ch = chaps.find(c => c.id === focus) || (chaps.length === 1 ? chaps[0] : null);
+  if (!ch) {
+    // plusieurs chapitres : on choisit d'abord le chapitre
+    return h("div", { class: "view", style: { "--subj": col } }, ...stag([
+      topbar(m.nom, "#/m/" + m.id),
+      h("header", null, h("div", { class: "eyebrow" }, "Flashcards · " + m.nom), h("h1", null, "Quel chapitre ?")),
+      h("div", { class: "rows" }, chaps.map(c => { const st = chapStats(x => deckOf(x).chapitre.id === c.id);
+        return h("a", { class: "row-link", href: "#/cartes/" + m.id + "?c=" + encodeURIComponent(c.id) }, h("span", { class: "grow" }, h("b", null, c.titre), h("small", null, plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : ""))), svg("chev")); }))
+    ]));
+  }
+  const f = c => deckOf(c).chapitre.id === ch.id, st = chapStats(f);
+  const parts = dks.filter(d => d.chapitre.id === ch.id).sort((a, b) => (a.ordre || 99) - (b.ordre || 99));
+  const nouv = st.n - st.seen, aFaire = Math.min(MAX_SESSION, st.due + Math.min(nouv, Math.max(0, NEW_PER_DAY - newToday())));
+  const pct = st.n ? st.m / st.n : 0;
+  return h("div", { class: "view fc-home", style: { "--subj": col } }, ...stag([
+    topbar(m.nom, "#/m/" + m.id),
+    h("header", null, h("div", { class: "eyebrow" }, "Flashcards · " + m.nom), h("h1", null, ch.titre)),
+    h("section", { class: "card fc-stats" },
+      h("div", { class: "nums" },
+        h("div", null, h("b", null, st.n), h("small", null, "cartes")),
+        h("div", null, h("b", null, st.m), h("small", null, "maîtrisées")),
+        h("div", null, h("b", null, st.due), h("small", null, "à revoir"))),
+      h("div", { class: "bar" }, h("i", { style: { width: (pct * 100) + "%" } }))),
+    modesBox(),
+    h("div", { class: "fc-go" },
+      h("button", { class: "btn big", onclick: () => go("#/session?mode=jour&c=" + encodeURIComponent(ch.id)) }, aFaire ? "Commencer · " + plural(aFaire, "carte") : "Commencer"),
+      h("button", { class: "btn quiet", onclick: () => go("#/session?mode=chapitre&c=" + encodeURIComponent(ch.id)) }, "Tout revoir avant l'interro · " + st.n)),
+    parts.length > 1 ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Ou une seule partie")),
+      h("div", { class: "rows" }, parts.map(d => { const s2 = chapStats(c => c.deck === d.id);
+        return h("a", { class: "row-link", href: "#/session?mode=chapitre&deck=" + encodeURIComponent(d.id) }, h("span", { class: "grow" }, h("b", null, d.titre), h("small", null, plural(s2.n, "carte") + (d.sousTitre ? " · " + d.sousTitre : ""))), svg("chev")); }))) : null
   ]));
-  if (focus) setTimeout(() => { const el = document.getElementById("chap-" + focus); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120);
-  return view;
 }
 
 function vSession(q) {

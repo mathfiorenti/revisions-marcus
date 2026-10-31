@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-31-7",
+  "version": "2026-10-31-8",
   "matieres": [
     {
       "id": "histoire",
@@ -25,7 +25,7 @@
               "id": "hist-fc",
               "type": "flashcards",
               "titre": "Flashcards",
-              "detail": "Athènes et Rome · 76 cartes, uniquement le cours",
+              "detail": "Uniquement le cours",
               "fichier": "contenus/histoire/flashcards.json",
               "decks": [
                 "hist-athenes",
@@ -43,7 +43,7 @@
               "id": "hist-anim",
               "type": "animation",
               "titre": "Athènes en mouvement",
-              "detail": "Fiche animée façon story · voix off, extraits vidéo, quiz",
+              "detail": "Le cours en animation · voix off, extraits vidéo, quiz",
               "fichier": "contenus/histoire/athenes-en-mouvement.html"
             },
             {

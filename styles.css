@@ -503,3 +503,72 @@ body,:root[data-theme="dark"] body,:root[data-theme="light"] body{background:tra
 
 .etat-ok{color:var(--ok)}
 .etat-ko{color:var(--mid)}
+
+/* ===== Interface simplifiée (31/10) ===== */
+/* retour : une pastille bien visible, toujours au même endroit */
+.topbar{justify-content:space-between}
+.back{color:var(--ink);background:var(--glass-2);border:1px solid var(--glass-edge);padding:8px 14px 8px 10px;border-radius:999px;font-size:.95rem;backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);text-decoration:none}
+.back:hover{color:var(--ink);filter:brightness(1.1)}
+/* petit bouton « Nouveau cours », en haut à droite */
+.mini-add{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:.82rem;font-weight:700;color:var(--ink);text-decoration:none;
+  background:var(--glass-2);border:1px solid var(--glass-edge);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+.mini-add svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mini-add:active{transform:scale(.96)}
+.hello{align-items:center;flex-wrap:nowrap}
+.hello .mini-add{flex-shrink:0;align-self:flex-start;margin-top:4px}
+/* supports d'un chapitre : cartouches identiques */
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:6px 14px 16px}
+@media (min-width:640px){.tiles{grid-template-columns:repeat(3,1fr)}}
+.tile{position:relative;display:flex;flex-direction:column;gap:4px;min-height:148px;padding:14px;border-radius:18px;text-decoration:none;color:var(--ink);
+  background-image:linear-gradient(160deg,color-mix(in srgb,var(--kind) 22%,var(--glass-2)),var(--glass) 75%);border:1px solid var(--glass-edge);
+  box-shadow:inset 0 1px 0 rgb(255 255 255 / .22),0 6px 18px rgb(0 0 0 / .18);transition:transform .15s}
+.tile:active{transform:scale(.97)}
+.tile:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tile .ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--kind);color:#fff;margin-bottom:6px;box-shadow:0 6px 16px color-mix(in srgb,var(--kind) 45%,transparent)}
+.tile .ico svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tile .kind{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--kind)}
+:root[data-theme="light"] .tile .kind{filter:brightness(.8)}
+.tile .t{font-weight:700;line-height:1.25;font-size:.98rem}
+.tile .s{font-size:.78rem;color:var(--muted);line-height:1.3;margin-top:auto}
+.tile.unseen::after{content:"";position:absolute;top:12px;right:12px;width:9px;height:9px;border-radius:50%;background:var(--kind);box-shadow:0 0 10px var(--kind)}
+/* vidéos : repliées sous les supports */
+.vids{margin:0 14px 16px;border-radius:14px;border:1px solid var(--line-2);overflow:hidden}
+.vids summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:12px 14px;font-weight:700;font-size:.92rem}
+.vids summary::-webkit-details-marker{display:none}
+.vids summary::after{content:"▾";margin-left:auto;color:var(--muted)}
+.vids[open] summary::after{content:"▴"}
+.vids svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.vid-list a{display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.92rem}
+.vid-list a span{flex:1}
+.vid-list .chev{opacity:.5}
+/* listes simples (matières, chapitres, parties) */
+.rows{display:flex;flex-direction:column;gap:8px}
+.row-link{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;text-decoration:none;color:var(--ink);
+  background-image:linear-gradient(160deg,var(--glass-2),var(--glass));border:1px solid var(--glass-edge);box-shadow:inset 0 1px 0 rgb(255 255 255 / .2)}
+.row-link:active{transform:scale(.98)}
+.row-link .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.row-link small{color:var(--muted);font-size:.8rem}
+.row-link .pic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--subj) 24%,transparent);color:var(--subj)}
+.row-link .pic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.row-link .chev{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;opacity:.5;flex-shrink:0}
+/* écran flashcards d'un chapitre */
+.fc-home h1{font-size:1.7rem}
+.fc-stats{gap:12px;padding:14px 16px}
+.fc-stats .nums{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.fc-stats .nums b{display:block;font-family:var(--display);font-weight:400;font-size:1.7rem;line-height:1.1}
+.fc-stats .nums small{color:var(--muted);font-size:.78rem}
+.fc-stats .bar{height:6px;border-radius:6px;background:var(--line-2);overflow:hidden}
+.fc-stats .bar i{display:block;height:100%;background:var(--subj);border-radius:6px}
+.modes-box{display:flex;flex-direction:column;gap:8px}
+.modes-box .lab{font-weight:700;font-size:.92rem}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-edge)}
+.seg button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;font-size:.82rem;font-weight:700;color:var(--muted);text-align:center}
+.seg button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.seg button[aria-checked="true"]{background:var(--glass-2);color:var(--ink);box-shadow:inset 0 1px 0 rgb(255 255 255 / .25),0 2px 8px rgb(0 0 0 / .2)}
+.seg button[aria-checked="true"] svg{color:var(--subj,var(--accent))}
+.seg button:focus-visible{outline:2px solid var(--accent)}
+.seg-desc{margin:0;font-size:.8rem;color:var(--muted)}
+.fc-go{display:flex;flex-direction:column;gap:8px}
+.fc-go .btn.big{min-height:54px;font-size:1.05rem}
+.fc-go .btn.quiet{min-height:44px}
+.tile .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
