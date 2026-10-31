@@ -232,7 +232,7 @@ function vHome() {
     h("div", { class: "txt" },
       h("div", { class: "big" }, todo === 0 ? (total ? (doneToday ? "Bravo, tout est revu pour aujourd'hui !" : "Rien à revoir aujourd'hui") : "Pas encore de cartes") : (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui")),
       h("div", { class: "stats" }, nw ? h("span", null, h("strong", null, nw), " nouvelle" + (nw > 1 ? "s" : "")) : null, due ? h("span", null, h("strong", null, due), " à revoir") : null, h("span", null, h("strong", null, mastered()), " / " + total + " maîtrisées"))),
-    h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, due && !nw ? "Réviser mes cartes" : nw && !due ? "Découvrir les nouvelles cartes" : "C'est parti")));
+    h("div", { class: "actions" }, h("a", { class: "btn", href: "#/cartes" }, "Réviser mes cartes")));
   const grid = h("div", { class: "subjects stagger" }, stag(S.matieres.map(m => {
     const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute)), dks = decksOf(m);
     const stt = dks.length ? chapStats(c => deckOf(c).matiere.id === m.id) : null;
@@ -365,7 +365,7 @@ async function sharePdf(url, title) {
 let fcMode = lsGet("rev.fcMode", "oral");
 function modesBox() {
   return h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
-    [["oral", "Réponse orale", "Tu réponds à voix haute, l'appli te corrige et te lit la correction"], ["rapide", "Révision rapide", "Dans ta tête, tu retournes, tu te notes"], ["ecrite", "Réponse écrite", "Tu écris, puis tu compares à la carte"]].map(([md, t, d]) => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
+    [["oral", "Je réponds à l'oral", "Je parle, l'IA me corrige et me lit la correction"], ["rapide", "Je réponds dans ma tête", "Je retourne la carte et je me note moi-même"], ["ecrite", "J'écris ma réponse", "J'écris, l'IA me corrige"]].map(([md, t, d]) => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
       md === "oral" ? [svg("mic"), t] : t, h("small", null, d))));
 }
 function vCards() {
@@ -375,12 +375,8 @@ function vCards() {
   const ns = notionStats().slice(0, 6);
   return h("div", { class: "view" }, ...stag([
     h("header", null, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, "Tes cartes")),
-    h("section", { class: "today" },
-      ring(doneToday + todo ? doneToday / (doneToday + todo) : 1, 80, todo ? countUp(n, todo) : "✓"),
-      h("div", { class: "txt" }, h("div", { class: "big" }, todo ? "Les cartes du jour, toutes matières" : "Rien à revoir aujourd'hui"), h("div", { class: "small" }, "Un mélange des cartes à revoir et de nouvelles cartes.")),
-      modesBox(),
-      h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, "Commencer"))),
-    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Par matière")),
+    h("section", { class: "card", style: { gap: "10px" } }, h("div", { class: "small", style: { fontWeight: 700, color: "var(--ink)" } }, "Comment tu veux réviser ?"), modesBox()),
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Choisis ta matière")),
       mats.length ? h("div", { class: "sec stagger", style: { gap: "10px" } }, stag(mats.map(m => {
         const st = chapStats(c => deckOf(c).matiere.id === m.id), nch = new Set(decksOf(m).map(d => d.chapitre.id)).size;
         return h("a", { class: "mat-card", href: "#/cartes/" + m.id, style: { "--subj": subjColor(m) } },
@@ -439,7 +435,7 @@ function vSession(q) {
   document.body.classList.add("immersive");
   const el = {};
   const wrap = h("div", { class: "view fc-wrap" },
-    h("div", { class: "topbar" }, h("button", { class: "back", onclick: () => quit() }, svg("back"), "Quitter"), el.track = h("div", { class: "track" }, h("i")), el.count = h("span", { class: "count" })),
+    h("div", { class: "topbar" }, h("button", { class: "sortie", onclick: () => terminer(), "aria-label": "Terminer la séance" }, svg("close"), "Terminer"), el.track = h("div", { class: "track" }, h("i")), el.count = h("span", { class: "count" })),
     h("div", { class: "stage" }, el.flash = h("div", { class: "flash", role: "button", tabindex: "0", "aria-label": "Retourner la carte", onclick: () => flip() },
       h("div", { class: "face front" }, h("div", { class: "face-top" }, el.chipF = h("span", { class: "chip" }), el.notF = h("span", { class: "notion" })), el.recto = h("p", { class: "recto" }), el.hint = h("div", { class: "hint" })),
       h("div", { class: "face back", "aria-live": "polite" }, h("div", { class: "face-top" }, el.chipB = h("span", { class: "chip" }), h("button", { class: "icon-btn", style: { padding: "4px 6px" }, onclick: e => { e.stopPropagation(); speak(el.verso.textContent); }, "aria-label": "Lire à voix haute" }, svg("speak"))), el.q = h("div", { class: "q" }), el.mine = h("div", { class: "mine" }), el.verso = h("p", { class: "verso" }), el.plus = h("div", { class: "plus" })))),
@@ -477,7 +473,7 @@ function vSession(q) {
     el.answer.hidden = !typed; el.reveal.hidden = typed || oral; el.oral.hidden = !oral; el.grades.hidden = true;
     for (const b of el.grades.children) b.classList.remove("suggere");
     el.hint.textContent = oral ? "Réponds à voix haute." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
-    if (oral) { el.oralTxt.textContent = "Touche le micro et réponds à voix haute"; el.oralTxt.classList.remove("live"); if (mainsLibres()) setTimeout(() => speak(c.recto, () => setTimeout(() => { if (sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped")) micToggle(true); }, 350)), 300); }
+    if (oral) { el.oralTxt.textContent = "Touche le micro et réponds à voix haute"; el.oralTxt.classList.remove("live"); if (mainsLibres()) setTimeout(() => speak(c.recto, () => setTimeout(() => { if (sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped")) micToggle(true); }, 700)), 300); }
     const p = pc(c.id) || { b: 0 }, nb = Math.min(6, (p.b || 0) + 1);
     el.okL.textContent = sess.mode === "chapitre" && p.l && p.d > today() ? "pas de changement" : INT[nb] <= 1 ? "demain" : "dans " + INT[nb] + " j";
     const tot = sess.queue.length; el.count.textContent = Math.min(sess.i + 1, tot) + " / " + tot; el.track.firstChild.style.width = (sess.i / tot * 100) + "%";
@@ -489,7 +485,7 @@ function vSession(q) {
   function micToggle(auto) {
     if (sess.rec) { sess.rec.stop(); return; }
     if (el.flash.classList.contains("flipped")) return;
-    hush(); el.oralTxt.textContent = "Je t'écoute…"; el.oralTxt.classList.add("live"); el.micBtn.classList.add("on");
+    hush(); el.oralTxt.textContent = "Je t'écoute… parle, puis touche le micro quand tu as fini"; el.oralTxt.classList.add("live"); el.micBtn.classList.add("on");
     sess.rec = ecouter({
       onInterim: t => { el.oralTxt.textContent = "« " + t + " »"; },
       onFinal: t => { sess.rec = null; el.micBtn.classList.remove("on"); el.oralTxt.classList.remove("live");
@@ -573,14 +569,15 @@ function vSession(q) {
       h("div", null, h("div", { class: "eyebrow" }, "Session terminée"), h("h2", { style: { fontSize: "1.6rem", marginTop: "4px" } }, !n ? "Session vide" : r.ok / n >= .85 ? "Excellent, tu maîtrises" : r.ok / n >= .6 ? "Bien joué" : "Tu progresses, continue demain")),
       h("div", { class: "tally" }, h("div", { class: "ok" }, h("b", null, r.ok), "Je savais"), h("div", { class: "mid" }, h("b", null, r.mid), "Presque"), h("div", { class: "ko" }, h("b", null, r.ko), "À revoir")),
       sess.missed.length ? h("div", null, h("p", { class: "small", style: { margin: "0 0 8px" } }, "Les cartes ratées reviennent demain :"), h("ul", { class: "missed" }, sess.missed.map(id => { const c = S.cards[id]; return c ? h("li", null, c.recto, h("span", null, c.verso)) : null; }))) : null,
-      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { const b = sess.back; sess = null; go(b); } }, "Retour aux cartes"))));
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { const b = sess.back; sess = null; go(b); } }, "Retour aux cartes"), h("a", { class: "btn quiet", href: "#/", onclick: () => { sess = null; } }, "Accueil"))));
     window.scrollTo({ top: 0 });
   }
   function quit() { logSession(); const b = sess.back; sess = null; hush(); go(b); }
+  function terminer() { stopEcoute(); hush(); const r = sess.res; if (r.ok + r.mid + r.ko) finish(); else quit(); }
   const onKey = e => {
     if (!sess || wrap.hidden) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
     if (e.key === " " || e.key === "Enter") { if (!el.flash.classList.contains("flipped")) { e.preventDefault(); flip(); } }
-    else if (e.key === "1") grade("ko"); else if (e.key === "2") grade("mid"); else if (e.key === "3") grade("ok"); else if (e.key === "Escape") quit();
+    else if (e.key === "1") grade("ko"); else if (e.key === "2") grade("mid"); else if (e.key === "3") grade("ok"); else if (e.key === "Escape") terminer();
   };
   document.addEventListener("keydown", onKey);
   cleanup = () => { document.removeEventListener("keydown", onKey); if (sess && sess.rec) sess.rec.abort(); hush(); };
@@ -589,17 +586,52 @@ function vSession(q) {
 }
 
 /* ---------------- voix ---------------- */
-function frVoice() { try { const vs = speechSynthesis.getVoices() || []; const fr = vs.filter(v => /^fr/i.test(v.lang)); return fr.find(v => /fr[-_]FR/i.test(v.lang) && /(Amélie|Audrey|Marie|Thomas|Google|Premium|Enhanced|Natural)/i.test(v.name)) || fr.find(v => /fr[-_]FR/i.test(v.lang)) || fr[0] || null; } catch (e) { return null; } }
-function speak(t, onend) {
-  let done = false; const fin = () => { if (done) return; done = true; onend && onend(); };
-  if (!("speechSynthesis" in window) || !t) { setTimeout(fin, 0); return; }
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; const v = frVoice(); if (v) u.voice = v; u.rate = 1.02; u.onend = fin; u.onerror = fin; speechSynthesis.speak(u);
-    setTimeout(fin, 1500 + t.length * 85); } catch (e) { setTimeout(fin, 0); }
+let voixFr = null;
+function frVoice() {
+  if (voixFr) return voixFr;
+  try {
+    const vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang));
+    const score = v => (/fr[-_]FR/i.test(v.lang) ? 4 : 0) + (/(premium|enhanced|am[ée]lior|natural|neural|siri)/i.test(v.name + " " + v.voiceURI) ? 10 : 0) + (/(Amélie|Audrey|Thomas|Marie|Aurélie|Google)/i.test(v.name) ? 2 : 0) - (/(compact|eloquence|grandma|grandpa|jacques|eddy|flo|reed|rocko|sandy|shelley)/i.test(v.name + " " + v.voiceURI) ? 8 : 0);
+    voixFr = vs.sort((a, b) => score(b) - score(a))[0] || null;
+  } catch (e) {}
+  return voixFr;
 }
-function hush() { try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
+if ("speechSynthesis" in window) { try { speechSynthesis.getVoices(); speechSynthesis.addEventListener("voiceschanged", () => { voixFr = null; frVoice(); }); } catch (e) {} }
+function morceaux(t) {
+  const out = [];
+  for (const ph of String(t).replace(/\s+/g, " ").match(/[^.!?…]+[.!?…]*|[.!?…]+/g) || []) {
+    let p = ph.trim(); if (!p) continue;
+    while (p.length > 180) { let k = p.lastIndexOf(", ", 170); if (k < 60) k = p.lastIndexOf(" ", 170); if (k < 60) k = 170; out.push(p.slice(0, k + 1).trim()); p = p.slice(k + 1).trim(); }
+    if (p) out.push(p);
+  }
+  return out;
+}
+let lectureId = 0;
+function speak(t, onend) {
+  const id = ++lectureId; let done = false;
+  const fin = () => { if (done) return; done = true; if (id === lectureId) onend && onend(); };
+  if (!("speechSynthesis" in window) || !t) { setTimeout(fin, 0); return; }
+  try { speechSynthesis.cancel(); } catch (e) {}
+  const parts = morceaux(t), v = frVoice();
+  let k = 0, garde = null;
+  const suivant = () => {
+    clearTimeout(garde);
+    if (id !== lectureId) return;
+    if (k >= parts.length) { fin(); return; }
+    const txt = parts[k++];
+    try {
+      const u = new SpeechSynthesisUtterance(txt); u.lang = "fr-FR"; if (v) u.voice = v; u.rate = 1; u.pitch = 1;
+      u.onend = suivant; u.onerror = suivant;
+      speechSynthesis.speak(u);
+      garde = setTimeout(suivant, 2500 + txt.length * 90);
+    } catch (e) { suivant(); }
+  };
+  setTimeout(suivant, 60);
+}
+function hush() { lectureId++; try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
 
 /* ---------------- ajouter un cours (photos → cartes + fiche) ---------------- */
-let pendingCache = lsGet("rev.demandes", []);
+let pendingCache = lsGet("rev.demandes", []); if (!Array.isArray(pendingCache)) pendingCache = [];
 function addCta(mid) {
   const pend = pendingCache.filter(d => d.statut === "en_attente" || d.statut === "en_cours").length;
   return h("a", { class: "add-cta", href: "#/ajouter" + (mid ? "?m=" + mid : "") },
@@ -609,7 +641,7 @@ function addCta(mid) {
 }
 async function refreshDemandes() {
   if (!SYNC.code || !navigator.onLine) return pendingCache;
-  try { pendingCache = await rpc("lister_demandes", { code: SYNC.code }) || []; lsSet("rev.demandes", pendingCache); } catch (e) {}
+  try { const d = await rpc("lister_demandes", { code: SYNC.code }); if (Array.isArray(d)) { pendingCache = d; lsSet("rev.demandes", d); } } catch (e) {}
   return pendingCache;
 }
 function compressImage(file, max = 1800, q = .72) {
@@ -689,17 +721,22 @@ function vAdd(mPre) {
 
 /* ---------------- réponse orale : écoute en français et correction ---------------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-function ecouter({ onInterim, onFinal, onError }) {
+function ecouter({ onInterim, onFinal, onError, silence = 2600 }) {
   if (!SR) { onError && onError("absent"); return null; }
-  const r = new SR(); r.lang = "fr-FR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
-  let txt = "", fini = false;
-  const finir = () => { if (fini) return; fini = true; clearTimeout(garde); onFinal && onFinal(txt.trim()); };
-  r.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript; txt = t; onInterim && onInterim(t); };
-  r.onerror = e => { if (e.error === "no-speech" || e.error === "aborted") return; fini = true; clearTimeout(garde); onError && onError(e.error); };
-  r.onend = finir;
-  const garde = setTimeout(() => { try { r.stop(); } catch (e) {} setTimeout(finir, 800); }, 15000);
-  try { r.start(); } catch (e) { fini = true; clearTimeout(garde); onError && onError("start"); return null; }
-  return { stop: () => { try { r.stop(); } catch (e) {} }, abort: () => { fini = true; clearTimeout(garde); try { r.abort(); } catch (e) {} } };
+  let base = "", courant = "", fini = false, parle = false, r = null, tSilence = null, relances = 0;
+  const total = () => (base + " " + courant).replace(/\s+/g, " ").trim();
+  const garde = setTimeout(() => finir(), 45000);
+  function finir() { if (fini) return; fini = true; clearTimeout(garde); clearTimeout(tSilence); try { r && r.stop(); } catch (e) {} setTimeout(() => onFinal && onFinal(total()), 250); }
+  function armerSilence() { clearTimeout(tSilence); if (parle) tSilence = setTimeout(finir, silence); }
+  function lancer() {
+    r = new SR(); r.lang = "fr-FR"; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+    r.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + " "; courant = t; if (t.trim()) parle = true; onInterim && onInterim(total()); armerSilence(); };
+    r.onerror = e => { if (fini) return; if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") { fini = true; clearTimeout(garde); onError && onError(e.error); } };
+    r.onend = () => { if (fini) return; base = total(); courant = ""; if (relances++ < 12) { try { lancer(); } catch (e) { finir(); } } else finir(); };
+    r.start();
+  }
+  try { lancer(); } catch (e) { fini = true; clearTimeout(garde); onError && onError("start"); return null; }
+  return { stop: finir, abort: () => { fini = true; clearTimeout(garde); clearTimeout(tSilence); try { r && r.abort(); } catch (e) {} } };
 }
 const STOP = new Set("alors aussi autre autres avant avec avoir bien cela celle celles celui cette ceux chaque comme comment dans depuis donc elle elles entre etre fait faire grand grande leur leurs mais meme moins notre nous parce pendant peut plus pour pourquoi quand quel quelle quelles quels sans selon sont sous tous tout toute toutes tres une unes vers votre vous apres ainsi avait etait sera sont ont deux trois premier premiere dont celui ceci".split(" "));
 function normTxt(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
