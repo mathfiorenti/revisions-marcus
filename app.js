@@ -708,6 +708,9 @@ function confetti() {
   requestAnimationFrame(step);
 }
 
+/* reflet qui suit le doigt */
+document.addEventListener("pointermove", e => { const t = e.target.closest && e.target.closest(".subject,.mat-card,.add-cta"); if (!t) return; const r = t.getBoundingClientRect(); t.style.setProperty("--mx", (e.clientX - r.left) + "px"); t.style.setProperty("--my", (e.clientY - r.top) + "px"); }, { passive: true });
+
 /* ---------------- démarrage ---------------- */
 applyTheme();
 splash();
