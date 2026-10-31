@@ -298,7 +298,7 @@ function vResource(id) {
     let zoom = 0;
     const pages = h("div", { class: "pages zoom-0" }, h("div", { class: "loading" }, "Ouverture de la fiche…"));
     bar.append(
-      h("button", { class: "icon-btn", onclick: () => { zoom = 1 - zoom; pages.className = "pages zoom-" + zoom; } }, svg("zoom"), h("span", { class: "lbl" }, "Zoom")),
+      h("button", { class: "icon-btn", onclick: () => { zoom = 1 - zoom; pages.className = "pages zoom-" + zoom; if (pages._redraw) setTimeout(pages._redraw, 50); } }, svg("zoom"), h("span", { class: "lbl" }, "Zoom")),
       h("button", { class: "icon-btn", onclick: () => sharePdf(url, r.titre) }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
     body.append(pages);
     renderPdf(url, pages);
@@ -318,23 +318,34 @@ function loadPdfLib() {
   return pdfLib;
 }
 async function renderPdf(url, box) {
-  let cancelled = false; cleanup = () => { cancelled = true; };
+  let cancelled = false, io = null;
+  cleanup = () => { cancelled = true; if (io) io.disconnect(); };
   try {
     const lib = await loadPdfLib();
     const doc = await lib.getDocument({ url, isEvalSupported: false }).promise;
     if (cancelled) return;
     box.replaceChildren();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const target = Math.min(Math.max(box.clientWidth || innerWidth, 600), 1300) * dpr;
+    const first = await doc.getPage(1), ratio = first.getViewport({ scale: 1 }).height / first.getViewport({ scale: 1 }).width;
+    const slots = [];
     for (let i = 1; i <= doc.numPages; i++) {
-      if (cancelled) return;
-      const page = await doc.getPage(i);
-      const base = page.getViewport({ scale: 1 });
-      const vp = page.getViewport({ scale: target / base.width });
-      const cv = h("canvas", { width: Math.floor(vp.width), height: Math.floor(vp.height), "aria-label": "Page " + i });
-      box.append(cv);
-      await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+      const slot = h("div", { class: "pg", style: { "aspect-ratio": "1 / " + ratio.toFixed(4) }, "data-n": i, role: "img", "aria-label": "Page " + i + " sur " + doc.numPages }, h("span", { class: "pg-n" }, i));
+      box.append(slot); slots.push(slot);
     }
+    const draw = async slot => {
+      if (slot.dataset.state) return; slot.dataset.state = "drawing";
+      const page = await doc.getPage(+slot.dataset.n); if (cancelled) return;
+      const base = page.getViewport({ scale: 1 }), dpr = Math.min(devicePixelRatio || 1, 2);
+      const w = Math.min(slot.clientWidth * dpr, 1800);
+      const vp = page.getViewport({ scale: w / base.width });
+      const cv = h("canvas", { width: Math.floor(vp.width), height: Math.floor(vp.height) });
+      await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+      if (cancelled || slot.dataset.state !== "drawing") { cv.width = cv.height = 0; return; }
+      slot.replaceChildren(cv); slot.dataset.state = "done";
+    };
+    const free = slot => { const cv = slot.querySelector("canvas"); if (cv) { cv.width = cv.height = 0; slot.replaceChildren(h("span", { class: "pg-n" }, slot.dataset.n)); } delete slot.dataset.state; };
+    io = new IntersectionObserver(es => { for (const e of es) { if (e.isIntersecting) draw(e.target); else if (Math.abs(e.boundingClientRect.top) > innerHeight * 4) free(e.target); } }, { root: box.closest(".reader-body"), rootMargin: "150% 0px" });
+    slots.forEach(s => io.observe(s));
+    box._redraw = () => slots.forEach(s => { free(s); io.unobserve(s); io.observe(s); });
   } catch (e) {
     box.replaceChildren(h("div", { class: "loading" }, "Impossible d'afficher la fiche ici. ", h("a", { href: url, target: "_blank" }, "Ouvrir le PDF")));
   }

@@ -765,7 +765,7 @@ const bars=[...prog.querySelectorAll('b')];
  p.innerHTML=h;
 })();
 /* extraits vidéo */
-const B="/_blob/";
+const B="medias/";
 const CLIPS={
  "mediques":{v:"44d88b4240599654852462cbeb16d5ce",p:"fd96c6660e0ae9e039d4ab4dafacd599",t:"La bataille de Salamine",d:"46 s",s:"Coursitout, « Histoire - La bataille de Salamine », YouTube, 2021",k:["Le détroit est trop étroit : la flotte perse, plus nombreuse, ne peut plus manœuvrer.","Les trières athéniennes, rapides et munies d'un éperon, font la différence.","Pour ton cours : la puissance d'Athènes sera maritime."]},
  "demo":{v:"eded0e5c57d177bb0b27a0e38d76c963",p:"f84bc4f4d147cf189ed221fab0568d2a",t:"Boulè, Ecclésia, Héliée",d:"1 min",s:"Julien Ferrand, « La démocratie athénienne en 180 secondes », YouTube, 2022",k:["Boulè : 500 citoyens tirés au sort préparent les lois.","Ecclésia : tous les citoyens, sur la Pnyx, votent les lois, la guerre et la paix.","Héliée : le tribunal, des citoyens tirés au sort."],w:"Vidéo pensée pour la 6e, donc simplifiée. Ton cours retient environ 40 000 citoyens."},
@@ -785,7 +785,7 @@ function openClip(key){const c=CLIPS[key];if(!c)return;
   const ul=document.getElementById('vlist');ul.textContent='';
   c.k.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li)});
   const w=document.getElementById('vwarn');w.hidden=!c.w;w.textContent=c.w||'';
-  vplayer.poster=B+c.p;vplayer.src=B+c.v;vlayer.hidden=false;vlayer.scrollTop=0;
+  vplayer.poster=B+c.p+".jpg";vplayer.src=B+c.v+".mp4";vlayer.hidden=false;vlayer.scrollTop=0;
   const pr=vplayer.play();if(pr&&pr.catch)pr.catch(()=>{});
   document.getElementById('vclose').focus({preventScroll:true});}
 function closeClip(){vplayer.pause();vplayer.removeAttribute('src');vplayer.load();vlayer.hidden=true;if(wasPlaying)setPlaying(true)}
@@ -793,12 +793,12 @@ document.getElementById('vclose').onclick=e=>{e.stopPropagation();closeClip()};
 vlayer.addEventListener('click',e=>e.stopPropagation());
 vbtn.onclick=e=>{e.stopPropagation();openClip(scenes[cur].dataset.key)};
 function updateVbtn(){const c=CLIPS[scenes[cur].dataset.key];vbtn.hidden=!c;
-  if(c){document.getElementById('vbtnTxt').textContent='Vidéo · '+c.d;document.getElementById('vbarTitle').textContent=c.t;document.getElementById('vbarImg').src=B+c.p;
+  if(c){document.getElementById('vbtnTxt').textContent='Vidéo · '+c.d;document.getElementById('vbarTitle').textContent=c.t;document.getElementById('vbarImg').src=B+c.p+".jpg";
     vbtn.style.animation='none';void vbtn.offsetWidth;vbtn.style.animation=''}}
 Object.keys(CLIPS).forEach(k=>{const sc=document.querySelector('.scene[data-key="'+k+'"]');if(sc)sc.classList.add('hasclip')});
 (function(){const th=document.getElementById('thumbs');
   Object.entries(CLIPS).forEach(([k,c])=>{const b=document.createElement('button');b.className='thumb';
-    const im=document.createElement('img');im.alt='';im.loading='lazy';im.src=B+c.p;b.appendChild(im);b.append(c.t);
+    const im=document.createElement('img');im.alt='';im.loading='lazy';im.src=B+c.p+".jpg";b.appendChild(im);b.append(c.t);
     b.onclick=e=>{e.stopPropagation();openClip(k)};th.appendChild(b)})})();
 /* gestes : glisser pour changer de scène, appui long pour mettre en pause */
 let tx=0,ty=0,tt=0,hold=null,held=false;
@@ -809,19 +809,19 @@ stage.addEventListener('touchend',e=>{clearTimeout(hold);if(!vlayer.hidden||e.ta
   if(held){held=false;setPlaying(true);swallow=true;return}
   const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;
   if(started&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.3&&Date.now()-tt<700){swallow=true;dx<0?go(cur+1):go(cur-1)}});
-const VOICE={"intro":["8091395ebe453d2fbaf8ac6c4ec85113",9.6],"cites":["d79149c74465d7e7ff5780d3c0800a2d",16.5],"mediques":["98b0bc7eec28ffa06facfce619da6554",15.5],"delos":["63b49cdf957fa2422963a27d6e9f75a4",15.7],"cp1":["51da093281a67723537be03d03f3439d",5.2],"demo":["2eecc624cec65260df0a1e4cc5b29b2c",15.7],"pericles":["14223d469652abb6e75037cee72e4bbb",14.2],"cp2":["cc73ed741350bc0ecbe473936fa1920f",3.9],"citoyens":["2464775332760477cf37a08f0e5f1fc4",12.5],"declin":["d57b849d3781650ada49af594ddf854d",15.0],"cp3":["15201feb0e713a02f51aaf37df6bdb64",3.4],"rome":["a75248a4508062add0c2e8f10a637123",10.3],"conquetes":["3b018356ffbcab3957b2574abbb2a7ab",15.0],"echanges":["95b31f1757db839924f5c2696b2bea90",12.6],"cp4":["930c55711a5c8f16f703a77822e3e6be",4.9],"republique":["cbcb197609952da10a0b30be9e093c5b",15.2],"auguste":["d59e8ec944d9bd048458fe0b15142edf",18.5],"integration":["fe0a1f8655bb1394a5b740c3b25edc73",13.3],"cp5":["adebacbe5d602137623cfe95447275f4",3.6],"constantin":["68e8f250336968e1ee960f2bd858c7c5",18.4],"fin":["3ca3ed988a6b1a8794330324e7b3ed61",14.5],"cp6":["c787494500fa76864616bcd1b3851a5b",3.8],"bilan":["2152670177dc34b17726712485a5cd9f",11.8],"ok1":["6dca04ff14f0ad3222ac9d761796b82a",1.0],"ok2":["67a3dc8f7adbb724a986edfcdbb574c5",0.9],"ok3":["9ca122ff2dc82da5f777393214ff33fb",0.8],"ko1":["eec850df91fe9be508df123745c96b4a",0.9],"ko2":["56a3d24561dd687ad24eaab5b4fcd51f",1.7],"done":["add1bbad97e5e73fe1e307ca329655a4",1.5]};
+const VOICE={"intro":["bdbb8031a404826843f28e41023af733",10.6],"cites":["6d9c75718cb6cba83c2aa437ea2aa216",14.4],"mediques":["75a046b531fe9bf681bfe3cc11157262",14.8],"delos":["7e76232723f9ff583d26095d6be85bf5",16.0],"cp1":["8d2dfe72e9c7a572b67d41df2ebe1b7b",4.5],"demo":["967c7477740a3f55323a91b95327cd81",16.4],"pericles":["5ada028f2a46ed2ba4af765c4f3112bb",14.6],"cp2":["070bb33ff597c5dad1d60f9319388ae9",3.7],"citoyens":["3122ad292b9b8a3f0948e4caf6244b1f",12.1],"declin":["f7d28d017e58b2c5e40e703350e02225",14.2],"cp3":["7000c09a60dc9594b03411f2f1c140af",3.0],"rome":["f55904563d21285206dad9c70240c717",10.0],"conquetes":["7f80b82d2a91609675710833e2e19ad9",14.7],"echanges":["88b59d3f20317fc80118facfcdc4670f",12.4],"cp4":["622a548949fcea231a4330c7ec048de8",4.3],"republique":["03e5aa8093246608162e6af9c90c6090",14.9],"auguste":["bfad3e4e04478e257f2688f11569901d",16.9],"integration":["f4fd035f134b38cbbf95ef4bb9bb404e",12.6],"cp5":["1f993cee3f0ab71d8d31f69d6d8d30ec",3.4],"constantin":["9854f89854dd8540cd80c728ff3bcb8d",15.7],"fin":["d03017eee75710ca8cec55328fcc83e1",12.1],"cp6":["2fe9cd61593bbbad4376e00f00fb2217",3.4],"bilan":["0416f3a6007286605a4efbef5a2e7dfd",10.7],"ok1":["cc581bd23368ea65ab9df865b4aa3574",1.0],"ok2":["34f63a56b75a12531561b54020364dad",1.1],"ok3":["32a72a5a345022c2565a08b34a35d7bd",1.0],"ko1":["5a98220558d1c482171dea022d0d5e0c",1.2],"ko2":["efaedda6c14b4ba29d8075e3ddb8382a",1.0],"done":["649090753238987398add7826c2b7c4c",1.5]};
 /* ===== voix ===== */
 let started=false,voiceOn=false,voiceDone=true,voiceEndAt=0;
 const vo=new Audio();vo.preload='auto';const fx=new Audio();fx.preload='auto';
 vo.addEventListener('ended',()=>{voiceDone=true;voiceEndAt=performance.now();const cb=vo._cb;vo._cb=null;cb&&cb()});
 vo.addEventListener('error',()=>{voiceDone=true;voiceEndAt=0;const cb=vo._cb;vo._cb=null;cb&&cb()});
 function say(key,cb){const v=VOICE[key];if(!voiceOn||!v){voiceDone=true;cb&&cb();return}
-  voiceDone=false;vo._cb=cb||null;vo.src='/_blob/'+v[0];
+  voiceDone=false;vo._cb=cb||null;vo.src='medias/'+v[0]+'.mp4';
   if(playing&&vlayer.hidden){const pr=vo.play();if(pr&&pr.catch)pr.catch(()=>{voiceDone=true;const c=vo._cb;vo._cb=null;c&&c()})}}
 function stopVoice(){vo._cb=null;try{vo.pause()}catch(e){}voiceDone=true;voiceEndAt=0}
 function voiceReady(now){return !voiceOn||(voiceDone&&now-voiceEndAt>900)}
 function effT(i){const T=+scenes[i].dataset.t,v=VOICE[scenes[i].dataset.voice];return voiceOn&&v?Math.max(T,v[1]*1000+1300):T}
-function sayFx(keys){if(!voiceOn)return;const k=keys[Math.floor(Math.random()*keys.length)];fx.src='/_blob/'+VOICE[k][0];const pr=fx.play();if(pr&&pr.catch)pr.catch(()=>{})}
+function sayFx(keys){if(!voiceOn)return;const k=keys[Math.floor(Math.random()*keys.length)];fx.src='medias/'+VOICE[k][0]+'.mp4';const pr=fx.play();if(pr&&pr.catch)pr.catch(()=>{})}
 /* sons courts (WebAudio) */
 let actx=null;
 function blip(ok){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime;
