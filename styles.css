@@ -609,3 +609,7 @@ a.back:hover{color:var(--ink);filter:brightness(1.1)}
 .flash.fantome .face.front{display:none}
 .flash.fantome .face.back{transform:none;visibility:visible}
 @media (prefers-reduced-motion:reduce){.pile.bump{animation:none}}
+/* micro qui attend un toucher (iPhone) */
+.mic.attente{animation:micAttente 1.2s ease-in-out infinite}
+@keyframes micAttente{50%{transform:scale(1.08);box-shadow:0 0 0 10px color-mix(in srgb,var(--accent) 22%,transparent)}}
+@media (prefers-reduced-motion:reduce){.mic.attente{animation:none}}

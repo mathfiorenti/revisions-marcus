@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 19 h 30"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 19 h 50"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -475,7 +475,13 @@ function vSession(q) {
     el.answer.hidden = !typed; el.reveal.hidden = typed || oral; el.oral.hidden = !oral; el.grades.hidden = true;
     for (const b of el.grades.children) b.classList.remove("suggere");
     el.hint.textContent = oral ? "Réponds à voix haute." : fcMode === "oral" && !SR ? "Ce navigateur ne permet pas la dictée (utilise Chrome ou Edge) : écris ta réponse ci-dessous." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
-    if (oral) { el.oralTxt.textContent = "Touche le micro et réponds à voix haute"; el.oralTxt.classList.remove("live"); if (mainsLibres()) setTimeout(() => speak(c.recto, () => setTimeout(() => { if (sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped")) micToggle(true); }, 700)), 300); }
+    if (oral) {
+      // Mode oral : l'appli lit la question, puis ouvre le micro toute seule (sur iPhone, si le micro refuse
+      // de s'ouvrir sans toucher, le bouton micro clignote et Marcus le touche).
+      el.oralTxt.textContent = "Écoute la question…"; el.oralTxt.classList.remove("live"); el.micBtn.classList.remove("attente");
+      const memeCarte = () => sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped") && !sess.rec;
+      setTimeout(() => { if (!memeCarte()) return; speak(c.recto, () => setTimeout(() => { if (memeCarte()) micToggle(true); }, 250)); }, 350);
+    }
     const p = pc(c.id) || { b: 0 }, nb = Math.min(6, (p.b || 0) + 1);
     el.okL.textContent = sess.mode === "chapitre" && p.l && p.d > today() ? "pas de changement" : INT[nb] <= 1 ? "demain" : "dans " + INT[nb] + " j";
     const reste = sess.queue.length - sess.i - 1; el.stage.dataset.reste = reste > 2 ? "2" : String(Math.max(0, reste));
@@ -489,7 +495,7 @@ function vSession(q) {
   function micToggle(auto) {
     if (sess.rec) { sess.rec.stop(); return; }
     if (el.flash.classList.contains("flipped")) return;
-    hush(); el.oralTxt.textContent = "Une seconde…"; el.oralTxt.classList.remove("live"); el.micBtn.classList.add("prep");
+    hush(); el.micBtn.classList.remove("attente"); el.oralTxt.textContent = "Une seconde…"; el.oralTxt.classList.remove("live"); el.micBtn.classList.add("prep");
     sess.rec = ecouter({
       onStart: () => { el.micBtn.classList.remove("prep"); el.micBtn.classList.add("on"); el.oralTxt.classList.add("live"); if (!/«/.test(el.oralTxt.textContent)) el.oralTxt.textContent = "À toi ! Je t'écoute… puis fais une pause ou touche le micro"; try { navigator.vibrate && navigator.vibrate(30); } catch (e) {} },
       onInterim: t => { el.micBtn.classList.remove("prep"); el.micBtn.classList.add("on"); el.oralTxt.classList.add("live"); el.oralTxt.textContent = "« " + t + " »"; },
@@ -498,6 +504,7 @@ function vSession(q) {
         corrigerOral(t); },
       onError: err => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
         if (err === "not-allowed" || err === "service-not-allowed") {
+          if (auto) { el.micBtn.classList.add("attente"); el.oralTxt.textContent = "À toi ! Touche le micro pour répondre."; return; }
           // iPhone : soit l'autorisation micro est refusée, soit la dictée d'Apple est coupée / indisponible dans l'appli installée.
           const ordi = DEVICE === "Ordinateur";
           el.oralTxt.replaceChildren(h("span", null, ordi
@@ -508,7 +515,8 @@ function vSession(q) {
             h("button", { class: "btn quiet", type: "button", style: { marginTop: "10px" }, onclick: () => { fcMode = "ecrite"; show(); } }, "J'écris ma réponse à la place"));
           return;
         }
-        el.oralTxt.textContent = auto ? "Touche le micro pour répondre." : "Le micro n'a pas démarré (" + err + "). Touche-le encore une fois."; }
+        if (auto) el.micBtn.classList.add("attente");
+        el.oralTxt.textContent = auto ? "À toi ! Touche le micro pour répondre." : "Le micro n'a pas démarré (" + err + "). Touche-le encore une fois."; }
     });
   }
   function corrigerOral(t) {
@@ -559,7 +567,6 @@ function vSession(q) {
   }
   function grade(g, toucher) {
     if (!el.flash.classList.contains("flipped")) return;
-    const ecouterEnsuite = toucher && fcMode === "oral" && !!SR;
     const id = sess.queue[sess.i], t = today();
     const p = Object.assign({ b: 0, d: null, ok: 0, ko: 0, mid: 0, l: null }, pc(id) || {}); const fresh = !p.l;
     const scheduled = sess.mode === "jour" || fresh || !p.d || p.d <= t;
@@ -571,8 +578,7 @@ function vSession(q) {
     if (g === "ko") { if (!sess.missed.includes(id)) sess.missed.push(id); sess.again[id] = (sess.again[id] || 0) + 1; if (sess.again[id] <= 2) sess.queue.push(id); }
     stopEcoute(); hush(); saveLocal();
     envol(g); next();
-    // iPad / iPhone : le micro ne peut s'ouvrir que pendant un toucher, on l'ouvre donc tout de suite pour la carte suivante
-    if (ecouterEnsuite && sess && !wrap.hidden && !el.flash.classList.contains("flipped")) micToggle(true);
+
   }
   function peindrePiles(bump) {
     for (const g of ["ko", "mid", "ok"]) {
