@@ -596,7 +596,7 @@ function frVoice() {
   if (voixFr) return voixFr;
   try {
     const vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang));
-    const choix = lsGet("rev.voix", ""); const pref = choix && vs.find(v => v.voiceURI === choix || v.name === choix);
+    const choix = choixVoix().startsWith("dev:") ? choixVoix().slice(4) : lsGet("rev.voix", ""); const pref = choix && vs.find(v => v.voiceURI === choix || v.name === choix);
     if (pref) return (voixFr = pref);
     const score = v => (/fr[-_]FR/i.test(v.lang) ? 4 : 0) + (/(premium|enhanced|am[ée]lior|natural|neural|siri)/i.test(v.name + " " + v.voiceURI) ? 10 : 0) + (/(Amélie|Audrey|Thomas|Marie|Aurélie|Google)/i.test(v.name) ? 2 : 0) - (/(compact|eloquence|grandma|grandpa|jacques|eddy|flo|reed|rocko|sandy|shelley)/i.test(v.name + " " + v.voiceURI) ? 8 : 0);
     voixFr = vs.sort((a, b) => score(b) - score(a))[0] || null;
@@ -618,15 +618,55 @@ function morceaux(t) {
 let lectureId = 0, voixDebloquee = false;
 // Sur iPhone et iPad, la synthèse vocale n'a le droit de parler qu'après un premier son déclenché par un toucher :
 // on la « débloque » silencieusement dès le premier geste, pour que les corrections soient ensuite lues automatiquement.
+const lecteur = new Audio(); lecteur.preload = "auto"; lecteur.setAttribute("playsinline", "");
+const SILENCE = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD8nKVOWfh+UlK3z/177OXrfOdKl7pyn3Xf//WreyTRUoAWgBgkOAGbZHBgG1OF6zM82DWbZaUmMBptgQhGjsyYqc9ae9XFz280948NMBWInljyzsNRFLPWdnZGWrddDsjK1unuSrVN9jJsK8KuQtQCtMBjCEtImISdNKJOopIpBFpNSMbIHCSRpRR5iakjTiyzLhchUUBwCgyKiweBv/7UsQbg8isVNoMPMjAAAA0gAAABEVFGmgqK////9bP/6XCykxBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+let lecteurDebloque = false;
 function debloquerVoix() {
+  if (!lecteurDebloque) { try { lecteur.src = SILENCE; const pr = lecteur.play(); lecteurDebloque = true; if (pr && pr.catch) pr.catch(() => { lecteurDebloque = false; }); } catch (e) {} }
   if (voixDebloquee || !("speechSynthesis" in window)) return;
   try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "fr-FR"; speechSynthesis.speak(u); voixDebloquee = true; } catch (e) {}
+}
+/* Voix naturelles en ligne (Google, voix Chirp 3 HD) via la fonction « voix » ; repli sur la voix de l'appareil. */
+const VOIX_NAT = { femmes: ["Aoede", "Kore", "Leda", "Zephyr"], hommes: ["Charon", "Puck", "Orus", "Fenrir"] };
+let voixNatOK = null; // null = inconnu (réessayé à chaque ouverture), true/false
+const cacheAudio = new Map();
+function choixVoix() { return lsGet("rev.voixMode", "nat:Aoede"); }
+async function audioNaturel(t) {
+  const mode = choixVoix(); if (!mode.startsWith("nat:") || voixNatOK === false || !SYNC.code || !navigator.onLine) return null;
+  const cle = mode + "|" + t; if (cacheAudio.has(cle)) return cacheAudio.get(cle);
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 6000);
+  try {
+    const r = await fetch(CFG.supabaseUrl + "/functions/v1/voix", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey }, body: JSON.stringify({ code: SYNC.code, texte: t, voix: mode.slice(4) }) });
+    clearTimeout(to);
+    if (r.status === 503) { voixNatOK = false; lsSet("rev.voixNatOK", false); return null; }
+    if (!r.ok) return null;
+    const d = await r.json(); if (!d.audio) return null;
+    voixNatOK = true; lsSet("rev.voixNatOK", true);
+    const bin = atob(d.audio), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
+    if (cacheAudio.size > 60) { const k = cacheAudio.keys().next().value; URL.revokeObjectURL(cacheAudio.get(k)); cacheAudio.delete(k); }
+    cacheAudio.set(cle, url); return url;
+  } catch (e) { clearTimeout(to); return null; }
 }
 ["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, debloquerVoix, { capture: true, passive: true }));
 function speak(t, onend) {
   const id = ++lectureId; let done = false;
   const fin = () => { if (done) return; done = true; if (id === lectureId) onend && onend(); };
-  if (!("speechSynthesis" in window) || !t) { setTimeout(fin, 0); return; }
+  if (!t) { setTimeout(fin, 0); return; }
+  try { speechSynthesis.cancel(); } catch (e) {} try { lecteur.pause(); } catch (e) {}
+  if (choixVoix().startsWith("nat:") && voixNatOK !== false && SYNC.code && navigator.onLine) {
+    audioNaturel(t).then(url => {
+      if (id !== lectureId) return;
+      if (!url) { parlerAppareil(t, id, fin); return; }
+      lecteur.onended = fin; lecteur.onerror = () => parlerAppareil(t, id, fin);
+      lecteur.src = url; const pr = lecteur.play(); if (pr && pr.catch) pr.catch(() => parlerAppareil(t, id, fin));
+    });
+    return;
+  }
+  parlerAppareil(t, id, fin);
+}
+function parlerAppareil(t, id, fin) {
+  if (!("speechSynthesis" in window)) { setTimeout(fin, 0); return; }
   try { speechSynthesis.cancel(); } catch (e) {}
   const parts = morceaux(t), v = frVoice();
   let k = 0, garde = null;
@@ -644,7 +684,7 @@ function speak(t, onend) {
   };
   suivant();
 }
-function hush() { lectureId++; try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
+function hush() { lectureId++; try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} try { lecteur.pause(); } catch (e) {} }
 
 /* ---------------- ajouter un cours (photos → cartes + fiche) ---------------- */
 let pendingCache = lsGet("rev.demandes", []); if (!Array.isArray(pendingCache)) pendingCache = [];
@@ -865,20 +905,22 @@ function vSettings() {
 }
 
 function carteVoix() {
-  const box = h("section", { class: "card" }, h("h2", null, "Voix de lecture"));
+  const box = h("section", { class: "card" });
+  const essai = "Bonjour Marcus, c'est moi qui lirai tes cartes et tes corrections.";
   const peindre = () => {
     let vs = []; try { vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang)); } catch (e) {}
-    const actuelle = frVoice();
-    box.replaceChildren(h("h2", null, "Voix de lecture"),
-      vs.length ? h("div", { class: "small", style: { margin: 0 } }, "La voix qui lit les questions et les corrections. Les voix « Premium » ou « Améliorée » sont les plus naturelles.") : h("div", { class: "small" }, "Aucune voix française trouvée sur cet appareil."),
-      vs.length ? h("div", { class: "voix" }, vs.sort((a, b) => (/premium|enhanced|am[ée]lior/i.test(b.name + b.voiceURI) - /premium|enhanced|am[ée]lior/i.test(a.name + a.voiceURI)) || a.name.localeCompare(b.name)).map(v =>
-        h("button", { class: "mode", role: "radio", "aria-checked": actuelle && actuelle.voiceURI === v.voiceURI ? "true" : "false", onclick: () => { lsSet("rev.voix", v.voiceURI); voixFr = v; peindre(); speak("Bonjour Marcus, c'est moi qui lirai tes cartes."); } },
-          v.name.replace(/\s*\(.*\)\s*/, " ").trim(), h("small", null, (/premium/i.test(v.name + v.voiceURI) ? "Premium · " : /enhanced|am[ée]lior/i.test(v.name + v.voiceURI) ? "Améliorée · " : "") + v.lang)))) : null);
+    const mode = choixVoix();
+    const bouton = (val, titre, sous) => h("button", { class: "mode", role: "radio", "aria-checked": mode === val ? "true" : "false", onclick: () => { lsSet("rev.voixMode", val); if (val.startsWith("dev:")) { lsSet("rev.voix", val.slice(4)); voixFr = null; } peindre(); speak(essai); } }, titre, h("small", null, sous));
+    box.replaceChildren(...[h("h2", null, "Voix de lecture"),
+      h("div", { class: "small", style: { margin: 0 } }, "Voix naturelles (en ligne) : les plus agréables, il faut du réseau et le code famille."),
+      voixNatOK === false ? h("div", { class: "pill off" }, "Voix naturelles pas encore activées : l'appli utilise la voix de l'appareil") : null,
+      h("div", { class: "voix" }, VOIX_NAT.femmes.map(n => bouton("nat:" + n, n, "Voix féminine")), VOIX_NAT.hommes.map(n => bouton("nat:" + n, n, "Voix masculine"))),
+      vs.length ? h("div", { class: "small", style: { margin: "6px 0 0" } }, "Voix de l'appareil (hors ligne) :") : null,
+      vs.length ? h("div", { class: "voix" }, vs.map(v => bouton("dev:" + v.voiceURI, v.name.replace(/\s*\(.*\)\s*/, " ").trim(), v.lang))) : null].filter(Boolean));
   };
   peindre(); try { speechSynthesis.addEventListener("voiceschanged", peindre, { once: true }); } catch (e) {}
   return box;
 }
-
 /* ---------------- thème, installation, service worker ---------------- */
 function applyTheme() {
   const t = lsGet("rev.theme", "dark"), dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
