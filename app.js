@@ -608,7 +608,14 @@ function morceaux(t) {
   }
   return out;
 }
-let lectureId = 0;
+let lectureId = 0, voixDebloquee = false;
+// Sur iPhone et iPad, la synthèse vocale n'a le droit de parler qu'après un premier son déclenché par un toucher :
+// on la « débloque » silencieusement dès le premier geste, pour que les corrections soient ensuite lues automatiquement.
+function debloquerVoix() {
+  if (voixDebloquee || !("speechSynthesis" in window)) return;
+  try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "fr-FR"; speechSynthesis.speak(u); voixDebloquee = true; } catch (e) {}
+}
+["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, debloquerVoix, { capture: true, passive: true }));
 function speak(t, onend) {
   const id = ++lectureId; let done = false;
   const fin = () => { if (done) return; done = true; if (id === lectureId) onend && onend(); };
@@ -628,7 +635,7 @@ function speak(t, onend) {
       garde = setTimeout(suivant, 2500 + txt.length * 90);
     } catch (e) { suivant(); }
   };
-  setTimeout(suivant, 60);
+  suivant();
 }
 function hush() { lectureId++; try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
 
