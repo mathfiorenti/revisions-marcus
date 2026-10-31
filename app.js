@@ -58,6 +58,7 @@ const ICONS = {
   share: '<svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8M10.5 8v5M8 10.5h5"/></svg>',
   speak: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
+  mic: '<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg>',
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.6"/></svg>',
   plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
   close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
@@ -360,11 +361,11 @@ async function sharePdf(url, title) {
 }
 
 /* ---------------- flashcards : écrans ---------------- */
-let fcMode = lsGet("rev.fcMode", "rapide");
+let fcMode = lsGet("rev.fcMode", "oral");
 function modesBox() {
   return h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
-    ["rapide", "ecrite"].map(md => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
-      md === "rapide" ? "Révision rapide" : "Réponse écrite", h("small", null, md === "rapide" ? "Dans ta tête, tu retournes, tu te notes" : "Tu écris, puis tu compares à la carte"))));
+    [["oral", "Réponse orale", "Tu réponds à voix haute, l'appli te corrige et te lit la correction"], ["rapide", "Révision rapide", "Dans ta tête, tu retournes, tu te notes"], ["ecrite", "Réponse écrite", "Tu écris, puis tu compares à la carte"]].map(([md, t, d]) => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
+      md === "oral" ? [svg("mic"), t] : t, h("small", null, d))));
 }
 function vCards() {
   const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw);
@@ -441,7 +442,15 @@ function vSession(q) {
     h("div", { class: "stage" }, el.flash = h("div", { class: "flash", role: "button", tabindex: "0", "aria-label": "Retourner la carte", onclick: () => flip() },
       h("div", { class: "face front" }, h("div", { class: "face-top" }, el.chipF = h("span", { class: "chip" }), el.notF = h("span", { class: "notion" })), el.recto = h("p", { class: "recto" }), el.hint = h("div", { class: "hint" })),
       h("div", { class: "face back", "aria-live": "polite" }, h("div", { class: "face-top" }, el.chipB = h("span", { class: "chip" }), h("button", { class: "icon-btn", style: { padding: "4px 6px" }, onclick: e => { e.stopPropagation(); speak(el.verso.textContent); }, "aria-label": "Lire à voix haute" }, svg("speak"))), el.q = h("div", { class: "q" }), el.mine = h("div", { class: "mine" }), el.verso = h("p", { class: "verso" }), el.plus = h("div", { class: "plus" })))),
-    el.answer = h("div", { class: "answer" }, el.ta = h("textarea", { rows: "3", placeholder: "Écris ta réponse (ou dicte-la avec le micro du clavier)…", onkeydown: e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); flip(); } } }), h("button", { class: "btn", onclick: () => flip() }, "Voir la réponse")),
+    el.answer = h("div", { class: "answer" }, el.ta = h("textarea", { rows: "3", lang: "fr", placeholder: "Écris ta réponse…", onkeydown: e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); flip(); } } }), h("button", { class: "btn", onclick: () => flip() }, "Voir la réponse")),
+    el.oral = h("div", { class: "oral" },
+      el.micBtn = h("button", { class: "mic", type: "button", "aria-label": "Répondre à voix haute", onclick: () => micToggle() }, svg("mic"), h("span", { class: "ring1" }), h("span", { class: "ring2" })),
+      el.oralTxt = h("div", { class: "oral-txt", "aria-live": "polite" }, "Touche le micro et réponds à voix haute"),
+      h("div", { class: "oral-tools" },
+        h("button", { class: "icon-btn", type: "button", onclick: () => speak(S.cards[sess.queue[sess.i]].recto) }, svg("speak"), h("span", { class: "lbl" }, "Relire la question")),
+        el.hands = h("button", { class: "icon-btn", type: "button", "aria-pressed": lsGet("rev.mainsLibres", false) ? "true" : "false", onclick: e => { const v = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", v ? "true" : "false"); lsSet("rev.mainsLibres", v); if (v) toast("Mains libres : questions lues, écoute et passage automatiques"); } }, "🎧", h("span", { class: "lbl" }, "Mains libres")),
+        h("button", { class: "icon-btn", type: "button", onclick: () => { stopEcoute(); flip(); } }, "Je ne sais pas"))),
+    el.verdict = h("div", { class: "verdict-o", hidden: true }),
     el.reveal = h("button", { class: "btn", onclick: () => flip() }, "Retourner la carte"),
     el.grades = h("div", { class: "grades" },
       h("button", { class: "g ko", onclick: () => grade("ko") }, "À revoir", h("small", null, "tout à l'heure")),
@@ -462,20 +471,51 @@ function vSession(q) {
     el.plus.replaceChildren(); if (c.plus) { el.plus.append(h("b", null, "À retenir aussi · "), c.plus); el.plus.hidden = false; } else el.plus.hidden = true;
     el.mine.hidden = true; el.ta.value = "";
     el.flash.classList.remove("flipped");
-    const typed = fcMode === "ecrite";
-    el.answer.hidden = !typed; el.reveal.hidden = typed; el.grades.hidden = true;
-    el.hint.textContent = typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
+    const oral = fcMode === "oral" && !!SR, typed = fcMode === "ecrite" || (fcMode === "oral" && !SR);
+    stopEcoute(); el.verdict.hidden = true; el.verdict.replaceChildren(); sess.note = null;
+    el.answer.hidden = !typed; el.reveal.hidden = typed || oral; el.oral.hidden = !oral; el.grades.hidden = true;
+    for (const b of el.grades.children) b.classList.remove("suggere");
+    el.hint.textContent = oral ? "Réponds à voix haute." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
+    if (oral) { el.oralTxt.textContent = "Touche le micro et réponds à voix haute"; el.oralTxt.classList.remove("live"); if (mainsLibres()) setTimeout(() => speak(c.recto, () => setTimeout(() => { if (sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped")) micToggle(true); }, 350)), 300); }
     const p = pc(c.id) || { b: 0 }, nb = Math.min(6, (p.b || 0) + 1);
     el.okL.textContent = sess.mode === "chapitre" && p.l && p.d > today() ? "pas de changement" : INT[nb] <= 1 ? "demain" : "dans " + INT[nb] + " j";
     const tot = sess.queue.length; el.count.textContent = Math.min(sess.i + 1, tot) + " / " + tot; el.track.firstChild.style.width = (sess.i / tot * 100) + "%";
-    hush();
+    if (!oral) hush();
     if (typed) setTimeout(() => el.ta.focus({ preventScroll: true }), 50);
+  }
+  function mainsLibres() { return el.hands.getAttribute("aria-pressed") === "true"; }
+  function stopEcoute() { if (sess && sess.rec) { sess.rec.abort(); sess.rec = null; } el.micBtn.classList.remove("on"); }
+  function micToggle(auto) {
+    if (sess.rec) { sess.rec.stop(); return; }
+    if (el.flash.classList.contains("flipped")) return;
+    hush(); el.oralTxt.textContent = "Je t'écoute…"; el.oralTxt.classList.add("live"); el.micBtn.classList.add("on");
+    sess.rec = ecouter({
+      onInterim: t => { el.oralTxt.textContent = "« " + t + " »"; },
+      onFinal: t => { sess.rec = null; el.micBtn.classList.remove("on"); el.oralTxt.classList.remove("live");
+        if (!t) { el.oralTxt.textContent = "Je n'ai rien entendu. Touche le micro pour réessayer."; return; }
+        corrigerOral(t); },
+      onError: err => { sess.rec = null; el.micBtn.classList.remove("on"); el.oralTxt.classList.remove("live");
+        el.oralTxt.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Le micro est bloqué : autorise-le pour cette appli (Réglages de l'iPhone > Safari > Micro), puis réessaie." : auto ? "Touche le micro pour répondre." : "Le micro n'a pas fonctionné. Réessaie, ou passe en réponse écrite."; }
+    });
+  }
+  function corrigerOral(t) {
+    const c = S.cards[sess.queue[sess.i]], n = noteOrale(t, c); sess.note = n;
+    el.mine.textContent = "Ta réponse : « " + t + " »"; el.mine.hidden = false;
+    flip();
+    const lab = { ok: "Validé", mid: "Presque", ko: "À revoir" }[n.verdict];
+    el.verdict.className = "verdict-o v-" + n.verdict;
+    el.verdict.replaceChildren(h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, "Correction automatique · tu peux choisir une autre note")),
+      n.trouves.length || n.manquants.length ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null);
+    el.verdict.hidden = false; setTimeout(() => el.verdict.scrollIntoView({ block: "nearest", behavior: "smooth" }), 450);
+    for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains(n.verdict));
+    speak(phraseRetour(n, c), () => { if (mainsLibres() && sess && sess.note === n) setTimeout(() => { if (sess && sess.note === n) grade(n.verdict); }, 900); });
   }
   function flip() {
     if (el.flash.classList.contains("flipped")) return;
     const typed = fcMode === "ecrite";
     if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; }
-    el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.grades.hidden = false;
+    if (fcMode === "oral" && SR && !sess.note) { stopEcoute(); el.mine.textContent = "Tu as passé cette carte."; el.mine.hidden = false; sess.note = { verdict: "ko" }; for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains("ko")); speak("La réponse : " + S.cards[sess.queue[sess.i]].verso); }
+    el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.oral.hidden = true; el.grades.hidden = false;
   }
   function grade(g) {
     if (!el.flash.classList.contains("flipped")) return;
@@ -488,7 +528,7 @@ function vSession(q) {
     P.cards[id] = p; P.days[t] = (P.days[t] || 0) + 1;
     sess.res[g]++;
     if (g === "ko") { if (!sess.missed.includes(id)) sess.missed.push(id); sess.again[id] = (sess.again[id] || 0) + 1; if (sess.again[id] <= 2) sess.queue.push(id); }
-    saveLocal(); next();
+    stopEcoute(); hush(); saveLocal(); next();
   }
   function next() { sess.i++; if (sess.i >= sess.queue.length) finish(); else show(); }
   function logSession() {
@@ -516,14 +556,19 @@ function vSession(q) {
     else if (e.key === "1") grade("ko"); else if (e.key === "2") grade("mid"); else if (e.key === "3") grade("ok"); else if (e.key === "Escape") quit();
   };
   document.addEventListener("keydown", onKey);
-  cleanup = () => { document.removeEventListener("keydown", onKey); hush(); };
+  cleanup = () => { document.removeEventListener("keydown", onKey); if (sess && sess.rec) sess.rec.abort(); hush(); };
   show();
   return root;
 }
 
 /* ---------------- voix ---------------- */
 function frVoice() { try { const vs = speechSynthesis.getVoices() || []; const fr = vs.filter(v => /^fr/i.test(v.lang)); return fr.find(v => /fr[-_]FR/i.test(v.lang) && /(Amélie|Audrey|Marie|Thomas|Google|Premium|Enhanced|Natural)/i.test(v.name)) || fr.find(v => /fr[-_]FR/i.test(v.lang)) || fr[0] || null; } catch (e) { return null; } }
-function speak(t) { if (!("speechSynthesis" in window) || !t) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; const v = frVoice(); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
+function speak(t, onend) {
+  let done = false; const fin = () => { if (done) return; done = true; onend && onend(); };
+  if (!("speechSynthesis" in window) || !t) { setTimeout(fin, 0); return; }
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; const v = frVoice(); if (v) u.voice = v; u.rate = 1.02; u.onend = fin; u.onerror = fin; speechSynthesis.speak(u);
+    setTimeout(fin, 1500 + t.length * 85); } catch (e) { setTimeout(fin, 0); }
+}
 function hush() { try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
 
 /* ---------------- ajouter un cours (photos → cartes + fiche) ---------------- */
@@ -613,6 +658,62 @@ function vAdd(mPre) {
   wrap.append(...stag([topbar("Accueil", "#/"), h("header", null, h("div", { class: "eyebrow" }, "Nouveau cours"), h("h1", null, "Ajoute ton cours")), form, listBox]));
   paintList(); refreshDemandes().then(paintList);
   return wrap;
+}
+
+/* ---------------- réponse orale : écoute en français et correction ---------------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+function ecouter({ onInterim, onFinal, onError }) {
+  if (!SR) { onError && onError("absent"); return null; }
+  const r = new SR(); r.lang = "fr-FR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+  let txt = "", fini = false;
+  const finir = () => { if (fini) return; fini = true; clearTimeout(garde); onFinal && onFinal(txt.trim()); };
+  r.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript; txt = t; onInterim && onInterim(t); };
+  r.onerror = e => { if (e.error === "no-speech" || e.error === "aborted") return; fini = true; clearTimeout(garde); onError && onError(e.error); };
+  r.onend = finir;
+  const garde = setTimeout(() => { try { r.stop(); } catch (e) {} setTimeout(finir, 800); }, 15000);
+  try { r.start(); } catch (e) { fini = true; clearTimeout(garde); onError && onError("start"); return null; }
+  return { stop: () => { try { r.stop(); } catch (e) {} }, abort: () => { fini = true; clearTimeout(garde); try { r.abort(); } catch (e) {} } };
+}
+const STOP = new Set("alors aussi autre autres avant avec avoir bien cela celle celles celui cette ceux chaque comme comment dans depuis donc elle elles entre etre fait faire grand grande leur leurs mais meme moins notre nous parce pendant peut plus pour pourquoi quand quel quelle quelles quels sans selon sont sous tous tout toute toutes tres une unes vers votre vous apres ainsi avait etait sera sont ont deux trois premier premiere dont celui ceci".split(" "));
+function normTxt(t) { return (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
+function racine(w) { return /^\d+$/.test(w) ? w : w.slice(0, 6); }
+function termesCles(verso) {
+  const out = new Map(), mots = (verso || "").split(/\s+/);
+  // l'essentiel est en tête de réponse (avant le premier « : », « ; », « ( » ou « . ») : ces mots comptent double
+  let tete = mots.findIndex(m => /[:;(.]$|^\(/.test(m)); tete = tete < 0 ? Math.min(mots.length, 10) : Math.min(tete + 1, 12);
+  mots.forEach((brut, i) => {
+    const propre = brut.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "").replace(/^(?:[ldjmnstc]|qu|jusqu|lorsqu|puisqu)['’]/i, ""); if (!propre) return;
+    for (const w of normTxt(propre).split(" ")) {
+      if (!w || /^[ivx]+(er|e)?$/.test(w)) continue;
+      let poids = 0;
+      if (/^\d+$/.test(w)) poids = 3;
+      else if (/^\p{Lu}/u.test(propre) && i > 0 && !/[.!?:]$/.test(mots[i - 1] || "") && w.length >= 3) poids = 2;
+      else if (w.length >= 5 && !STOP.has(w)) poids = 1;
+      if (!poids) continue;
+      if (i < tete) poids += 2;
+      const k = racine(w); const cur = out.get(k);
+      if (!cur || cur.poids < poids) out.set(k, { k, poids, aff: propre });
+    }
+  });
+  return [...out.values()].sort((a, b) => b.poids - a.poids || b.aff.length - a.aff.length).slice(0, 8);
+}
+function noteOrale(reponse, carte) {
+  const r = normTxt(reponse);
+  if (!r || /^(je (ne )?sais pas|aucune idee|j en sais rien|passe|joker)/.test(r)) return { verdict: "ko", score: 0, trouves: [], manquants: termesCles(carte.verso) };
+  const mots = r.split(" "), rac = new Set(mots.map(racine));
+  const termes = termesCles(carte.verso);
+  if (!termes.length) return { verdict: "mid", score: .5, trouves: [], manquants: [] };
+  const trouve = t => rac.has(t.k) || (t.k.length >= 5 && !/^\d+$/.test(t.k) && mots.some(m => m.length >= 5 && (m.startsWith(t.k.slice(0, 5)) || t.k.startsWith(m.slice(0, 5)))));
+  const trouves = termes.filter(trouve), manquants = termes.filter(t => !trouve(t));
+  const tot = termes.reduce((a, t) => a + t.poids, 0), ok = trouves.reduce((a, t) => a + t.poids, 0), score = ok / tot;
+  return { verdict: score >= .5 ? "ok" : score >= .28 ? "mid" : "ko", score, trouves, manquants };
+}
+function phraseRetour(n, carte) {
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  const manque = n.manquants.slice(0, 3).map(t => t.aff).join(", ");
+  if (n.verdict === "ok") return pick(["Bien joué !", "Exact !", "Parfait, c'est ça.", "Très bien !"]) + (n.manquants.length && manque ? " Pour être complet, ajoute : " + manque + "." : "");
+  if (n.verdict === "mid") return "Presque. Il te manquait : " + manque + ". La réponse : " + carte.verso;
+  return pick(["Pas tout à fait.", "Ce n'est pas ça.", "Raté, mais tu vas la retenir."]) + " La réponse : " + carte.verso;
 }
 
 /* ---------------- suivi ---------------- */
