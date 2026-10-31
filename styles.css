@@ -623,3 +623,17 @@ a.back:hover{color:var(--ink);filter:brightness(1.1)}
 .opt-row span{display:flex;flex-direction:column;gap:2px}
 .opt-row small{color:var(--muted);font-size:.78rem}
 @media (prefers-reduced-motion:reduce){.serie-banner.go{animation:none}}
+
+/* ===== Verrou ===== */
+body.locked .tabbar{display:none}
+.view.lock{min-height:80vh;display:grid;place-items:center}
+.lock-card{width:min(100%,380px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:28px 22px;border-radius:24px;
+  background-image:radial-gradient(120% 70% at 0% 0%,var(--glass-shine),transparent 42%),linear-gradient(160deg,var(--glass-2),var(--glass) 70%);
+  border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur)}
+.lock-card h1{font-size:1.7rem;margin:0}
+.lock-card .lock-ico{width:62px;height:62px;border-radius:20px;display:grid;place-items:center;background:var(--grad);color:#fff;box-shadow:0 10px 26px color-mix(in srgb,var(--accent) 40%,transparent)}
+.lock-card .lock-ico svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-card .code-in{text-align:center;font-size:1.2rem;letter-spacing:.2em;width:100%}
+.lock-card .btn{width:100%}
+.lock-card.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}

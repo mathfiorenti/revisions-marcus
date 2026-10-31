@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 20 h 30"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 21 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -63,6 +63,7 @@ const ICONS = {
   camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.6"/></svg>',
   plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
   close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  cadenas: '<svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3M12 14.5v2.5"/></svg>',
   expand: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>'
 };
 // Chaque type de support a son pictogramme et sa couleur, identiques dans toutes les matières.
@@ -120,7 +121,7 @@ function merge(remote) {
 }
 async function rpc(fn, body) {
   const r = await fetch(CFG.supabaseUrl + "/rest/v1/rpc/" + fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey, Authorization: "Bearer " + CFG.supabaseKey }, body: JSON.stringify(body) });
-  if (!r.ok) { const t = await r.text(); const err = new Error(t); err.status = r.status; err.badCode = /code invalide/.test(t); throw err; }
+  if (!r.ok) { const t = await r.text(); const err = new Error(t); err.status = r.status; err.badCode = r.status === 403 || /code invalide/.test(t); throw err; }
   return r.json();
 }
 async function syncNow(opts) {
@@ -135,6 +136,7 @@ async function syncNow(opts) {
     if (opts && opts.rerender) render();
   } catch (e) {
     SYNC.state = e.badCode ? "badcode" : "error";
+    if (e.badCode) { lsSet("rev.deverrouille", ""); if (!sess) render(); } // code changé côté serveur : l'appli se reverrouille
   } finally { SYNC.busy = false; }
 }
 function scheduleSync() { clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 2500); }
@@ -202,6 +204,8 @@ function setTab(name) { for (const a of document.querySelectorAll(".tabbar a")) 
 function render() {
   if (cleanup) { try { cleanup(); } catch (e) {} cleanup = null; }
   document.body.classList.remove("immersive");
+  if (verrouillee()) { document.body.classList.add("locked"); hush(); sess = null; app.replaceChildren(vVerrou()); return; }
+  document.body.classList.remove("locked");
   if (!S.loaded) { app.replaceChildren(h("div", { class: "loading" }, "Chargement…")); return; }
   const { parts, q } = route();
   const v = parts[0] || "";
@@ -218,6 +222,31 @@ function render() {
   else { setTab("accueil"); view = vHome(); }
   app.replaceChildren(view);
   if (v !== "r") window.scrollTo({ top: 0 });
+}
+/* ---------------- verrou : code famille à la première ouverture et après chaque mise à jour ---------------- */
+function verrouillee() { return !SYNC.code || lsGet("rev.deverrouille", "") !== APP_VERSION; }
+function vVerrou() {
+  const champ = h("input", { class: "txt-in code-in", type: "password", inputmode: "text", autocomplete: "off", autocapitalize: "characters", spellcheck: "false", placeholder: "Code famille", "aria-label": "Code famille", maxlength: "40" });
+  const msg = h("p", { class: "small", "aria-live": "polite", style: { margin: 0, minHeight: "1.3em" } }, lsGet("rev.deverrouille", "") && SYNC.code ? "Nouvelle version installée : entre le code pour continuer." : "");
+  const carte = h("form", { class: "lock-card", onsubmit: async e => {
+    e.preventDefault();
+    const code = champ.value.trim().toUpperCase(); if (!code) { champ.focus(); return; }
+    if (!navigator.onLine) { msg.textContent = "Il faut une connexion internet pour vérifier le code."; return; }
+    bouton.disabled = true; msg.textContent = "Vérification…";
+    let ok = false; try { ok = await rpc("verifier_code", { code }); } catch (err) { ok = false; }
+    bouton.disabled = false;
+    if (!ok) { msg.textContent = "Code incorrect. Après plusieurs erreurs, l'accès est bloqué 15 minutes."; carte.classList.remove("shake"); void carte.offsetWidth; carte.classList.add("shake"); champ.select(); return; }
+    SYNC.code = code; lsSet("rev.code", code); lsSet("rev.deverrouille", APP_VERSION);
+    render(); syncNow({ rerender: true });
+  } },
+    h("span", { class: "lock-ico" }, svg("cadenas")),
+    h("h1", null, "Révisions " + (CFG.prenom || "")),
+    h("p", { class: "small", style: { margin: 0 } }, "Appli familiale privée. Entre le code famille pour l'ouvrir."),
+    champ, msg);
+  const bouton = h("button", { class: "btn", type: "submit" }, "Ouvrir l'appli");
+  carte.append(bouton);
+  setTimeout(() => champ.focus(), 300);
+  return h("div", { class: "view lock" }, carte);
 }
 function topbar(label, href, extra) {
   return h("div", { class: "topbar" }, h("a", { class: "back", href: href || "#/" }, svg("back"), label || "Retour"), extra || null);
