@@ -106,6 +106,7 @@ function merge(remote) {
   for (const [id, rc] of Object.entries(remote.cards || {})) { const lc = P.cards[id]; if (!lc || (rc.ts || 0) > (lc.ts || 0)) { P.cards[id] = rc; changed = true; } }
   for (const [d, n] of Object.entries(remote.days || {})) if ((P.days[d] || 0) < n) { P.days[d] = n; changed = true; }
   for (const [id, t] of Object.entries(remote.seen || {})) if ((P.seen[id] || 0) < t) { P.seen[id] = t; changed = true; }
+  if (remote.alertes) { const ts = new Set((P.alertes || []).map(a => a.t)); for (const a of remote.alertes) if (!ts.has(a.t)) { (P.alertes = P.alertes || []).push(a); changed = true; } }
   const have = new Set(P.sessions.map(s => s.id));
   for (const s of remote.sessions || []) if (!have.has(s.id)) { P.sessions.push(s); changed = true; }
   P.sessions.sort((a, b) => a.t - b.t); if (P.sessions.length > 300) P.sessions = P.sessions.slice(-300);
@@ -472,7 +473,7 @@ function vSession(q) {
     el.mine.hidden = true; el.ta.value = "";
     el.flash.classList.remove("flipped");
     const oral = fcMode === "oral" && !!SR, typed = fcMode === "ecrite" || (fcMode === "oral" && !SR);
-    stopEcoute(); el.verdict.hidden = true; el.verdict.replaceChildren(); sess.note = null;
+    stopEcoute(); el.verdict.hidden = true; el.verdict.replaceChildren(); sess.note = null; hush();
     el.answer.hidden = !typed; el.reveal.hidden = typed || oral; el.oral.hidden = !oral; el.grades.hidden = true;
     for (const b of el.grades.children) b.classList.remove("suggere");
     el.hint.textContent = oral ? "Réponds à voix haute." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
@@ -499,23 +500,49 @@ function vSession(q) {
     });
   }
   function corrigerOral(t) {
-    const c = S.cards[sess.queue[sess.i]], n = noteOrale(t, c); sess.note = n;
+    sess.note = { attente: true };
     el.mine.textContent = "Ta réponse : « " + t + " »"; el.mine.hidden = false;
-    flip();
+    flip(); evaluer(t);
+  }
+  async function evaluer(t) {
+    const c = S.cards[sess.queue[sess.i]], d = deckOf(c), jeton = {}; sess.note = jeton;
+    el.verdict.className = "verdict-o v-wait"; el.verdict.hidden = false;
+    el.verdict.replaceChildren(h("div", { class: "v-top" }, h("b", null, "Correction en cours…"), h("span", { class: "small" }, "Une IA (Claude) analyse ta réponse")));
+    let n = null, ia = null;
+    if (SYNC.code && navigator.onLine) {
+      try {
+        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 9000);
+        const r = await fetch(CFG.supabaseUrl + "/functions/v1/corriger", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey },
+          body: JSON.stringify({ code: SYNC.code, matiere: d.matiere ? d.matiere.nom : "", recto: c.recto, verso: c.verso, plus: c.plus || "", reponse: t }) });
+        clearTimeout(to);
+        if (r.ok) ia = await r.json();
+      } catch (e) {}
+    }
+    if (sess.note !== jeton) return;
+    if (ia && ia.verdict) {
+      n = { verdict: ia.verdict, ia: true, trouves: [], manquants: [] };
+      if (ia.alerte) { P.alertes = (P.alertes || []).concat([{ t: Date.now(), carte: c.id }]).slice(-50); saveLocal(); }
+    } else n = noteOrale(t, c);
+    sess.note = n;
     const lab = { ok: "Validé", mid: "Presque", ko: "À revoir" }[n.verdict];
     el.verdict.className = "verdict-o v-" + n.verdict;
-    el.verdict.replaceChildren(h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, "Correction automatique · tu peux choisir une autre note")),
-      n.trouves.length || n.manquants.length ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null);
-    el.verdict.hidden = false; setTimeout(() => el.verdict.scrollIntoView({ block: "nearest", behavior: "smooth" }), 450);
+    el.verdict.replaceChildren(...[h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, n.ia ? "Correction par une IA (Claude) · tu peux choisir une autre note" : "Correction automatique par mots-clés · tu peux choisir une autre note")),
+      n.ia ? h("p", { class: "v-txt" }, ia.correction) : null,
+      n.ia && ia.astuce ? h("p", { class: "v-astuce" }, "💡 " + ia.astuce) : null,
+      !n.ia && (n.trouves.length || n.manquants.length) ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null].filter(Boolean));
+    setTimeout(() => el.verdict.scrollIntoView({ block: "nearest", behavior: "smooth" }), 300);
     for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains(n.verdict));
-    speak(phraseRetour(n, c), () => { if (mainsLibres() && sess && sess.note === n) setTimeout(() => { if (sess && sess.note === n) grade(n.verdict); }, 900); });
+    const dire = n.ia ? ({ ok: "Validé. ", mid: "Presque. ", ko: "" }[n.verdict] + ia.correction) : phraseRetour(n, c);
+    speak(dire, () => { if (fcMode === "oral" && mainsLibres() && sess && sess.note === n) setTimeout(() => { if (sess && sess.note === n) grade(n.verdict); }, 900); });
   }
   function flip() {
     if (el.flash.classList.contains("flipped")) return;
     const typed = fcMode === "ecrite";
-    if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; }
+    let aCorriger = null;
+    if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; if (a) aCorriger = a; }
     if (fcMode === "oral" && SR && !sess.note) { stopEcoute(); el.mine.textContent = "Tu as passé cette carte."; el.mine.hidden = false; sess.note = { verdict: "ko" }; for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains("ko")); speak("La réponse : " + S.cards[sess.queue[sess.i]].verso); }
     el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.oral.hidden = true; el.grades.hidden = false;
+    if (aCorriger) evaluer(aCorriger);
   }
   function grade(g) {
     if (!el.flash.classList.contains("flipped")) return;
@@ -741,6 +768,7 @@ function vStats() {
         return h("div", { class: "deck", style: { "--subj": subjColor(d.matiere) } }, h("div", { class: "deck-main" }, h("span", { class: "chip" }, d.matiere.nom), h("h3", null, d.titre), h("div", { class: "meter" }, h("i", { class: "m", style: { width: (n ? mm / n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (n ? (seen - mm) / n * 100 : 0) + "%" } })), h("div", { class: "deck-meta" }, mm + " maîtrisées · " + (seen - mm) + " en cours · " + (n - seen) + " jamais vues"))); })) : null),
     h("section", { class: "sec" }, h("h2", null, "Notions qui coincent"),
       ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses")))) : h("div", { class: "empty-box" }, "Pas assez de réponses pour l'instant.")),
+    (P.alertes || []).length ? h("section", { class: "card", style: { borderColor: "var(--ko)" } }, h("h2", null, "À regarder"), h("p", { class: "small", style: { margin: 0 } }, plural(P.alertes.length, "réponse") + " signalée" + (P.alertes.length > 1 ? "s" : "") + " par la correction IA comme hors sujet ou préoccupante (dernière le " + new Date(P.alertes[P.alertes.length - 1].t).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) + "). Le contenu n'est pas conservé : il peut valoir la peine d'en parler avec Marcus.")) : null,
     h("section", { class: "card" }, h("h2", null, "Dernières sessions"),
       sessions.length ? h("ul", { class: "log" }, sessions.map(s => h("li", null, h("span", null, s.titre + " · " + s.ok + " sues, " + s.mid + " presque, " + s.ko + " à revoir"), h("span", null, new Date(s.t).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }) + (s.app ? " · " + s.app : ""))))) : h("p", { class: "small", style: { margin: 0 } }, "Aucune session pour l'instant.")),
     h("section", { class: "card" }, h("h2", null, "Derniers supports ouverts"),
@@ -770,6 +798,8 @@ function vSettings() {
       h("div", { class: "field" }, h("label", { for: "code" }, "Code"), input), status,
       h("div", { class: "row" }, h("button", { class: "btn", onclick: save }, "Enregistrer"), SYNC.code ? h("button", { class: "btn quiet", onclick: async () => { await syncNow({ rerender: false }); paint(); toast(SYNC.state === "ok" ? "Synchronisé." : "Synchro impossible pour l'instant."); } }, "Synchroniser maintenant") : null)),
     h("section", { class: "card" }, h("h2", null, "Apparence"), seg),
+    h("section", { class: "card" }, h("h2", null, "Correction par une IA"),
+      h("p", { class: "small", style: { margin: 0 } }, "En réponse orale ou écrite, ta réponse est corrigée par une intelligence artificielle (Claude, d'Anthropic), pas par une personne. Elle ne sert qu'à corriger la carte : ta réponse n'est pas conservée, et l'IA ne discute de rien d'autre. Sans réseau, l'appli corrige par mots-clés. Appli familiale, utilisée sous la responsabilité des parents, dans le respect du RGPD.")),
     standalone ? null : h("section", { class: "card" }, h("h2", null, "Installer l'appli"),
       h("div", { class: "install" }, h("b", null, "1"), h("span", null, "Sur iPhone ou iPad, ouvre cette page dans Safari."), h("b", null, "2"), h("span", null, "Touche le bouton Partager (le carré avec une flèche vers le haut)."), h("b", null, "3"), h("span", null, "Choisis « Sur l'écran d'accueil », puis « Ajouter »."), h("b", null, "4"), h("span", null, "Sur Android : menu ⋮ de Chrome, puis « Installer l'application ».")),
       installEvt ? h("button", { class: "btn", onclick: async () => { installEvt.prompt(); installEvt = null; } }, "Installer maintenant") : null),

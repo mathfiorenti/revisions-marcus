@@ -483,3 +483,9 @@ body,:root[data-theme="dark"] body,:root[data-theme="light"] body{background:tra
 .kw span{font-size:.82rem;font-weight:600;padding:3px 9px;border-radius:999px}
 .kw-ok{background:var(--ok-soft);color:var(--ok)} .kw-ko{background:var(--ko-soft);color:var(--ko)}
 .g.suggere{border-color:currentColor;box-shadow:0 0 0 3px color-mix(in srgb,currentColor 25%,transparent),inset 0 1px 0 rgb(255 255 255 / .25);transform:scale(1.03)}
+
+.verdict-o.v-wait{background:var(--accent-soft)}
+.verdict-o.v-wait b{color:var(--accent);animation:pulse-t 1.2s ease-in-out infinite}
+@keyframes pulse-t{50%{opacity:.45}}
+.v-txt{margin:0;line-height:1.5}
+.v-astuce{margin:0;font-size:.92rem;color:var(--muted)}
