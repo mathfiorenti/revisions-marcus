@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 18 h 20"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 18 h 45"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -104,6 +104,10 @@ function markSeen(id) { P.seen[id] = Date.now(); saveLocal(); }
 function merge(remote) {
   if (!remote) return false;
   let changed = false;
+  // Remise à zéro décidée côté serveur : on efface la progression locale de cet appareil.
+  if ((remote.reset || 0) > (P.reset || 0)) {
+    P.cards = {}; P.days = {}; P.seen = {}; P.sessions = []; P.alertes = []; P.reset = remote.reset; changed = true;
+  }
   for (const [id, rc] of Object.entries(remote.cards || {})) { const lc = P.cards[id]; if (!lc || (rc.ts || 0) > (lc.ts || 0)) { P.cards[id] = rc; changed = true; } }
   for (const [d, n] of Object.entries(remote.days || {})) if ((P.days[d] || 0) < n) { P.days[d] = n; changed = true; }
   for (const [id, t] of Object.entries(remote.seen || {})) if ((P.seen[id] || 0) < t) { P.seen[id] = t; changed = true; }

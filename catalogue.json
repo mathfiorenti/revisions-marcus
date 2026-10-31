@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-31-6",
+  "version": "2026-10-31-7",
   "matieres": [
     {
       "id": "histoire",
@@ -25,12 +25,12 @@
               "id": "hist-fc",
               "type": "flashcards",
               "titre": "Flashcards",
-              "detail": "Athènes et Rome · 71 cartes",
+              "detail": "Athènes et Rome · 76 cartes, uniquement le cours",
+              "fichier": "contenus/histoire/flashcards.json",
               "decks": [
                 "hist-athenes",
                 "hist-rome"
-              ],
-              "fichier": "contenus/histoire/flashcards.json"
+              ]
             },
             {
               "id": "hist-qcm",
