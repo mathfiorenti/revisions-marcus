@@ -58,6 +58,9 @@ const ICONS = {
   share: '<svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8M10.5 8v5M8 10.5h5"/></svg>',
   speak: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
+  camera: '<svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
   expand: '<svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>'
 };
 const KIND = {
@@ -201,6 +204,7 @@ function render() {
   else if (v === "r") { view = vResource(parts[1]); if (!view) return; }
   else if (v === "cartes") { setTab("cartes"); view = parts[1] ? vCardsSubject(parts[1], q.get("c")) : vCards(); }
   else if (v === "session") { setTab("cartes"); view = vSession(q); }
+  else if (v === "ajouter") { setTab("accueil"); view = vAdd(q.get("m")); }
   else if (v === "suivi") { setTab("suivi"); view = vStats(); }
   else if (v === "reglages") { setTab("reglages"); view = vSettings(); }
   else { setTab("accueil"); view = vHome(); }
@@ -242,6 +246,7 @@ function vHome() {
   return h("div", { class: "view" }, ...stag([
     h("header", { class: "hello" }, h("div", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))), flame(st)),
     todayBox,
+    addCta(),
     h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid),
     unseen.length ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "À découvrir")),
       h("div", { class: "feed" }, unseen.map(({ m, c, r }) => h("a", { href: "#/r/" + r.id, style: { "--subj": subjColor(m) } },
@@ -273,7 +278,7 @@ function vSubject(id) {
     ...stag([topbar("Accueil", "#/"),
     h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Seconde"), h("h1", null, m.nom)),
       decksOf(m).length ? h("a", { class: "btn tint", href: "#/cartes/" + m.id }, svg("flashcards"), "Cartes") : null),
-    ...body]));
+    ...body, addCta(m.id)]));
 }
 
 /* ---------------- lecteur ---------------- */
@@ -510,6 +515,95 @@ function frVoice() { try { const vs = speechSynthesis.getVoices() || []; const f
 function speak(t) { if (!("speechSynthesis" in window) || !t) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "fr-FR"; const v = frVoice(); if (v) u.voice = v; speechSynthesis.speak(u); } catch (e) {} }
 function hush() { try { if ("speechSynthesis" in window) speechSynthesis.cancel(); } catch (e) {} }
 
+/* ---------------- ajouter un cours (photos → cartes + fiche) ---------------- */
+let pendingCache = lsGet("rev.demandes", []);
+function addCta(mid) {
+  const pend = pendingCache.filter(d => d.statut === "en_attente" || d.statut === "en_cours").length;
+  return h("a", { class: "add-cta", href: "#/ajouter" + (mid ? "?m=" + mid : "") },
+    h("span", { class: "ico" }, svg("camera")),
+    h("span", null, h("div", { class: "t" }, "J'ajoute un nouveau cours"), h("div", { class: "s" }, pend ? plural(pend, "cours") + " en préparation" : "Photographie ton cours : cartes et fiche de révision arrivent toutes seules")),
+    svg("chev"));
+}
+async function refreshDemandes() {
+  if (!SYNC.code || !navigator.onLine) return pendingCache;
+  try { pendingCache = await rpc("lister_demandes", { code: SYNC.code }) || []; lsSet("rev.demandes", pendingCache); } catch (e) {}
+  return pendingCache;
+}
+function compressImage(file, max = 1800, q = .72) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement("canvas"); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      let data = cv.toDataURL("image/jpeg", q); if (data.length > 2300000) data = cv.toDataURL("image/jpeg", .55);
+      res({ data: data.split(",")[1], preview: data });
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("image illisible")); };
+    img.src = url;
+  });
+}
+const STATUT = { en_attente: ["En attente", "⏳"], en_cours: ["En préparation", "✨"], pret: ["Prêt", "✅"], erreur: ["Problème", "⚠️"] };
+function vAdd(mPre) {
+  const st = { m: mPre || (S.matieres.find(m => m.chapitres.length) || S.matieres[0]).id, photos: [], nb: 25, fiche: true };
+  const wrap = h("div", { class: "view add" });
+  const listBox = h("div", { class: "sec" });
+  const paintList = () => {
+    const ds = pendingCache;
+    listBox.replaceChildren(h("div", { class: "sec-head" }, h("h2", null, "Mes cours envoyés")),
+      ds.length ? h("div", { class: "feed" }, ds.map(d => { const m = S.matieres.find(x => x.id === d.matiere), [lab, emo] = STATUT[d.statut] || [d.statut, ""];
+        const href = d.statut === "pret" && d.chapitre_id ? "#/cartes/" + d.matiere + "?c=" + encodeURIComponent(d.chapitre_id) : null;
+        return h(href ? "a" : "div", { href, class: "dem", style: { "--subj": subjColor(m) } }, h("span", { class: "ico" }, svg(m ? m.pictogramme : "fiche")),
+          h("span", null, h("div", { class: "t" }, d.titre || (m ? m.nom : d.matiere)), h("div", { class: "s" }, (m ? m.nom + " · " : "") + d.nb_photos + " photo" + (d.nb_photos > 1 ? "s" : "") + " · " + d.nb_cartes + " cartes" + (d.fiche ? " + fiche" : "") + (d.message ? " · " + d.message : ""))),
+          h("span", { class: "statut s-" + d.statut }, emo + " " + lab)); }))
+        : h("div", { class: "empty-box" }, "Aucun cours envoyé pour l'instant."));
+  };
+  if (!SYNC.code) {
+    wrap.append(...stag([topbar("Accueil", "#/"), h("header", null, h("div", { class: "eyebrow" }, "Nouveau cours"), h("h1", null, "Ajoute ton cours")),
+      h("div", { class: "empty-box" }, h("strong", null, "Il faut d'abord le code famille"), "Va dans Réglages et saisis le code : il permet d'envoyer tes photos en toute sécurité."), h("a", { class: "btn", href: "#/reglages" }, "Aller aux réglages")]));
+    return wrap;
+  }
+  const chips = h("div", { class: "mchips" }, S.matieres.map(m => h("button", { class: "mchip", type: "button", "aria-pressed": st.m === m.id ? "true" : "false", style: { "--subj": subjColor(m) }, onclick: e => { st.m = m.id; for (const b of chips.children) b.setAttribute("aria-pressed", b === e.currentTarget ? "true" : "false"); } }, svg(m.pictogramme), m.nom)));
+  const titre = h("input", { class: "txt-in", placeholder: "Ex : Chapitre 3, la cellule", maxlength: "120" });
+  const remarque = h("textarea", { class: "txt-in", rows: "2", placeholder: "Facultatif · ex : interro jeudi sur la partie II", maxlength: "500" });
+  const thumbs = h("div", { class: "thumbs" });
+  const fileIn = h("input", { type: "file", accept: "image/*", multiple: true, hidden: true });
+  const paintThumbs = () => { thumbs.replaceChildren(...st.photos.map((p, i) => h("div", { class: "thumb" }, h("img", { src: p.preview, alt: "Page " + (i + 1) }), h("span", { class: "num" }, i + 1), h("button", { type: "button", class: "rm", "aria-label": "Retirer la photo " + (i + 1), onclick: () => { st.photos.splice(i, 1); paintThumbs(); } }, svg("close"))))); send.disabled = !st.photos.length; pick.querySelector(".pt").textContent = st.photos.length ? "Ajouter d'autres pages" : "Prendre ou choisir des photos"; };
+  fileIn.addEventListener("change", async () => {
+    const files = [...fileIn.files].slice(0, 20 - st.photos.length); fileIn.value = "";
+    for (const f of files) { try { st.photos.push(await compressImage(f)); paintThumbs(); } catch (e) { toast("Une photo n'a pas pu être lue."); } }
+  });
+  const pick = h("button", { type: "button", class: "pick", onclick: () => fileIn.click() }, h("span", { class: "ico" }, svg("camera")), h("span", { class: "pt" }, "Prendre ou choisir des photos"), h("span", { class: "small" }, "Une photo par page, bien à plat et lisible · 20 pages max"));
+  const nbVal = h("b", null, st.nb);
+  const slider = h("input", { type: "range", min: "10", max: "60", step: "5", value: st.nb, "aria-label": "Nombre de flashcards", oninput: e => { st.nb = +e.target.value; nbVal.textContent = st.nb; } });
+  const ficheT = h("button", { type: "button", class: "toggle", role: "switch", "aria-checked": "true", onclick: e => { st.fiche = !st.fiche; e.currentTarget.setAttribute("aria-checked", st.fiche ? "true" : "false"); } }, h("span", { class: "knob" }));
+  const bar = h("div", { class: "track", hidden: true }, h("i")), status = h("div", { class: "small", "aria-live": "polite" });
+  const send = h("button", { class: "btn", disabled: true, onclick: async () => {
+    send.disabled = true; bar.hidden = false; const total = st.photos.length + 2; let k = 0; const step = t => { k++; bar.firstChild.style.width = (k / total * 100) + "%"; status.textContent = t; };
+    try {
+      const id = await rpc("creer_demande", { code: SYNC.code, p_matiere: st.m, p_titre: titre.value, p_nb: st.nb, p_fiche: st.fiche, p_remarque: remarque.value }); step("Envoi des photos…");
+      for (let i = 0; i < st.photos.length; i++) { await rpc("deposer_photo", { code: SYNC.code, p_demande: id, p_n: i + 1, p_data: st.photos[i].data }); step("Photo " + (i + 1) + " sur " + st.photos.length + " envoyée"); }
+      await rpc("soumettre_demande", { code: SYNC.code, p_demande: id }); step("C'est envoyé !");
+      await refreshDemandes();
+      confetti();
+      form.replaceChildren(h("div", { class: "sent" }, h("div", { class: "big-ok" }, "✓"), h("h2", null, "Cours envoyé !"), h("p", { class: "small" }, "Tes flashcards" + (st.fiche ? " et ta fiche de révision" : "") + " arrivent dans l'appli d'ici une heure (entre 8 h et 22 h). Tu verras le badge « Nouveau » dans la matière."),
+        h("div", { class: "row" }, h("button", { class: "btn quiet", onclick: () => render() }, "Ajouter un autre cours"), h("a", { class: "btn", href: "#/" }, "Retour à l'accueil"))));
+      paintList();
+    } catch (e) { send.disabled = false; bar.hidden = true; status.textContent = e.badCode ? "Le code famille n'est plus valable : vérifie-le dans Réglages." : /trop de demandes/.test(e.message) ? "Beaucoup de cours envoyés aujourd'hui : réessaie demain." : "L'envoi n'a pas abouti. Vérifie ta connexion et réessaie."; }
+  } }, svg("share"), "Envoyer mon cours");
+  const form = h("div", { class: "sec", style: { gap: "18px" } },
+    h("section", { class: "card" }, h("div", { class: "lab" }, "1 · La matière"), chips, h("div", { class: "lab" }, "Le titre du cours"), titre),
+    h("section", { class: "card" }, h("div", { class: "lab" }, "2 · Les pages du cours"), pick, fileIn, thumbs),
+    h("section", { class: "card" }, h("div", { class: "lab" }, "3 · Ce que tu veux"),
+      h("div", { class: "nb" }, h("span", null, "Nombre de flashcards"), nbVal), slider,
+      h("div", { class: "opt" }, h("span", null, h("strong", null, "Fiche de révision"), h("div", { class: "small" }, "Une fiche synthétique en PDF, à lire ou imprimer")), ficheT),
+      h("div", { class: "lab" }, "Une précision ?"), remarque),
+    h("div", { class: "sec", style: { gap: "10px" } }, send, bar, status));
+  wrap.append(...stag([topbar("Accueil", "#/"), h("header", null, h("div", { class: "eyebrow" }, "Nouveau cours"), h("h1", null, "Ajoute ton cours")), form, listBox]));
+  paintList(); refreshDemandes().then(paintList);
+  return wrap;
+}
+
 /* ---------------- suivi ---------------- */
 function vStats() {
   const t = today(), days = [];
@@ -618,5 +712,5 @@ function confetti() {
 applyTheme();
 splash();
 render();
-loadCatalogue().then(() => { render(); syncNow({ rerender: true }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
+loadCatalogue().then(() => { render(); syncNow({ rerender: true }); refreshDemandes().then(() => { if (!sess && (location.hash === "" || location.hash === "#/")) render(); }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
 })();
