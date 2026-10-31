@@ -31,7 +31,7 @@ function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 let toastT;
 function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 3200); }
-function isDark() { const t = document.documentElement.dataset.theme; return t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches); }
+function isDark() { return document.documentElement.dataset.theme !== "light"; }
 function subjColor(m) { return m ? (isDark() ? m.couleurNuit || m.couleur : m.couleur) : "var(--accent)"; }
 
 /* ---------------- pictogrammes ---------------- */
@@ -146,6 +146,42 @@ function notionStats() {
   return Object.values(m).map(o => { const n = o.ok + o.ko + o.mid; return { ...o, n, rate: n ? (o.ok + o.mid * .5) / n : 1 }; }).filter(o => o.n >= 3 && o.rate < .75).sort((a, b) => a.rate - b.rate);
 }
 
+/* ---------------- petits composants animés ---------------- */
+function ring(pct, size, label, color) {
+  const r = 18, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(1, pct)));
+  const ns = "http://www.w3.org/2000/svg", el = document.createElementNS(ns, "svg");
+  el.setAttribute("viewBox", "0 0 44 44"); el.setAttribute("width", size); el.setAttribute("height", size); el.setAttribute("class", "ring"); el.setAttribute("aria-hidden", "true");
+  el.innerHTML = '<circle class="bg" cx="22" cy="22" r="18"/><circle class="fg" cx="22" cy="22" r="18" style="--c:' + c.toFixed(2) + ';--off:' + off.toFixed(2) + (color ? ';stroke:' + color : '') + '"/>';
+  return h("span", { class: "ring-wrap", style: { width: size + "px", height: size + "px" } }, el, label != null ? h("span", { class: "lbl" }, label) : null);
+}
+function countUp(el, n, ms) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || n < 2) { el.textContent = n; return el; }
+  const t0 = performance.now(), d = ms || 700; el.textContent = "0";
+  const step = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(n * e); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step); return el;
+}
+function flame(n) {
+  const ico = '<svg viewBox="0 0 24 24"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.4 1.2-3.9 2.4-5 .1 1.6.8 2.6 1.8 3 .2-3.4.6-6.3.8-9Z"/></svg>';
+  const s = h("span", { class: "flame" + (n ? "" : " off"), title: "Jours d'affilée" }); s.innerHTML = ico; s.append(n ? plural(n, "jour") + " d'affilée" : "Lance ta série"); return s;
+}
+function scopeFilter(q) {
+  const d = q.get("deck"), c = q.get("c"), m = q.get("m");
+  if (d) return x => x.deck === d;
+  if (c) return x => deckOf(x).chapitre && deckOf(x).chapitre.id === c;
+  if (m) return x => deckOf(x).matiere && deckOf(x).matiere.id === m;
+  return null;
+}
+function scopeInfo(q) {
+  const d = q.get("deck"), c = q.get("c"), m = q.get("m");
+  if (d && S.decks[d]) return { titre: S.decks[d].titre, back: "#/cartes/" + S.decks[d].matiere.id + "?c=" + S.decks[d].chapitre.id };
+  if (c) { const dk = Object.values(S.decks).find(x => x.chapitre.id === c); if (dk) return { titre: dk.chapitre.titre, back: "#/cartes/" + dk.matiere.id + "?c=" + c }; }
+  if (m) { const mm = S.matieres.find(x => x.id === m); if (mm) return { titre: mm.nom, back: "#/cartes/" + m }; }
+  return { titre: "Cartes du jour", back: "#/cartes" };
+}
+function decksOf(m) { return Object.values(S.decks).filter(d => d.matiere.id === m.id); }
+function chapStats(f) { const cs = sortedCards(f), n = cs.length; return { n, m: cs.filter(c => (pc(c.id) || {}).b >= MASTER).length, seen: cs.filter(c => (pc(c.id) || {}).l).length, due: dueList(f).length }; }
+function stag(nodes) { nodes.forEach((n, i) => n && n.style && n.style.setProperty("--i", i)); return nodes; }
+
 /* ---------------- routeur ---------------- */
 let sess = null, cleanup = null;
 function route() { const raw = location.hash.replace(/^#\/?/, ""); const [path, qs] = raw.split("?"); return { parts: path.split("/").filter(Boolean).map(decodeURIComponent), q: new URLSearchParams(qs || "") }; }
@@ -163,7 +199,7 @@ function render() {
   if (v === "") { setTab("accueil"); view = vHome(); }
   else if (v === "m") { setTab("accueil"); view = vSubject(parts[1]); }
   else if (v === "r") { view = vResource(parts[1]); if (!view) return; }
-  else if (v === "cartes") { setTab("cartes"); view = vCards(q.get("deck")); }
+  else if (v === "cartes") { setTab("cartes"); view = parts[1] ? vCardsSubject(parts[1], q.get("c")) : vCards(); }
   else if (v === "session") { setTab("cartes"); view = vSession(q); }
   else if (v === "suivi") { setTab("suivi"); view = vStats(); }
   else if (v === "reglages") { setTab("reglages"); view = vSettings(); }
@@ -182,33 +218,36 @@ function isNew(dateStr) { return dateStr && dateStr >= addDays(today(), -7); }
 
 function vHome() {
   const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw), total = Object.keys(S.cards).length;
+  const doneToday = P.days[today()] || 0, goal = doneToday + todo;
   const st = streak();
+  const n = h("span");
   const todayBox = h("section", { class: "today" },
-    h("div", { class: "due" }, h("b", null, todo), h("span", null, todo === 0 ? (total ? "Rien à revoir aujourd'hui. Reviens demain !" : "Pas encore de cartes") : (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui") + (nw ? " · dont " + plural(nw, "nouvelle") : ""))),
-    h("div", { class: "stats" }, h("span", null, h("strong", null, st), " ", st > 1 ? "jours d'affilée" : "jour d'affilée"), h("span", null, h("strong", null, mastered()), " cartes maîtrisées sur ", h("strong", null, total))),
-    h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, due && !nw ? "Réviser mes cartes" : nw && !due ? "Découvrir les nouvelles cartes" : "Commencer"))
-  );
-  const grid = h("div", { class: "subjects" }, S.matieres.map(m => {
-    const n = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute));
-    return h("a", { class: "subject" + (n ? "" : " empty"), href: "#/m/" + m.id, style: { "--subj": subjColor(m) } },
-      recent ? h("span", { class: "new" }, "Nouveau") : null,
-      h("span", { class: "pic" }, svg(m.pictogramme)),
+    ring(goal ? doneToday / goal : (total ? 1 : 0), 96, todo ? countUp(n, todo) : "✓"),
+    h("div", { class: "txt" },
+      h("div", { class: "big" }, todo === 0 ? (total ? (doneToday ? "Bravo, tout est revu pour aujourd'hui !" : "Rien à revoir aujourd'hui") : "Pas encore de cartes") : (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui")),
+      h("div", { class: "stats" }, nw ? h("span", null, h("strong", null, nw), " nouvelle" + (nw > 1 ? "s" : "")) : null, due ? h("span", null, h("strong", null, due), " à revoir") : null, h("span", null, h("strong", null, mastered()), " / " + total + " maîtrisées"))),
+    h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, due && !nw ? "Réviser mes cartes" : nw && !due ? "Découvrir les nouvelles cartes" : "C'est parti")));
+  const grid = h("div", { class: "subjects stagger" }, stag(S.matieres.map(m => {
+    const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute)), dks = decksOf(m);
+    const stt = dks.length ? chapStats(c => deckOf(c).matiere.id === m.id) : null;
+    return h("a", { class: "subject" + (nb ? "" : " empty"), href: "#/m/" + m.id, style: { "--subj": subjColor(m) } },
+      h("span", { class: "top" }, h("span", { class: "pic" }, svg(m.pictogramme)), recent ? h("span", { class: "new" }, "Nouveau") : stt && stt.n ? ring(stt.m / stt.n, 40, Math.round(stt.m / stt.n * 100) + "%") : null),
       h("h3", null, m.nom),
-      h("span", { class: "meta" }, n ? plural(m.chapitres.length, "chapitre") + " · " + plural(n, "support") : "Bientôt"));
-  }));
+      h("span", { class: "meta" }, nb ? plural(m.chapitres.length, "chapitre") + " · " + plural(nb, "support") + (stt && stt.due ? " · " + stt.due + " cartes à revoir" : "") : "Bientôt"));
+  })));
   const recents = [];
   for (const m of S.matieres) for (const c of m.chapitres) for (const r of c.ressources) if (r.type !== "video") recents.push({ m, c, r });
   recents.sort((a, b) => (b.c.ajoute || "").localeCompare(a.c.ajoute || ""));
   const unseen = recents.filter(x => !P.seen[x.r.id]).slice(0, 4);
-  return h("div", { class: "view" },
-    h("header", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))),
+  return h("div", { class: "view" }, ...stag([
+    h("header", { class: "hello" }, h("div", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))), flame(st)),
     todayBox,
     h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid),
-    unseen.length ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Pas encore ouverts")),
+    unseen.length ? h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "À découvrir")),
       h("div", { class: "feed" }, unseen.map(({ m, c, r }) => h("a", { href: "#/r/" + r.id, style: { "--subj": subjColor(m) } },
         h("span", { class: "ico" }, svg(KIND[r.type].icon)),
         h("span", null, h("div", { class: "t" }, r.titre), h("div", { class: "s" }, m.nom + " · " + c.titre)), svg("chev"))))) : null
-  );
+  ]));
 }
 
 function resTile(r, m) {
@@ -231,9 +270,10 @@ function vSubject(id) {
       vids.length ? [h("div", { class: "subhead" }, "Vidéos"), h("div", { class: "videos" }, vids.map(r => resTile(r, m)))] : null);
   }) : [h("div", { class: "empty-box" }, h("strong", null, "Rien pour l'instant"), "Les fiches, cartes et quiz de " + m.nom + " apparaîtront ici dès qu'un chapitre sera ajouté.")];
   return h("div", { class: "view", style: { "--subj": col } },
-    topbar("Accueil", "#/"),
-    h("header", { class: "subj-head" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", null, h("div", { class: "eyebrow" }, "Seconde"), h("h1", { style: { marginTop: 0 } }, m.nom))),
-    ...body);
+    ...stag([topbar("Accueil", "#/"),
+    h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Seconde"), h("h1", null, m.nom)),
+      decksOf(m).length ? h("a", { class: "btn tint", href: "#/cartes/" + m.id }, svg("flashcards"), "Cartes") : null),
+    ...body]));
 }
 
 /* ---------------- lecteur ---------------- */
@@ -241,7 +281,7 @@ function vResource(id) {
   const x = S.byRes[id];
   if (!x) return vHome();
   const { r, m } = x;
-  if (r.type === "flashcards") { location.replace("#/cartes?deck=" + encodeURIComponent((r.decks || [])[0] || "")); return null; }
+  if (r.type === "flashcards") { location.replace("#/cartes/" + m.id + "?c=" + encodeURIComponent(x.c.id)); return null; }
   markSeen(r.id);
   document.body.classList.add("immersive");
   const back = () => (history.length > 1 ? history.back() : go("#/m/" + m.id));
@@ -305,48 +345,78 @@ async function sharePdf(url, title) {
 
 /* ---------------- flashcards : écrans ---------------- */
 let fcMode = lsGet("rev.fcMode", "rapide");
-function vCards(focus) {
-  const decks = Object.values(S.decks).sort((a, b) => (a.matiere.nom || "").localeCompare(b.matiere.nom || "") || (a.ordre || 99) - (b.ordre || 99));
+function modesBox() {
+  return h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
+    ["rapide", "ecrite"].map(md => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: e => { fcMode = md; lsSet("rev.fcMode", md); for (const b of e.currentTarget.parentNode.children) b.setAttribute("aria-checked", b === e.currentTarget ? "true" : "false"); } },
+      md === "rapide" ? "Révision rapide" : "Réponse écrite", h("small", null, md === "rapide" ? "Dans ta tête, tu retournes, tu te notes" : "Tu écris, puis tu compares à la carte"))));
+}
+function vCards() {
   const due = dueList().length, nw = newList().length, todo = Math.min(MAX_SESSION, due + nw);
-  const modes = h("div", { class: "modes", role: "radiogroup", "aria-label": "Mode de révision" },
-    ["rapide", "ecrite"].map(md => h("button", { class: "mode", role: "radio", "aria-checked": fcMode === md ? "true" : "false", onclick: () => { fcMode = md; lsSet("rev.fcMode", md); render(); } },
-      md === "rapide" ? "Révision rapide" : "Réponse écrite", h("small", null, md === "rapide" ? "Tu réponds dans ta tête, tu retournes, tu te notes" : "Tu écris ta réponse, puis tu la compares à la carte"))));
-  const list = decks.length ? h("div", { class: "decks" }, decks.map(d => {
-    const cs = sortedCards(c => c.deck === d.id), n = cs.length;
-    const mm = cs.filter(c => (pc(c.id) || {}).b >= MASTER).length, seen = cs.filter(c => (pc(c.id) || {}).l).length;
-    const dueD = dueList(c => c.deck === d.id).length;
-    return h("div", { class: "deck", id: "deck-" + d.id, style: { "--subj": subjColor(d.matiere) } },
-      h("div", { class: "deck-main" }, h("span", { class: "chip" }, d.matiere.nom), h("h3", null, d.titre), d.sousTitre ? h("span", { class: "small" }, d.sousTitre) : null,
-        h("div", { class: "meter" }, h("i", { class: "m", style: { width: (n ? mm / n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (n ? (seen - mm) / n * 100 : 0) + "%" } })),
-        h("div", { class: "deck-meta" }, mm + " maîtrisée" + (mm > 1 ? "s" : "") + " · " + (seen - mm) + " en cours · " + (n - seen) + " nouvelle" + (n - seen > 1 ? "s" : "") + (dueD ? " · " + dueD + " à revoir" : ""))),
-      h("div", { class: "row", style: { flexDirection: "column", gap: "8px" } },
-        h("button", { class: "btn quiet", disabled: !n, onclick: () => go("#/session?mode=chapitre&deck=" + encodeURIComponent(d.id)) }, "Veille d'interro"),
-        dueD ? h("button", { class: "btn quiet", onclick: () => go("#/session?mode=jour&deck=" + encodeURIComponent(d.id)) }, "Juste celles du jour") : null));
-  })) : h("div", { class: "empty-box" }, h("strong", null, "Pas encore de cartes"), "Les flashcards arrivent ici à chaque nouveau chapitre.");
+  const doneToday = P.days[today()] || 0, n = h("span");
+  const mats = S.matieres.filter(m => decksOf(m).length);
   const ns = notionStats().slice(0, 6);
-  const view = h("div", { class: "view" },
+  return h("div", { class: "view" }, ...stag([
     h("header", null, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, "Tes cartes")),
     h("section", { class: "today" },
-      h("div", { class: "due" }, h("b", null, todo), h("span", null, todo ? (todo > 1 ? "cartes au programme aujourd'hui" : "carte au programme aujourd'hui") : "Rien à revoir aujourd'hui")),
-      modes,
+      ring(doneToday + todo ? doneToday / (doneToday + todo) : 1, 80, todo ? countUp(n, todo) : "✓"),
+      h("div", { class: "txt" }, h("div", { class: "big" }, todo ? "Les cartes du jour, toutes matières" : "Rien à revoir aujourd'hui"), h("div", { class: "small" }, "Un mélange des cartes à revoir et de nouvelles cartes.")),
+      modesBox(),
       h("div", { class: "actions" }, h("button", { class: "btn", disabled: !todo, onclick: () => go("#/session?mode=jour") }, "Commencer"))),
-    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Par chapitre"), h("span", { class: "small" }, "Veille d'interro : tout le chapitre d'un coup")), list),
+    h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Par matière")),
+      mats.length ? h("div", { class: "sec stagger", style: { gap: "10px" } }, stag(mats.map(m => {
+        const st = chapStats(c => deckOf(c).matiere.id === m.id), nch = new Set(decksOf(m).map(d => d.chapitre.id)).size;
+        return h("a", { class: "mat-card", href: "#/cartes/" + m.id, style: { "--subj": subjColor(m) } },
+          h("span", { class: "pic" }, svg(m.pictogramme)),
+          h("span", null, h("h3", null, m.nom), h("div", { class: "meta" }, plural(nch, "chapitre") + " · " + plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : "")), st.due ? h("span", { class: "due-pill" }, st.due + " à revoir") : null),
+          ring(st.n ? st.m / st.n : 0, 52, (st.n ? Math.round(st.m / st.n * 100) : 0) + "%"));
+      }))) : h("div", { class: "empty-box" }, h("strong", null, "Pas encore de cartes"), "Les flashcards arrivent ici à chaque nouveau chapitre.")),
     h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Notions à retravailler")),
       ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses, " + o.ko + " ratée" + (o.ko > 1 ? "s" : "")))))
-        : h("div", { class: "empty-box" }, h("strong", null, "Rien à signaler"), "Après quelques révisions, les notions qui résistent apparaissent ici.")));
-  if (focus) setTimeout(() => { const el = document.getElementById("deck-" + focus); if (el) el.scrollIntoView({ block: "center", behavior: "smooth" }); }, 60);
+        : h("div", { class: "empty-box" }, h("strong", null, "Rien à signaler"), "Après quelques révisions, les notions qui résistent apparaissent ici."))
+  ]));
+}
+function vCardsSubject(mid, focus) {
+  const m = S.matieres.find(x => x.id === mid);
+  if (!m) return vCards();
+  const col = subjColor(m), dks = decksOf(m);
+  const chaps = []; for (const d of dks) if (!chaps.find(c => c.id === d.chapitre.id)) chaps.push(d.chapitre);
+  chaps.sort((a, b) => (b.ajoute || "").localeCompare(a.ajoute || ""));
+  const all = chapStats(c => deckOf(c).matiere.id === m.id);
+  const view = h("div", { class: "view", style: { "--subj": col } }, ...stag([
+    topbar("Cartes", "#/cartes"),
+    h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Flashcards"), h("h1", null, m.nom), h("div", { class: "small" }, plural(all.n, "carte") + " · " + all.m + " maîtrisée" + (all.m > 1 ? "s" : ""))), ring(all.n ? all.m / all.n : 0, 60, (all.n ? Math.round(all.m / all.n * 100) : 0) + "%")),
+    h("section", { class: "card", style: { gap: "10px" } }, h("div", { class: "small", style: { fontWeight: 700, color: "var(--ink)" } }, "Mode de révision"), modesBox()),
+    ...chaps.map(ch => {
+      const f = c => deckOf(c).chapitre.id === ch.id, st = chapStats(f);
+      const parts = dks.filter(d => d.chapitre.id === ch.id).sort((a, b) => (a.ordre || 99) - (b.ordre || 99));
+      return h("section", { class: "chap-card" + (focus === ch.id ? " focus" : ""), id: "chap-" + ch.id },
+        h("div", { class: "chap-top" }, h("div", null, h("div", { class: "eyebrow" }, isNew(ch.ajoute) ? "Nouveau chapitre" : "Chapitre"), h("h2", null, ch.titre), h("div", { class: "deck-meta", style: { marginTop: "4px" } }, st.n + " cartes · " + st.m + " maîtrisées · " + (st.seen - st.m) + " en cours · " + (st.n - st.seen) + " nouvelles")), ring(st.n ? st.m / st.n : 0, 54, (st.n ? Math.round(st.m / st.n * 100) : 0) + "%")),
+        h("div", { class: "chap-actions" },
+          h("button", { class: "btn", onclick: () => go("#/session?mode=jour&c=" + encodeURIComponent(ch.id)) }, st.due ? "Réviser (" + st.due + " à revoir)" : "Réviser ce chapitre"),
+          h("button", { class: "btn tint", onclick: () => go("#/session?mode=chapitre&c=" + encodeURIComponent(ch.id)) }, "Veille d'interro · tout")),
+        parts.length > 1 ? h("div", { class: "parts" }, parts.map(d => {
+          const s2 = chapStats(c => c.deck === d.id);
+          return h("div", { class: "part" },
+            h("div", { class: "part-main" }, h("span", { class: "t" }, d.titre), d.sousTitre ? h("span", { class: "small" }, d.sousTitre) : null,
+              h("div", { class: "meter" }, h("i", { class: "m", style: { width: (s2.n ? s2.m / s2.n * 100 : 0) + "%" } }), h("i", { class: "p", style: { width: (s2.n ? (s2.seen - s2.m) / s2.n * 100 : 0) + "%" } })),
+              h("div", { class: "deck-meta" }, s2.n + " cartes" + (s2.due ? " · " + s2.due + " à revoir" : ""))),
+            h("button", { class: "btn quiet", onclick: () => go("#/session?mode=chapitre&deck=" + encodeURIComponent(d.id)) }, "Juste cette partie"));
+        })) : null);
+    })
+  ]));
+  if (focus) setTimeout(() => { const el = document.getElementById("chap-" + focus); if (el) el.scrollIntoView({ block: "start", behavior: "smooth" }); }, 120);
   return view;
 }
 
 function vSession(q) {
-  const mode = q.get("mode") || "jour", deck = q.get("deck");
+  const mode = q.get("mode") || "jour", info = scopeInfo(q);
   if (!sess || sess.key !== location.hash) {
-    const f = deck ? c => c.deck === deck : null;
+    const f = scopeFilter(q);
     let queue;
     if (mode === "chapitre") queue = shuffle(sortedCards(f).map(c => c.id));
     else { const due = shuffle(dueList(f).map(c => c.id)), nw = newList(f).map(c => c.id); queue = []; let i = 0, j = 0; while (i < due.length || j < nw.length) { if (i < due.length) queue.push(due[i++]); if (i < due.length) queue.push(due[i++]); if (j < nw.length) queue.push(nw[j++]); } queue = queue.slice(0, MAX_SESSION); }
-    if (!queue.length) { setTimeout(() => go("#/cartes"), 0); return h("div"); }
-    sess = { key: location.hash, mode, deck, queue, i: 0, res: { ok: 0, mid: 0, ko: 0 }, missed: [], again: {}, start: Date.now() };
+    if (!queue.length) { setTimeout(() => { toast("Rien à revoir ici aujourd'hui. Essaie la veille d'interro."); go(info.back); }, 0); return h("div"); }
+    sess = { key: location.hash, mode, titre: info.titre, back: info.back, queue, i: 0, res: { ok: 0, mid: 0, ko: 0 }, missed: [], again: {}, start: Date.now() };
   }
   document.body.classList.add("immersive");
   const el = {};
@@ -367,7 +437,8 @@ function vSession(q) {
   function show() {
     const c = S.cards[sess.queue[sess.i]]; if (!c) return next();
     const d = deckOf(c), col = subjColor(d.matiere);
-    wrap.style.setProperty("--subj", col);
+    wrap.style.setProperty("--subj", col); wrap.style.setProperty("--subjCard", d.matiere ? d.matiere.couleur : "#2a46c4");
+    el.flash.classList.remove("enter"); void el.flash.offsetWidth; el.flash.classList.add("enter");
     for (const ch of [el.chipF, el.chipB]) ch.textContent = (d.matiere ? d.matiere.nom : "") + (c.type ? " · " + c.type : "");
     el.notF.textContent = c.notion || "";
     el.recto.textContent = c.recto || ""; el.recto.className = "recto" + (/^[\s\-–−0-9\/et]+$/.test(c.recto || "") && (c.recto || "").length < 16 ? " date" : "");
@@ -388,7 +459,7 @@ function vSession(q) {
     if (el.flash.classList.contains("flipped")) return;
     const typed = fcMode === "ecrite";
     if (typed) { const a = el.ta.value.trim(); el.mine.textContent = a ? "Ta réponse : " + a : "Tu n'as rien écrit."; el.mine.hidden = false; el.answer.hidden = true; }
-    el.flash.classList.add("flipped"); el.reveal.hidden = true; el.grades.hidden = false;
+    el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.grades.hidden = false;
   }
   function grade(g) {
     if (!el.flash.classList.contains("flipped")) return;
@@ -406,8 +477,7 @@ function vSession(q) {
   function next() { sess.i++; if (sess.i >= sess.queue.length) finish(); else show(); }
   function logSession() {
     const r = sess.res, n = r.ok + r.mid + r.ko; if (!n || sess.logged) return; sess.logged = true;
-    const d = sess.deck ? S.decks[sess.deck] : null;
-    P.sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), mode: sess.mode, deck: sess.deck || null, titre: d ? d.titre : "Cartes du jour", ok: r.ok, mid: r.mid, ko: r.ko, min: Math.max(1, Math.round((Date.now() - sess.start) / 60000)), app: DEVICE });
+    P.sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), t: Date.now(), mode: sess.mode, titre: sess.titre + (sess.mode === "chapitre" ? " · veille d'interro" : ""), ok: r.ok, mid: r.mid, ko: r.ko, min: Math.max(1, Math.round((Date.now() - sess.start) / 60000)), app: DEVICE });
     if (P.sessions.length > 300) P.sessions = P.sessions.slice(-300);
     saveLocal();
   }
@@ -415,14 +485,15 @@ function vSession(q) {
     logSession(); syncNow();
     const r = sess.res, n = r.ok + r.mid + r.ko;
     wrap.hidden = true; end.hidden = false;
+    if (n && r.ok / n >= .6) confetti();
     end.replaceChildren(h("div", { class: "done" },
       h("div", null, h("div", { class: "eyebrow" }, "Session terminée"), h("h2", { style: { fontSize: "1.6rem", marginTop: "4px" } }, !n ? "Session vide" : r.ok / n >= .85 ? "Excellent, tu maîtrises" : r.ok / n >= .6 ? "Bien joué" : "Tu progresses, continue demain")),
       h("div", { class: "tally" }, h("div", { class: "ok" }, h("b", null, r.ok), "Je savais"), h("div", { class: "mid" }, h("b", null, r.mid), "Presque"), h("div", { class: "ko" }, h("b", null, r.ko), "À revoir")),
       sess.missed.length ? h("div", null, h("p", { class: "small", style: { margin: "0 0 8px" } }, "Les cartes ratées reviennent demain :"), h("ul", { class: "missed" }, sess.missed.map(id => { const c = S.cards[id]; return c ? h("li", null, c.recto, h("span", null, c.verso)) : null; }))) : null,
-      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { sess = null; go("#/cartes"); } }, "Retour aux cartes"))));
+      h("div", { class: "row" }, h("button", { class: "btn", onclick: () => { const b = sess.back; sess = null; go(b); } }, "Retour aux cartes"))));
     window.scrollTo({ top: 0 });
   }
-  function quit() { logSession(); sess = null; hush(); go("#/cartes"); }
+  function quit() { logSession(); const b = sess.back; sess = null; hush(); go(b); }
   const onKey = e => {
     if (!sess || wrap.hidden) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
     if (e.key === " " || e.key === "Enter") { if (!el.flash.classList.contains("flipped")) { e.preventDefault(); flip(); } }
@@ -483,7 +554,7 @@ function vSettings() {
     catch (e) { toast("Pas de réseau : réessaie dans un instant."); return; }
     SYNC.code = code; lsSet("rev.code", code); await syncNow(); paint(); toast("Progression synchronisée.");
   };
-  const theme = lsGet("rev.theme", "auto");
+  const theme = lsGet("rev.theme", "dark");
   const seg = h("div", { class: "segmented", role: "group", "aria-label": "Apparence" }, [["auto", "Auto"], ["light", "Clair"], ["dark", "Sombre"]].map(([v, l]) => h("button", { "aria-pressed": theme === v ? "true" : "false", onclick: () => { lsSet("rev.theme", v); applyTheme(); render(); } }, l)));
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   return h("div", { class: "view" },
@@ -502,7 +573,11 @@ function vSettings() {
 }
 
 /* ---------------- thème, installation, service worker ---------------- */
-function applyTheme() { const t = lsGet("rev.theme", "auto"); if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t; }
+function applyTheme() {
+  const t = lsGet("rev.theme", "dark"), dark = t === "dark" || (t === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  for (const mt of document.querySelectorAll('meta[name="theme-color"]')) mt.setAttribute("content", dark ? "#0b0e14" : "#f3efe6");
+}
 let installEvt = null;
 addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; });
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
@@ -510,10 +585,38 @@ if ("serviceWorker" in navigator && location.protocol !== "file:") {
     reg.addEventListener("updatefound", () => { const w = reg.installing; if (w) w.addEventListener("statechange", () => { if (w.state === "installed" && navigator.serviceWorker.controller) toast("Nouvelle version prête : elle s'appliquera à la prochaine ouverture."); }); });
   }).catch(() => {}));
 }
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => render());
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { applyTheme(); render(); });
+
+/* ---------------- ouverture animée et confettis ---------------- */
+function splash() {
+  let seen = false; try { seen = sessionStorage.getItem("rev.splash") === "1"; sessionStorage.setItem("rev.splash", "1"); } catch (e) {}
+  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const tick = '<svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.3L18.5 7.5"/></svg>';
+  const el = h("div", { class: "splash", "aria-hidden": "true" },
+    h("div", { class: "stack" }, h("div", { class: "c c1" }), h("div", { class: "c c2" }), h("div", { class: "c c3" }), h("div", { class: "c c4" }, h("span", null, "M")), h("div", { class: "tick", html: tick })),
+    h("div", { class: "word" }, "Révisions", h("small", null, "Seconde · " + (CFG.prenom || ""))));
+  const kill = () => el.remove();
+  el.addEventListener("click", kill); el.addEventListener("animationend", e => { if (e.animationName === "splashOut") kill(); });
+  document.body.append(el); setTimeout(kill, 2600);
+}
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cv = h("canvas", { class: "confetti" }); document.body.append(cv);
+  const dpr = Math.min(devicePixelRatio || 1, 2), W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr, ctx = cv.getContext("2d");
+  const cols = ["#a68cf0", "#e57b9f", "#f2b04a", "#5fd39e", "#8f9cff", "#5cc3df"];
+  const ps = Array.from({ length: 140 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .35, vx: (Math.random() - .5) * 16 * dpr, vy: (-Math.random() * 14 - 6) * dpr, s: (5 + Math.random() * 6) * dpr, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: cols[Math.floor(Math.random() * cols.length)] }));
+  const t0 = performance.now();
+  const step = t => {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of ps) { p.vy += .45 * dpr; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .66); ctx.restore(); }
+    if (t - t0 < 2200) requestAnimationFrame(step); else cv.remove();
+  };
+  requestAnimationFrame(step);
+}
 
 /* ---------------- démarrage ---------------- */
 applyTheme();
+splash();
 render();
 loadCatalogue().then(() => { render(); syncNow({ rerender: true }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
 })();
