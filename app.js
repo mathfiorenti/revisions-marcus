@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 19 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 19 h 10"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
