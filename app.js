@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 19 h 10"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 19 h 30"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -436,7 +436,9 @@ function vSession(q) {
   const el = {};
   const wrap = h("div", { class: "view fc-wrap" },
     h("div", { class: "topbar" }, h("button", { class: "sortie", onclick: () => terminer(), "aria-label": "Terminer la séance" }, svg("close"), "Terminer"), el.track = h("div", { class: "track" }, h("i")), el.count = h("span", { class: "count" })),
-    h("div", { class: "stage" }, el.flash = h("div", { class: "flash", role: "button", tabindex: "0", "aria-label": "Retourner la carte", onclick: () => flip() },
+    el.piles = h("div", { class: "piles", "aria-label": "Tes piles de cartes" }, [["ko", "À revoir"], ["mid", "Presque"], ["ok", "Je savais"]].map(([g, lab]) =>
+      el["pile_" + g] = h("div", { class: "pile p-" + g }, h("span", { class: "stack" }, h("i"), h("i"), h("i"), h("i")), h("b", null, "0"), h("small", null, lab)))),
+    el.stage = h("div", { class: "stage" }, el.flash = h("div", { class: "flash", role: "button", tabindex: "0", "aria-label": "Retourner la carte", onclick: () => flip() },
       h("div", { class: "face front" }, h("div", { class: "face-top" }, el.chipF = h("span", { class: "chip" }), el.notF = h("span", { class: "notion" })), el.recto = h("p", { class: "recto" }), el.hint = h("div", { class: "hint" })),
       h("div", { class: "face back", "aria-live": "polite" }, h("div", { class: "face-top" }, el.chipB = h("span", { class: "chip" }), h("button", { class: "icon-btn", style: { padding: "4px 6px" }, onclick: e => { e.stopPropagation(); speak(el.verso.textContent); }, "aria-label": "Lire à voix haute" }, svg("speak"))), el.q = h("div", { class: "q" }), el.mine = h("div", { class: "mine" }), el.verso = h("p", { class: "verso" }), el.plus = h("div", { class: "plus" })))),
     el.answer = h("div", { class: "answer" }, el.ta = h("textarea", { rows: "3", lang: "fr", placeholder: "Écris ta réponse…", onkeydown: e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); flip(); } } }), h("button", { class: "btn", onclick: () => flip() }, "Voir la réponse")),
@@ -472,10 +474,12 @@ function vSession(q) {
     stopEcoute(); el.verdict.hidden = true; el.verdict.replaceChildren(); sess.note = null; hush();
     el.answer.hidden = !typed; el.reveal.hidden = typed || oral; el.oral.hidden = !oral; el.grades.hidden = true;
     for (const b of el.grades.children) b.classList.remove("suggere");
-    el.hint.textContent = oral ? "Réponds à voix haute." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
+    el.hint.textContent = oral ? "Réponds à voix haute." : fcMode === "oral" && !SR ? "Ce navigateur ne permet pas la dictée (utilise Chrome ou Edge) : écris ta réponse ci-dessous." : typed ? "Écris ta réponse ci-dessous, puis compare." : "Réponds dans ta tête, puis retourne la carte.";
     if (oral) { el.oralTxt.textContent = "Touche le micro et réponds à voix haute"; el.oralTxt.classList.remove("live"); if (mainsLibres()) setTimeout(() => speak(c.recto, () => setTimeout(() => { if (sess && S.cards[sess.queue[sess.i]] === c && !el.flash.classList.contains("flipped")) micToggle(true); }, 700)), 300); }
     const p = pc(c.id) || { b: 0 }, nb = Math.min(6, (p.b || 0) + 1);
     el.okL.textContent = sess.mode === "chapitre" && p.l && p.d > today() ? "pas de changement" : INT[nb] <= 1 ? "demain" : "dans " + INT[nb] + " j";
+    const reste = sess.queue.length - sess.i - 1; el.stage.dataset.reste = reste > 2 ? "2" : String(Math.max(0, reste));
+    if (!sess.vol) peindrePiles();
     const tot = sess.queue.length; el.count.textContent = Math.min(sess.i + 1, tot) + " / " + tot; el.track.firstChild.style.width = (sess.i / tot * 100) + "%";
     if (!oral) hush();
     if (typed) setTimeout(() => el.ta.focus({ preventScroll: true }), 50);
@@ -495,7 +499,10 @@ function vSession(q) {
       onError: err => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
         if (err === "not-allowed" || err === "service-not-allowed") {
           // iPhone : soit l'autorisation micro est refusée, soit la dictée d'Apple est coupée / indisponible dans l'appli installée.
-          el.oralTxt.replaceChildren(h("span", null, err === "service-not-allowed"
+          const ordi = DEVICE === "Ordinateur";
+          el.oralTxt.replaceChildren(h("span", null, ordi
+              ? "Le navigateur bloque le micro. Clique sur l'icône à gauche de l'adresse (cadenas ou réglages), mets « Micro » sur « Autoriser », puis recharge la page. Sous Windows, vérifie aussi Paramètres > Confidentialité et sécurité > Microphone (accès autorisé pour les applications de bureau). La dictée marche dans Chrome et Edge, pas dans Firefox."
+              : err === "service-not-allowed"
               ? "La dictée de l'iPhone n'est pas disponible ici. Vérifie : Réglages > Général > Clavier > « Activer la dictée ». Sinon, réponds par écrit."
               : "Le micro est refusé. Vérifie : Réglages > Safari > Micro sur « Demander » ou « Autoriser », et que « Activer la dictée » est allumé (Réglages > Général > Clavier). Sinon, réponds par écrit."),
             h("button", { class: "btn quiet", type: "button", style: { marginTop: "10px" }, onclick: () => { fcMode = "ecrite"; show(); } }, "J'écris ma réponse à la place"));
@@ -562,9 +569,36 @@ function vSession(q) {
     P.cards[id] = p; P.days[t] = (P.days[t] || 0) + 1;
     sess.res[g]++;
     if (g === "ko") { if (!sess.missed.includes(id)) sess.missed.push(id); sess.again[id] = (sess.again[id] || 0) + 1; if (sess.again[id] <= 2) sess.queue.push(id); }
-    stopEcoute(); hush(); saveLocal(); next();
+    stopEcoute(); hush(); saveLocal();
+    envol(g); next();
     // iPad / iPhone : le micro ne peut s'ouvrir que pendant un toucher, on l'ouvre donc tout de suite pour la carte suivante
     if (ecouterEnsuite && sess && !wrap.hidden && !el.flash.classList.contains("flipped")) micToggle(true);
+  }
+  function peindrePiles(bump) {
+    for (const g of ["ko", "mid", "ok"]) {
+      const pl = el["pile_" + g], n = sess.res[g];
+      pl.querySelector("b").textContent = n;
+      pl.dataset.n = n >= 12 ? "4" : n >= 6 ? "3" : n >= 3 ? "2" : n >= 1 ? "1" : "0";
+      if (bump === g) { pl.classList.remove("bump"); void pl.offsetWidth; pl.classList.add("bump"); }
+    }
+  }
+  function envol(g) {
+    // la carte notée s'envole et rétrécit jusqu'à sa pile, qui grossit
+    const cible = el["pile_" + g].querySelector(".stack");
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches || !el.flash.animate) { peindrePiles(g); return; }
+    const a = el.flash.getBoundingClientRect(), b = cible.getBoundingClientRect();
+    const fantome = el.flash.cloneNode(true); fantome.classList.remove("enter", "flipped"); fantome.classList.add("fantome"); sess.vol = (sess.vol || 0) + 1;
+    Object.assign(fantome.style, { position: "fixed", left: a.left + "px", top: a.top + "px", width: a.width + "px", height: a.height + "px", margin: 0, zIndex: 50, pointerEvents: "none" });
+    document.body.append(fantome);
+    const dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + a.height / 2), k = Math.max(.08, b.width / a.width);
+    const rot = g === "ko" ? -14 : g === "ok" ? 14 : 0;
+    const anim = fantome.animate([
+      { transform: "translate(0,0) scale(1)", opacity: 1 },
+      { transform: `translate(${dx * .35}px,${dy * .2 - 30}px) rotate(${rot / 2}deg) scale(.55)`, opacity: 1, offset: .45 },
+      { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg) scale(${k})`, opacity: .2 }
+    ], { duration: 560, easing: "cubic-bezier(.35,.1,.25,1)" });
+    const atterrir = () => { if (!fantome.isConnected) return; fantome.remove(); if (sess) { sess.vol = Math.max(0, (sess.vol || 1) - 1); peindrePiles(g); } };
+    anim.onfinish = atterrir; setTimeout(atterrir, 900);
   }
   function next() { sess.i++; if (sess.i >= sess.queue.length) finish(); else show(); }
   function logSession() {
