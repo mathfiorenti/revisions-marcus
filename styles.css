@@ -613,3 +613,13 @@ a.back:hover{color:var(--ink);filter:brightness(1.1)}
 .mic.attente{animation:micAttente 1.2s ease-in-out infinite}
 @keyframes micAttente{50%{transform:scale(1.08);box-shadow:0 0 0 10px color-mix(in srgb,var(--accent) 22%,transparent)}}
 @media (prefers-reduced-motion:reduce){.mic.attente{animation:none}}
+
+/* ===== Séance : série, rafale ===== */
+.serie-banner{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 70px);transform:translateX(-50%);z-index:60;padding:10px 18px;border-radius:999px;font-weight:800;font-size:1rem;white-space:nowrap;
+  color:#2b1600;background:linear-gradient(135deg,#ffd36b,#ff8a3d);box-shadow:0 10px 30px rgb(255 138 61 / .45);pointer-events:none}
+.serie-banner.go{animation:serieIn 2.2s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes serieIn{0%{opacity:0;transform:translate(-50%,-14px) scale(.7)}12%{opacity:1;transform:translate(-50%,0) scale(1.08)}20%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px)}}
+.opt-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-edge)}
+.opt-row span{display:flex;flex-direction:column;gap:2px}
+.opt-row small{color:var(--muted);font-size:.78rem}
+@media (prefers-reduced-motion:reduce){.serie-banner.go{animation:none}}
