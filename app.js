@@ -3,6 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
+const APP_VERSION = "31/10 · 18 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -493,7 +494,7 @@ function vSession(q) {
         if (!t) { el.oralTxt.textContent = "Je n'ai rien entendu. Touche le micro pour réessayer."; return; }
         corrigerOral(t); },
       onError: err => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
-        el.oralTxt.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Le micro est bloqué : autorise-le pour cette appli (Réglages de l'iPhone > Safari > Micro), puis réessaie." : auto ? "Touche le micro pour répondre." : "Le micro n'a pas fonctionné. Réessaie, ou passe en réponse écrite."; }
+        el.oralTxt.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Le micro est bloqué : autorise-le pour cette appli (Réglages de l'iPhone > Safari > Micro), puis réessaie." : auto ? "Touche le micro pour répondre." : "Le micro n'a pas démarré (" + err + "). Touche-le encore une fois."; }
     });
   }
   function corrigerOral(t) {
@@ -508,7 +509,7 @@ function vSession(q) {
     let n = null, ia = null;
     if (SYNC.code && navigator.onLine) {
       try {
-        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 9000);
+        const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 15000);
         const r = await fetch(CFG.supabaseUrl + "/functions/v1/corriger", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey },
           body: JSON.stringify({ code: SYNC.code, matiere: d.matiere ? d.matiere.nom : "", recto: c.recto, verso: c.verso, plus: c.plus || "", reponse: t }) });
         clearTimeout(to);
@@ -638,16 +639,17 @@ async function audioNaturel(t) {
   try {
     const r = await fetch(CFG.supabaseUrl + "/functions/v1/voix", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey }, body: JSON.stringify({ code: SYNC.code, texte: t, voix: mode.slice(4) }) });
     clearTimeout(to);
-    if (r.status === 503) { voixNatOK = false; lsSet("rev.voixNatOK", false); return null; }
-    if (!r.ok) return null;
-    const d = await r.json(); if (!d.audio) return null;
-    voixNatOK = true; lsSet("rev.voixNatOK", true);
+    if (r.status === 503) { voixNatOK = false; voixEtat = "La voix naturelle n'est pas activée sur le serveur."; return null; }
+    if (!r.ok) { voixEtat = r.status === 401 ? "Code famille refusé : vérifie-le plus haut." : r.status === 429 ? "Limite du jour atteinte : voix de l'appareil jusqu'à demain." : "Le serveur de voix n'a pas répondu (" + r.status + ")."; return null; }
+    const d = await r.json(); if (!d.audio) { voixEtat = "Réponse vide du serveur de voix."; return null; }
+    voixNatOK = true; voixEtat = "";
     const bin = atob(d.audio), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
     const url = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
     if (cacheAudio.size > 60) { const k = cacheAudio.keys().next().value; URL.revokeObjectURL(cacheAudio.get(k)); cacheAudio.delete(k); }
     cacheAudio.set(cle, url); return url;
-  } catch (e) { clearTimeout(to); return null; }
+  } catch (e) { clearTimeout(to); voixEtat = "Pas de réponse du serveur de voix (réseau lent ?)."; return null; }
 }
+let voixEtat = "";
 ["pointerdown", "touchend", "click", "keydown"].forEach(ev => document.addEventListener(ev, debloquerVoix, { capture: true, passive: true }));
 function speak(t, onend) {
   const id = ++lectureId; let done = false;
@@ -658,11 +660,13 @@ function speak(t, onend) {
     audioNaturel(t).then(url => {
       if (id !== lectureId) return;
       if (!url) { parlerAppareil(t, id, fin); return; }
-      lecteur.onended = fin; lecteur.onerror = () => parlerAppareil(t, id, fin);
-      lecteur.src = url; const pr = lecteur.play(); if (pr && pr.catch) pr.catch(() => parlerAppareil(t, id, fin));
+      let bascule = false; const repli = why => { if (bascule || id !== lectureId) return; bascule = true; voixEtat = why; parlerAppareil(t, id, fin); };
+      lecteur.onended = fin; lecteur.onerror = () => repli("L'iPad n'a pas pu lire le son reçu.");
+      lecteur.src = url; const pr = lecteur.play(); if (pr && pr.catch) pr.catch(() => repli("L'iPad a bloqué la lecture du son : touche l'écran une fois puis réessaie."));
     });
     return;
   }
+  if (choixVoix().startsWith("nat:") && !SYNC.code) voixEtat = "Il faut le code famille pour les voix naturelles.";
   parlerAppareil(t, id, fin);
 }
 function parlerAppareil(t, id, fin) {
@@ -789,7 +793,12 @@ function ecouter({ onInterim, onFinal, onError, onStart, silence = 2600 }) {
     let parti = false; const pret = () => { if (parti) return; parti = true; onStart && onStart(); };
     r.onstart = pret; r.onaudiostart = pret;
     r.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + " "; courant = t; if (t.trim()) parle = true; onInterim && onInterim(total()); armerSilence(); };
-    r.onerror = e => { if (fini) return; if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") { fini = true; clearTimeout(garde); onError && onError(e.error); } };
+    r.onerror = e => {
+      if (fini) return;
+      // audio-capture : le son de la voix occupait encore l'audio de l'iPad ; on relance une fois, juste après.
+      if (e.error === "audio-capture" && !parti && relances < 2) { relances++; r.onend = null; setTimeout(() => { if (!fini) { try { lancer(); } catch (x) { fini = true; clearTimeout(garde); onError && onError("audio-capture"); } } }, 350); return; }
+      if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") { fini = true; clearTimeout(garde); onError && onError(e.error); }
+    };
     r.onend = () => { if (fini) return; base = total(); courant = ""; if (relances++ < 12) { try { lancer(); } catch (e) { finir(); } } else finir(); };
     r.start();
   }
@@ -900,8 +909,28 @@ function vSettings() {
       h("div", { class: "install" }, h("b", null, "1"), h("span", null, "Sur iPhone ou iPad, ouvre cette page dans Safari."), h("b", null, "2"), h("span", null, "Touche le bouton Partager (le carré avec une flèche vers le haut)."), h("b", null, "3"), h("span", null, "Choisis « Sur l'écran d'accueil », puis « Ajouter »."), h("b", null, "4"), h("span", null, "Sur Android : menu ⋮ de Chrome, puis « Installer l'application ».")),
       installEvt ? h("button", { class: "btn", onclick: async () => { installEvt.prompt(); installEvt = null; } }, "Installer maintenant") : null),
     h("section", { class: "card" }, h("h2", null, "Mise à jour"),
-      h("p", { class: "small", style: { margin: 0 } }, "Les nouveaux contenus arrivent tout seuls à l'ouverture. Version des contenus : " + (S.cat && S.cat.version || "?") + "."),
-      h("div", { class: "row" }, h("button", { class: "btn quiet", onclick: async () => { try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch (e) {} location.reload(); } }, "Vérifier les mises à jour"))));
+      h("p", { class: "small", style: { margin: 0 } }, "Version de l'appli : ", h("b", null, APP_VERSION), " · contenus : " + (S.cat && S.cat.version || "?") + ". Les nouveautés arrivent toutes seules à l'ouverture."),
+      h("div", { class: "row" }, h("button", { class: "btn quiet", onclick: e => miseAJour(e.currentTarget) }, "Vérifier les mises à jour"))));
+}
+async function miseAJour(btn) {
+  // Attend que la nouvelle version soit vraiment installée avant de relancer l'appli.
+  if (btn) { btn.disabled = true; btn.textContent = "Recherche de la nouvelle version…"; }
+  try {
+    const reg = "serviceWorker" in navigator && await navigator.serviceWorker.getRegistration();
+    if (reg) {
+      await reg.update();
+      const w = reg.installing || reg.waiting;
+      if (w) {
+        await new Promise(res => {
+          const to = setTimeout(res, 15000);
+          const ok = () => { clearTimeout(to); res(); };
+          if (w.state === "activated") ok(); else w.addEventListener("statechange", () => { if (w.state === "activated") ok(); });
+          try { w.postMessage("skipWaiting"); } catch (e) {}
+        });
+      }
+    }
+  } catch (e) {}
+  location.reload();
 }
 
 function carteVoix() {
@@ -910,10 +939,12 @@ function carteVoix() {
   const peindre = () => {
     let vs = []; try { vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang)); } catch (e) {}
     const mode = choixVoix();
-    const bouton = (val, titre, sous) => h("button", { class: "mode", role: "radio", "aria-checked": mode === val ? "true" : "false", onclick: () => { lsSet("rev.voixMode", val); if (val.startsWith("dev:")) { lsSet("rev.voix", val.slice(4)); voixFr = null; } peindre(); speak(essai); } }, titre, h("small", null, sous));
+    const essayer = () => { etat.textContent = "Lecture en cours…"; etat.className = "small"; voixEtat = ""; speak(essai, () => { const nat = choixVoix().startsWith("nat:"); etat.className = "small " + (nat && voixEtat ? "etat-ko" : "etat-ok"); etat.textContent = !nat ? "Voix de l'appareil utilisée." : voixEtat ? "⚠️ " + voixEtat + " La voix de l'appareil a pris le relais." : "✓ Voix naturelle en ligne : tout fonctionne."; }); };
+    const bouton = (val, titre, sous) => h("button", { class: "mode", role: "radio", "aria-checked": mode === val ? "true" : "false", onclick: () => { lsSet("rev.voixMode", val); if (val.startsWith("dev:")) { lsSet("rev.voix", val.slice(4)); voixFr = null; } peindre(); essayer(); } }, titre, h("small", null, sous));
+    const etat = h("p", { class: "small", style: { margin: "4px 0 0" }, "aria-live": "polite" }, "");
     box.replaceChildren(...[h("h2", null, "Voix de lecture"),
       h("div", { class: "small", style: { margin: 0 } }, "Voix naturelles (en ligne) : les plus agréables, il faut du réseau et le code famille."),
-      voixNatOK === false ? h("div", { class: "pill off" }, "Voix naturelles pas encore activées : l'appli utilise la voix de l'appareil") : null,
+      h("div", { class: "row" }, h("button", { class: "btn quiet", type: "button", onclick: essayer }, svg("speak"), "Tester la voix")), etat,
       h("div", { class: "voix" }, VOIX_NAT.femmes.map(n => bouton("nat:" + n, n, "Voix féminine")), VOIX_NAT.hommes.map(n => bouton("nat:" + n, n, "Voix masculine"))),
       vs.length ? h("div", { class: "small", style: { margin: "6px 0 0" } }, "Voix de l'appareil (hors ligne) :") : null,
       vs.length ? h("div", { class: "voix" }, vs.map(v => bouton("dev:" + v.voiceURI, v.name.replace(/\s*\(.*\)\s*/, " ").trim(), v.lang))) : null].filter(Boolean));

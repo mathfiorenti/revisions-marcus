@@ -500,3 +500,6 @@ body,:root[data-theme="dark"] body,:root[data-theme="light"] body{background:tra
 .verdict-o .suite svg{width:20px;height:20px}
 
 .mic.prep{background:linear-gradient(135deg,#f2c063,#e59a3a);animation:pulse-t .8s ease-in-out infinite}
+
+.etat-ok{color:var(--ok)}
+.etat-ko{color:var(--mid)}
