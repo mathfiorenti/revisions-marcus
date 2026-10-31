@@ -591,6 +591,8 @@ function frVoice() {
   if (voixFr) return voixFr;
   try {
     const vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang));
+    const choix = lsGet("rev.voix", ""); const pref = choix && vs.find(v => v.voiceURI === choix || v.name === choix);
+    if (pref) return (voixFr = pref);
     const score = v => (/fr[-_]FR/i.test(v.lang) ? 4 : 0) + (/(premium|enhanced|am[ée]lior|natural|neural|siri)/i.test(v.name + " " + v.voiceURI) ? 10 : 0) + (/(Amélie|Audrey|Thomas|Marie|Aurélie|Google)/i.test(v.name) ? 2 : 0) - (/(compact|eloquence|grandma|grandpa|jacques|eddy|flo|reed|rocko|sandy|shelley)/i.test(v.name + " " + v.voiceURI) ? 8 : 0);
     voixFr = vs.sort((a, b) => score(b) - score(a))[0] || null;
   } catch (e) {}
@@ -835,6 +837,7 @@ function vSettings() {
       h("div", { class: "field" }, h("label", { for: "code" }, "Code"), input), status,
       h("div", { class: "row" }, h("button", { class: "btn", onclick: save }, "Enregistrer"), SYNC.code ? h("button", { class: "btn quiet", onclick: async () => { await syncNow({ rerender: false }); paint(); toast(SYNC.state === "ok" ? "Synchronisé." : "Synchro impossible pour l'instant."); } }, "Synchroniser maintenant") : null)),
     h("section", { class: "card" }, h("h2", null, "Apparence"), seg),
+    carteVoix(),
     h("section", { class: "card" }, h("h2", null, "Correction par une IA"),
       h("p", { class: "small", style: { margin: 0 } }, "En réponse orale ou écrite, ta réponse est corrigée par une intelligence artificielle (Claude, d'Anthropic), pas par une personne. Elle ne sert qu'à corriger la carte : ta réponse n'est pas conservée, et l'IA ne discute de rien d'autre. Sans réseau, l'appli corrige par mots-clés. Appli familiale, utilisée sous la responsabilité des parents, dans le respect du RGPD.")),
     standalone ? null : h("section", { class: "card" }, h("h2", null, "Installer l'appli"),
@@ -843,6 +846,21 @@ function vSettings() {
     h("section", { class: "card" }, h("h2", null, "Mise à jour"),
       h("p", { class: "small", style: { margin: 0 } }, "Les nouveaux contenus arrivent tout seuls à l'ouverture. Version des contenus : " + (S.cat && S.cat.version || "?") + "."),
       h("div", { class: "row" }, h("button", { class: "btn quiet", onclick: async () => { try { const reg = await navigator.serviceWorker.getRegistration(); if (reg) await reg.update(); } catch (e) {} location.reload(); } }, "Vérifier les mises à jour"))));
+}
+
+function carteVoix() {
+  const box = h("section", { class: "card" }, h("h2", null, "Voix de lecture"));
+  const peindre = () => {
+    let vs = []; try { vs = (speechSynthesis.getVoices() || []).filter(v => /^fr/i.test(v.lang)); } catch (e) {}
+    const actuelle = frVoice();
+    box.replaceChildren(h("h2", null, "Voix de lecture"),
+      vs.length ? h("div", { class: "small", style: { margin: 0 } }, "La voix qui lit les questions et les corrections. Les voix « Premium » ou « Améliorée » sont les plus naturelles.") : h("div", { class: "small" }, "Aucune voix française trouvée sur cet appareil."),
+      vs.length ? h("div", { class: "voix" }, vs.sort((a, b) => (/premium|enhanced|am[ée]lior/i.test(b.name + b.voiceURI) - /premium|enhanced|am[ée]lior/i.test(a.name + a.voiceURI)) || a.name.localeCompare(b.name)).map(v =>
+        h("button", { class: "mode", role: "radio", "aria-checked": actuelle && actuelle.voiceURI === v.voiceURI ? "true" : "false", onclick: () => { lsSet("rev.voix", v.voiceURI); voixFr = v; peindre(); speak("Bonjour Marcus, c'est moi qui lirai tes cartes."); } },
+          v.name.replace(/\s*\(.*\)\s*/, " ").trim(), h("small", null, (/premium/i.test(v.name + v.voiceURI) ? "Premium · " : /enhanced|am[ée]lior/i.test(v.name + v.voiceURI) ? "Améliorée · " : "") + v.lang)))) : null);
+  };
+  peindre(); try { speechSynthesis.addEventListener("voiceschanged", peindre, { once: true }); } catch (e) {}
+  return box;
 }
 
 /* ---------------- thème, installation, service worker ---------------- */
