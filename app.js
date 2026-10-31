@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 18 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "31/10 · 18 h 20"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -494,7 +494,15 @@ function vSession(q) {
         if (!t) { el.oralTxt.textContent = "Je n'ai rien entendu. Touche le micro pour réessayer."; return; }
         corrigerOral(t); },
       onError: err => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
-        el.oralTxt.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Le micro est bloqué : autorise-le pour cette appli (Réglages de l'iPhone > Safari > Micro), puis réessaie." : auto ? "Touche le micro pour répondre." : "Le micro n'a pas démarré (" + err + "). Touche-le encore une fois."; }
+        if (err === "not-allowed" || err === "service-not-allowed") {
+          // iPhone : soit l'autorisation micro est refusée, soit la dictée d'Apple est coupée / indisponible dans l'appli installée.
+          el.oralTxt.replaceChildren(h("span", null, err === "service-not-allowed"
+              ? "La dictée de l'iPhone n'est pas disponible ici. Vérifie : Réglages > Général > Clavier > « Activer la dictée ». Sinon, réponds par écrit."
+              : "Le micro est refusé. Vérifie : Réglages > Safari > Micro sur « Demander » ou « Autoriser », et que « Activer la dictée » est allumé (Réglages > Général > Clavier). Sinon, réponds par écrit."),
+            h("button", { class: "btn quiet", type: "button", style: { marginTop: "10px" }, onclick: () => { fcMode = "ecrite"; show(); } }, "J'écris ma réponse à la place"));
+          return;
+        }
+        el.oralTxt.textContent = auto ? "Touche le micro pour répondre." : "Le micro n'a pas démarré (" + err + "). Touche-le encore une fois."; }
     });
   }
   function corrigerOral(t) {
