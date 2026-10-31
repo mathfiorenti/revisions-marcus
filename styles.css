@@ -495,3 +495,8 @@ body,:root[data-theme="dark"] body,:root[data-theme="light"] body{background:tra
 .sortie:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 .voix{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+
+.verdict-o .suite{margin-top:4px;width:100%}
+.verdict-o .suite svg{width:20px;height:20px}
+
+.mic.prep{background:linear-gradient(135deg,#f2c063,#e59a3a);animation:pulse-t .8s ease-in-out infinite}

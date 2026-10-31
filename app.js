@@ -445,14 +445,14 @@ function vSession(q) {
       el.oralTxt = h("div", { class: "oral-txt", "aria-live": "polite" }, "Touche le micro et réponds à voix haute"),
       h("div", { class: "oral-tools" },
         h("button", { class: "icon-btn", type: "button", onclick: () => speak(S.cards[sess.queue[sess.i]].recto) }, svg("speak"), h("span", { class: "lbl" }, "Relire la question")),
-        el.hands = h("button", { class: "icon-btn", type: "button", "aria-pressed": lsGet("rev.mainsLibres", false) ? "true" : "false", onclick: e => { const v = e.currentTarget.getAttribute("aria-pressed") !== "true"; e.currentTarget.setAttribute("aria-pressed", v ? "true" : "false"); lsSet("rev.mainsLibres", v); if (v) toast("Mains libres : questions lues, écoute et passage automatiques"); } }, "🎧", h("span", { class: "lbl" }, "Mains libres")),
+
         h("button", { class: "icon-btn", type: "button", onclick: () => { stopEcoute(); flip(); } }, "Je ne sais pas"))),
     el.verdict = h("div", { class: "verdict-o", hidden: true }),
     el.reveal = h("button", { class: "btn", onclick: () => flip() }, "Retourner la carte"),
     el.grades = h("div", { class: "grades" },
-      h("button", { class: "g ko", onclick: () => grade("ko") }, "À revoir", h("small", null, "tout à l'heure")),
-      h("button", { class: "g mid", onclick: () => grade("mid") }, "Presque", h("small", null, "demain")),
-      el.okBtn = h("button", { class: "g ok", onclick: () => grade("ok") }, "Je savais", el.okL = h("small"))));
+      h("button", { class: "g ko", onclick: () => grade("ko", true) }, "À revoir", h("small", null, "tout à l'heure")),
+      h("button", { class: "g mid", onclick: () => grade("mid", true) }, "Presque", h("small", null, "demain")),
+      el.okBtn = h("button", { class: "g ok", onclick: () => grade("ok", true) }, "Je savais", el.okL = h("small"))));
   const end = h("div", { class: "view fc-wrap", hidden: true });
   const root = h("div", null, wrap, end);
 
@@ -480,18 +480,19 @@ function vSession(q) {
     if (!oral) hush();
     if (typed) setTimeout(() => el.ta.focus({ preventScroll: true }), 50);
   }
-  function mainsLibres() { return el.hands.getAttribute("aria-pressed") === "true"; }
-  function stopEcoute() { if (sess && sess.rec) { sess.rec.abort(); sess.rec = null; } el.micBtn.classList.remove("on"); }
+  function mainsLibres() { return false; }
+  function stopEcoute() { if (sess && sess.rec) { sess.rec.abort(); sess.rec = null; } el.micBtn.classList.remove("on", "prep"); }
   function micToggle(auto) {
     if (sess.rec) { sess.rec.stop(); return; }
     if (el.flash.classList.contains("flipped")) return;
-    hush(); el.oralTxt.textContent = "Je t'écoute… parle, puis touche le micro quand tu as fini"; el.oralTxt.classList.add("live"); el.micBtn.classList.add("on");
+    hush(); el.oralTxt.textContent = "Une seconde…"; el.oralTxt.classList.remove("live"); el.micBtn.classList.add("prep");
     sess.rec = ecouter({
-      onInterim: t => { el.oralTxt.textContent = "« " + t + " »"; },
-      onFinal: t => { sess.rec = null; el.micBtn.classList.remove("on"); el.oralTxt.classList.remove("live");
+      onStart: () => { el.micBtn.classList.remove("prep"); el.micBtn.classList.add("on"); el.oralTxt.classList.add("live"); if (!/«/.test(el.oralTxt.textContent)) el.oralTxt.textContent = "À toi ! Je t'écoute… puis fais une pause ou touche le micro"; try { navigator.vibrate && navigator.vibrate(30); } catch (e) {} },
+      onInterim: t => { el.micBtn.classList.remove("prep"); el.micBtn.classList.add("on"); el.oralTxt.classList.add("live"); el.oralTxt.textContent = "« " + t + " »"; },
+      onFinal: t => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
         if (!t) { el.oralTxt.textContent = "Je n'ai rien entendu. Touche le micro pour réessayer."; return; }
         corrigerOral(t); },
-      onError: err => { sess.rec = null; el.micBtn.classList.remove("on"); el.oralTxt.classList.remove("live");
+      onError: err => { sess.rec = null; el.micBtn.classList.remove("on", "prep"); el.oralTxt.classList.remove("live");
         el.oralTxt.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Le micro est bloqué : autorise-le pour cette appli (Réglages de l'iPhone > Safari > Micro), puis réessaie." : auto ? "Touche le micro pour répondre." : "Le micro n'a pas fonctionné. Réessaie, ou passe en réponse écrite."; }
     });
   }
@@ -525,7 +526,8 @@ function vSession(q) {
     el.verdict.replaceChildren(...[h("div", { class: "v-top" }, h("b", null, lab), h("span", { class: "small" }, n.ia ? "Correction par une IA (Claude) · tu peux choisir une autre note" : "Correction automatique par mots-clés · tu peux choisir une autre note")),
       n.ia ? h("p", { class: "v-txt" }, ia.correction) : null,
       n.ia && ia.astuce ? h("p", { class: "v-astuce" }, "💡 " + ia.astuce) : null,
-      !n.ia && (n.trouves.length || n.manquants.length) ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null].filter(Boolean));
+      !n.ia && (n.trouves.length || n.manquants.length) ? h("div", { class: "kw" }, n.trouves.map(k => h("span", { class: "kw-ok" }, "✓ " + k.aff)), n.manquants.slice(0, 5).map(k => h("span", { class: "kw-ko" }, "✗ " + k.aff))) : null,
+      fcMode === "oral" && SR ? h("button", { class: "btn suite", onclick: () => grade(n.verdict, true) }, svg("mic"), "Carte suivante") : h("button", { class: "btn suite", onclick: () => grade(n.verdict, true) }, "Carte suivante")].filter(Boolean));
     setTimeout(() => el.verdict.scrollIntoView({ block: "nearest", behavior: "smooth" }), 300);
     for (const b of el.grades.children) b.classList.toggle("suggere", b.classList.contains(n.verdict));
     const dire = n.ia ? ({ ok: "Validé. ", mid: "Presque. ", ko: "" }[n.verdict] + ia.correction) : phraseRetour(n, c);
@@ -540,8 +542,9 @@ function vSession(q) {
     el.flash.classList.remove("enter"); el.flash.classList.add("flipped"); el.reveal.hidden = true; el.oral.hidden = true; el.grades.hidden = false;
     if (aCorriger) evaluer(aCorriger);
   }
-  function grade(g) {
+  function grade(g, toucher) {
     if (!el.flash.classList.contains("flipped")) return;
+    const ecouterEnsuite = toucher && fcMode === "oral" && !!SR;
     const id = sess.queue[sess.i], t = today();
     const p = Object.assign({ b: 0, d: null, ok: 0, ko: 0, mid: 0, l: null }, pc(id) || {}); const fresh = !p.l;
     const scheduled = sess.mode === "jour" || fresh || !p.d || p.d <= t;
@@ -552,6 +555,8 @@ function vSession(q) {
     sess.res[g]++;
     if (g === "ko") { if (!sess.missed.includes(id)) sess.missed.push(id); sess.again[id] = (sess.again[id] || 0) + 1; if (sess.again[id] <= 2) sess.queue.push(id); }
     stopEcoute(); hush(); saveLocal(); next();
+    // iPad / iPhone : le micro ne peut s'ouvrir que pendant un toucher, on l'ouvre donc tout de suite pour la carte suivante
+    if (ecouterEnsuite && sess && !wrap.hidden && !el.flash.classList.contains("flipped")) micToggle(true);
   }
   function next() { sess.i++; if (sess.i >= sess.queue.length) finish(); else show(); }
   function logSession() {
@@ -606,7 +611,9 @@ function morceaux(t) {
     while (p.length > 180) { let k = p.lastIndexOf(", ", 170); if (k < 60) k = p.lastIndexOf(" ", 170); if (k < 60) k = 170; out.push(p.slice(0, k + 1).trim()); p = p.slice(k + 1).trim(); }
     if (p) out.push(p);
   }
-  return out;
+  const grp = [];
+  for (const m of out) { if (grp.length && (grp[grp.length - 1] + " " + m).length <= 200) grp[grp.length - 1] += " " + m; else grp.push(m); }
+  return grp;
 }
 let lectureId = 0, voixDebloquee = false;
 // Sur iPhone et iPad, la synthèse vocale n'a le droit de parler qu'après un premier son déclenché par un toucher :
@@ -730,7 +737,7 @@ function vAdd(mPre) {
 
 /* ---------------- réponse orale : écoute en français et correction ---------------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-function ecouter({ onInterim, onFinal, onError, silence = 2600 }) {
+function ecouter({ onInterim, onFinal, onError, onStart, silence = 2600 }) {
   if (!SR) { onError && onError("absent"); return null; }
   let base = "", courant = "", fini = false, parle = false, r = null, tSilence = null, relances = 0;
   const total = () => (base + " " + courant).replace(/\s+/g, " ").trim();
@@ -739,6 +746,8 @@ function ecouter({ onInterim, onFinal, onError, silence = 2600 }) {
   function armerSilence() { clearTimeout(tSilence); if (parle) tSilence = setTimeout(finir, silence); }
   function lancer() {
     r = new SR(); r.lang = "fr-FR"; r.interimResults = true; r.continuous = true; r.maxAlternatives = 1;
+    let parti = false; const pret = () => { if (parti) return; parti = true; onStart && onStart(); };
+    r.onstart = pret; r.onaudiostart = pret;
     r.onresult = e => { let t = ""; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript + " "; courant = t; if (t.trim()) parle = true; onInterim && onInterim(total()); armerSilence(); };
     r.onerror = e => { if (fini) return; if (e.error === "not-allowed" || e.error === "service-not-allowed" || e.error === "audio-capture") { fini = true; clearTimeout(garde); onError && onError(e.error); } };
     r.onend = () => { if (fini) return; base = total(); courant = ""; if (relances++ < 12) { try { lancer(); } catch (e) { finir(); } } else finir(); };

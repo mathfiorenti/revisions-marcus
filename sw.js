@@ -1,5 +1,5 @@
 /* Service worker : appli disponible hors ligne, contenus mis à jour en arrière-plan. */
-const VERSION = "rev-2026-10-31-11";
+const VERSION = "rev-2026-10-31-12";
 const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "manifest.webmanifest", "catalogue.json",
   "icones/icone-192.png", "icones/icone-512.png", "icones/apple-touch-icon.png", "vendor/pdf.min.js", "vendor/pdf.worker.min.js"];
 
