@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SES – Chapitre 1 : révision et exercices</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&family=Young+Serif&display=swap">
+<link rel="stylesheet" href="../commun/fiche.css">
+<script src="../commun/fiche.js" defer></script>
+<style>
+/* Circuit économique simplifié */
+.circuit .c-titre{font-weight:800;margin:0 0 2px}
+.circuit .c-sous{font-size:.85rem;color:var(--doux);margin:0 0 10px}
+.circuit .boite{fill:var(--papier-2);stroke:var(--trait);stroke-width:1.5}
+.circuit .agent{fill:currentColor;font-weight:800;font-size:17px}
+.circuit .role{fill:var(--doux);font-size:13px}
+.circuit .lbl{fill:currentColor;font-size:14px}
+.circuit .reel{stroke:var(--c);stroke-width:2.5;fill:none}
+.circuit .mon{stroke:var(--mid);stroke-width:2.5;fill:none;stroke-dasharray:7 5}
+.circuit .p-reel{fill:var(--c)}
+.circuit .p-mon{fill:var(--mid)}
+.circuit .legende{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:center;font-size:.85rem;margin-top:10px}
+.circuit .legende span{display:inline-flex;align-items:center;gap:8px}
+.circuit .legende svg{width:34px;height:8px;margin:0}
+.f-mots{font-size:.92rem;margin-top:6px;color:var(--doux)}
+.f-mots strong{color:var(--encre)}
+.f-lettres{list-style:none;padding-left:0}
+</style>
+</head>
+<body data-matiere="ses">
+<main class="f-page">
+  <header class="f-hero">
+    <div class="f-sur">SES · Seconde · Chapitre 1</div>
+    <h1>SES – Chapitre 1 : révision et exercices</h1>
+    <p class="f-sous">Préparation de l'interrogation de Marcus (seconde) · 11 octobre 2026 · Mathieu Fiorenti</p>
+    <div class="f-chips"><span class="f-chip">18 pages en PDF</span><span class="f-chip">11 définitions</span><span class="f-chip">12 exercices corrigés</span><span class="f-chip">Interro blanche sur 20</span></div>
+  </header>
+
+  <!-- ===================== FEUILLE DE ROUTE ===================== -->
+  <section class="f-section" id="route" data-court="Feuille de route">
+    <h2><span class="n">0</span>Feuille de route</h2>
+    <p>Le professeur a listé huit savoir-faire à maîtriser en fin de chapitre. Coche chaque ligne quand tu réussis l'exercice indiqué sans regarder le cours.</p>
+    <div class="f-carte">
+      <ul>
+        <li>Identifier si une question relève de l'économie, de la sociologie ou de la science politique, et justifier : <strong>exercices 3 et 4</strong></li>
+        <li>Expliquer pourquoi la rareté oblige à faire des choix et à allouer les ressources : <strong>exercice 5</strong></li>
+        <li>Formuler une question de sociologie (faire société, comportement social) : <strong>exercice 4</strong></li>
+        <li>Formuler une question de science politique (conquête ou exercice du pouvoir) : <strong>exercices 4 et 6</strong></li>
+        <li>Distinguer une donnée, une enquête et un modèle, et dire à quoi ils servent : <strong>exercice 10</strong></li>
+        <li>Définir un modèle comme une représentation simplifiée de la réalité : <strong>exercices 1 et 11</strong></li>
+        <li>Identifier une corrélation positive ou négative : <strong>exercices 8 et 9</strong></li>
+        <li>Expliquer pourquoi une corrélation ne prouve pas une causalité (causalité inverse, variable cachée) : <strong>exercices 8, 9 et 12</strong></li>
+      </ul>
+    </div>
+    <div class="f-methode"><div class="f-etiquette">Plan sur trois soirs</div>
+      <ol class="f-etapes">
+        <li><strong>Premier soir :</strong> apprendre les définitions de la partie 1.</li>
+        <li><strong>Deuxième soir :</strong> relire l'essentiel et les méthodes, faire les exercices 1 à 6.</li>
+        <li><strong>Dernier soir :</strong> faire l'interro blanche, la corriger avec le barème, puis refaire le QCM en ligne.</li>
+      </ol>
+    </div>
+    <div class="f-retiens"><div class="f-etiquette">L'essentiel en huit phrases, à relire le matin de l'interro</div>
+      <ol>
+        <li>Les SES étudient les phénomènes économiques, sociaux et politiques avec une démarche scientifique, sans jugement de valeur.</li>
+        <li>Les ressources sont rares par rapport aux besoins : il faut faire des choix, c'est la question de l'économiste.</li>
+        <li>Toute société doit décider quoi produire, comment produire et pour qui, en combinant terre, travail et capital.</li>
+        <li>Le sociologue cherche comment les individus font société et pourquoi ils se comportent ainsi : nos goûts sont influencés par la société.</li>
+        <li>Le politiste étudie comment le pouvoir politique, qui s'exerce sur toute la société, se conquiert (élection ou coup d'État) et s'exerce (démocratie ou dictature).</li>
+        <li>Les chercheurs formulent des hypothèses puis les testent par des enquêtes, quantitatives ou qualitatives, qui produisent des données.</li>
+        <li>Une corrélation ne prouve pas une causalité : attention à la causalité inverse, à la variable cachée et à la coïncidence.</li>
+        <li>Un modèle, comme le circuit économique, simplifie la réalité pour mieux raisonner.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== 1. DÉFINITIONS ===================== -->
+  <section class="f-section" id="definitions" data-court="Définitions">
+    <h2><span class="n">1</span>Les 11 définitions à savoir par cœur</h2>
+    <p>Ce sont les définitions du professeur : à l'interrogation, il faut les restituer mot pour mot, ou au moins avec tous les mots-clés de la colonne de droite. Une définition sans ses mots-clés perd des points.</p>
+
+    <div class="f-def"><b>Sciences économiques et sociales (SES)</b>Ensemble de disciplines scientifiques qui étudient les phénomènes économiques, sociaux et politiques.
+      <p class="f-mots">Mots-clés à ne pas oublier : disciplines <strong>scientifiques</strong> · économiques, sociaux <strong>et politiques</strong></p></div>
+    <div class="f-def"><b>Rareté</b>Situation dans laquelle les ressources disponibles sont limitées au regard des usages possibles et des besoins ou désirs.
+      <p class="f-mots">Mots-clés à ne pas oublier : ressources <strong>limitées</strong> · <strong>au regard</strong> des besoins (la rareté est relative)</p></div>
+    <div class="f-def"><b>Allocation des ressources</b>Façon dont des ressources rares sont réparties entre différents usages possibles.
+      <p class="f-mots">Mots-clés à ne pas oublier : ressources <strong>rares</strong> · <strong>réparties</strong> entre usages</p></div>
+    <div class="f-def"><b>Science économique</b>Science sociale qui étudie notamment la manière dont les individus et les sociétés effectuent des choix et allouent des ressources rares.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>choix</strong> · <strong>allouent</strong> · ressources <strong>rares</strong></p></div>
+    <div class="f-def"><b>Sociologie</b>Science sociale qui cherche notamment à comprendre comment les individus font société et à expliquer les comportements sociaux.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>font société</strong> · <strong>comportements sociaux</strong></p></div>
+    <div class="f-def"><b>Science politique</b>Science sociale qui étudie notamment la conquête et l'exercice du pouvoir politique.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>conquête</strong> · <strong>exercice</strong> · pouvoir <strong>politique</strong></p></div>
+    <div class="f-def"><b>Enquête</b>Démarche organisée de collecte d'informations permettant d'étudier un phénomène et de confronter des hypothèses aux faits.
+      <p class="f-mots">Mots-clés à ne pas oublier : démarche <strong>organisée</strong> · <strong>collecte</strong> · confronter des <strong>hypothèses aux faits</strong></p></div>
+    <div class="f-def"><b>Donnée</b>Information recueillie ou construite, souvent chiffrée, utilisée pour décrire ou analyser un phénomène.
+      <p class="f-mots">Mots-clés à ne pas oublier : recueillie <strong>ou construite</strong> · souvent <strong>chiffrée</strong> · décrire ou analyser</p></div>
+    <div class="f-def"><b>Modèle</b>Représentation simplifiée de la réalité qui en retient certains éléments afin de raisonner et d'en comprendre des mécanismes.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>simplifiée</strong> · <strong>retient certains éléments</strong> · <strong>raisonner</strong></p></div>
+    <div class="f-def"><b>Corrélation</b>Relation statistique entre deux variables qui évoluent ensemble, dans le même sens ou en sens opposé.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>statistique</strong> · évoluent <strong>ensemble</strong> · même sens (positive) ou sens opposé (négative)</p></div>
+    <div class="f-def"><b>Causalité</b>Relation de cause à effet : une variation d'un phénomène contribue à produire une variation d'un autre phénomène.
+      <p class="f-mots">Mots-clés à ne pas oublier : <strong>cause à effet</strong> · <strong>contribue à produire</strong></p></div>
+
+    <div class="f-retiens"><div class="f-etiquette">Astuce mémoire</div>
+      <p>Les trois disciplines tiennent en trois mots : l'économiste étudie les <strong>choix</strong> (face à la rareté), le sociologue étudie la <strong>société</strong> (liens et comportements), le politiste étudie le <strong>pouvoir</strong> (conquête et exercice).</p></div>
+    <div class="f-piege"><div class="f-etiquette">Le mot « notamment » compte</div>
+      <p>Il figure dans les trois définitions de disciplines : chaque science étudie d'autres choses aussi. Le citer montre au professeur que la définition est connue avec précision.</p></div>
+  </section>
+
+  <!-- ===================== 2. L'ESSENTIEL DU COURS ===================== -->
+  <section class="f-section" id="cours" data-court="L'essentiel">
+    <h2><span class="n">2</span>L'essentiel du cours</h2>
+    <div class="f-question"><div class="f-etiquette">Problématique du chapitre</div>
+      <p>Comment les économistes, les sociologues et les politistes construisent-ils des explications <strong>scientifiques</strong> du monde économique, social et politique ?</p>
+      <p><strong>Réponse courte :</strong> ils posent des questions propres à leur discipline, formulent des hypothèses, les confrontent aux faits grâce à des enquêtes et des données, et construisent des modèles. Ils décrivent et expliquent, sans porter de <strong>jugement de valeur</strong>.</p></div>
+
+    <h3>I. Trois regards sur la société</h3>
+    <div class="f-grille trois">
+      <div class="f-carte">
+        <h3 style="margin-top:0;color:var(--c)">Économiste</h3>
+        <p><strong>Question de base :</strong> Comment allouer efficacement des ressources rares ?</p>
+        <p><strong>Mot-clé :</strong> Rareté, choix</p>
+        <p><strong>Document du cours :</strong> Mankiw et Taylor, <em>Principes de l'économie</em></p>
+        <p><strong>Exemple du vélo en ville :</strong> Le prix des vélos a-t-il augmenté avec la demande ?</p>
+      </div>
+      <div class="f-carte">
+        <h3 style="margin-top:0;color:var(--c)">Sociologue</h3>
+        <p><strong>Question de base :</strong> Comment fait-on société ? Comment explique-t-on les comportements sociaux ?</p>
+        <p><strong>Mot-clé :</strong> Liens sociaux, comportements</p>
+        <p><strong>Document du cours :</strong> Lahire (doc 2) ; chenilles frites et cuisses de grenouilles (doc 3)</p>
+        <p><strong>Exemple du vélo en ville :</strong> Pourquoi cette mode touche-t-elle surtout les jeunes ?</p>
+      </div>
+      <div class="f-carte">
+        <h3 style="margin-top:0;color:var(--c)">Politiste</h3>
+        <p><strong>Question de base :</strong> Comment se conquiert et s'exerce le pouvoir politique ?</p>
+        <p><strong>Mot-clé :</strong> Pouvoir</p>
+        <p><strong>Document du cours :</strong> BD <em>Toute l'éco et la socio</em></p>
+        <p><strong>Exemple du vélo en ville :</strong> La ville a-t-elle décidé de créer assez de pistes cyclables ?</p>
+      </div>
+    </div>
+
+    <p style="margin-top:18px"><strong>A. Le regard de l'économiste : pourquoi faut-il faire des choix ?</strong></p>
+    <ul>
+      <li>Les besoins (nourriture, logement, santé) et les envies (vacances, smartphone) sont <strong>illimités</strong>, alors que les ressources sont <strong>limitées</strong> : c'est la rareté.</li>
+      <li>Toute société doit donc faire des choix et répondre à <strong>trois questions</strong> : que produire ? comment produire ? pour qui produire (à qui distribuer la production) ?</li>
+      <li>Pour produire, on combine trois types de ressources : la <strong>terre</strong> (ressources naturelles : minerais, poissons, farine et sel pour le pain), le <strong>travail</strong> (effort humain, physique et intellectuel : le boulanger, le vendeur) et le <strong>capital</strong> (équipements et bâtiments qui servent à produire : le four, les machines, les ordinateurs).</li>
+      <li>Les entreprises produisent des <strong>biens</strong> (matériels, stockables : une baguette) et des <strong>services</strong> (immatériels, produits et consommés en même temps : une coupe de cheveux).</li>
+      <li>Phrase à savoir compléter : l'économie est la science qui étudie l'allocation des <strong>ressources rares</strong>, c'est-à-dire comment <strong>produire</strong> et comment répartir les richesses produites.</li>
+    </ul>
+
+    <p><strong>B. Le regard du sociologue : comment les individus vivent-ils en société ?</strong></p>
+    <ul>
+      <li>L'être humain est un être <strong>social</strong> : sans interactions avec les autres, un enfant ne développerait ni langage ni sensibilité et ne survivrait pas (Lahire). Les individus sont reliés à des groupes et à des institutions (famille, école, amis).</li>
+      <li>Nos goûts et nos comportements ne sont pas seulement naturels ou individuels : ils sont <strong>influencés par la société</strong> dans laquelle nous grandissons. Les chenilles frites dégoûtent un Français, les cuisses de grenouilles surprennent un Sud-Américain.</li>
+      <li>Phrase à savoir compléter : la sociologie est la science qui étudie <strong>les liens sociaux</strong> et les <strong>comportements sociaux</strong>.</li>
+    </ul>
+
+    <p><strong>C. Le regard du politiste : qu'étudie la science politique ?</strong></p>
+    <ul>
+      <li>Il existe plusieurs formes de pouvoir : pouvoir des parents et de l'école sur les enfants, pouvoir économique des entreprises, pouvoir judiciaire, pouvoir législatif.</li>
+      <li>Le <strong>pouvoir politique</strong> se distingue des autres parce qu'il s'exerce sur <strong>l'ensemble de la société</strong>, et non sur un seul groupe (le pouvoir de l'école ne concerne que les élèves).</li>
+      <li><strong>Conquête</strong> du pouvoir : légale par l'<strong>élection</strong> (le Président de la République est choisi par un vote) ou illégale par un <strong>coup d'État</strong> (renversement du pouvoir en place, souvent brutal et inattendu).</li>
+      <li><strong>Exercice</strong> du pouvoir : en <strong>démocratie</strong>, le peuple décide (« gouvernement du peuple, par le peuple, pour le peuple », Abraham Lincoln, discours de Gettysburg, 1863) ; en <strong>dictature</strong>, le peuple n'a pas de place et tous les pouvoirs sont concentrés entre les mains d'une seule personne ou d'un petit nombre.</li>
+      <li>Phrase à savoir compléter : la science politique est la science qui étudie la façon dont le pouvoir politique se <strong>conquiert</strong> et <strong>s'exerce</strong>.</li>
+    </ul>
+
+    <div class="f-retiens"><div class="f-etiquette">Une approche scientifique</div>
+      <p>Les trois disciplines émettent des hypothèses, les confrontent au réel et construisent des théories. Elles s'en tiennent aux faits, sans jugement de valeur : « les filles font moins d'études scientifiques » est un constat à expliquer, « c'est scandaleux » est un jugement de valeur.</p></div>
+
+    <h3>II. Comment les chercheurs produisent-ils des connaissances ?</h3>
+    <p><strong>A. Recueillir des données par l'enquête</strong></p>
+    <ul>
+      <li>Le sociologue « ne se contente pas d'avoir des idées » (Paugam) : il met ses hypothèses à l'épreuve de la <strong>réalité empirique</strong>, c'est-à-dire des faits observés.</li>
+      <li>La démarche : 1) observer la société ; 2) se poser une question et formuler des <strong>hypothèses</strong> ; 3) réaliser une <strong>enquête</strong> pour les vérifier ; 4) analyser les résultats. Les hypothèses servent à orienter l'enquête : savoir quoi chercher et quelles questions poser.</li>
+      <li>Qui réalise des enquêtes ? Les chercheurs (sociologues, économistes, politistes) et les organismes publics comme l'<strong>INSEE</strong> (Institut national de la statistique et des études économiques). Pourquoi ? Pour comprendre la société contemporaine.</li>
+      <li>Deux types d'enquêtes :</li>
+    </ul>
+    <div class="f-table-w"><table>
+      <thead><tr><th></th><th>Enquête quantitative</th><th>Enquête qualitative</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Outil</strong></td><td>Questionnaire, statistiques</td><td>Entretien, observation</td></tr>
+        <tr><td><strong>Données</strong></td><td>Chiffrées (pourcentages, effectifs)</td><td>Paroles, récits, attitudes</td></tr>
+        <tr><td><strong>Personnes interrogées</strong></td><td>Beaucoup, souvent un <strong>échantillon représentatif</strong></td><td>Peu, mais en profondeur</td></tr>
+        <tr><td><strong>Sert à</strong></td><td>Mesurer l'ampleur d'un phénomène</td><td>Comprendre le sens que les individus donnent à leurs actes</td></tr>
+        <tr><td><strong>Exemple</strong></td><td>Enquête Emploi de l'INSEE</td><td>Entretiens avec des salariés victimes de discriminations</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li>Un <strong>échantillon représentatif</strong> est une partie de la population qui a les mêmes caractéristiques que la population totale (part d'hommes et de femmes, âges, régions…). Il permet de généraliser les résultats sans interroger tout le monde.</li>
+      <li>Exemple du cours (INSEE, enquête Emploi 2021) : parmi les personnes déclarant avoir subi des discriminations au travail, 19 % citent leur <strong>sexe</strong> comme principal motif ; cette part atteint 30 % pour les femmes dans cette situation.</li>
+    </ul>
+    <div class="f-chiffres">
+      <div class="f-chiffre"><b data-compte="19" data-suffixe=" %">19 %</b><span>des personnes déclarant avoir subi des discriminations au travail citent leur sexe comme principal motif</span></div>
+      <div class="f-chiffre"><b data-compte="30" data-suffixe=" %">30 %</b><span>pour les femmes dans cette situation</span></div>
+    </div>
+
+    <p><strong>B. Passer des données à l'explication : corrélation et causalité</strong></p>
+    <ul>
+      <li><strong>Corrélation positive</strong> : les deux variables évoluent dans le même sens (la température monte, les ventes de glaces montent). <strong>Corrélation négative</strong> : elles évoluent en sens opposé (le prix d'un produit monte, les quantités achetées baissent).</li>
+    </ul>
+    <div class="f-piege"><div class="f-etiquette">Trois pièges</div>
+      <p>Une corrélation ne suffit <strong>pas</strong> à prouver une causalité. Trois pièges :</p>
+      <ol>
+        <li><strong>Causalité inverse</strong> (attention au sens) : ce n'est pas A qui cause B, c'est B qui cause A.</li>
+        <li><strong>Variable cachée</strong> (troisième variable commune) : un facteur C fait varier A et B en même temps. Exemple classique (le « chocolat » des notes) : les pays qui consomment le plus de chocolat ont le plus de prix Nobel. Le chocolat ne rend pas intelligent : la richesse du pays explique à la fois la consommation de chocolat et le niveau de recherche.</li>
+        <li><strong>Coïncidence</strong> : deux courbes évoluent ensemble par hasard, sans aucun lien.</li>
+      </ol>
+    </div>
+    <ul>
+      <li>Pour défendre une causalité, il faut un <strong>mécanisme</strong> plausible (expliquer comment A agit sur B), une chronologie cohérente (la cause précède l'effet) et l'élimination des variables cachées.</li>
+    </ul>
+
+    <h3>III. Pourquoi les sciences sociales construisent-elles des modèles ?</h3>
+    <ul>
+      <li>La réalité est trop complexe pour être étudiée en entier. Le modèle <strong>simplifie</strong> : il garde quelques éléments essentiels et en laisse d'autres de côté pour mieux raisonner, comme une carte de métro ne montre pas les rues.</li>
+      <li>Exemple : le <strong>circuit économique simplifié</strong>, avec deux agents, les entreprises et les ménages (schéma ci-dessous).</li>
+      <li>Ses limites : il oublie l'État (impôts, services publics), les banques (épargne, crédit) et le reste du monde (importations, exportations). C'est volontaire : un modèle n'est pas faux parce qu'il est simple, il est utile parce qu'il est simple.</li>
+    </ul>
+
+    <figure class="f-schema circuit" id="circuit">
+      <p class="c-titre">Chaque flux réel a sa contrepartie monétaire en sens inverse</p>
+      <p class="c-sous">Circuit économique simplifié : deux agents, quatre flux</p>
+      <svg viewBox="0 0 440 250" role="img" aria-label="Circuit économique simplifié : biens et services des entreprises vers les ménages, dépenses de consommation des ménages vers les entreprises, travail des ménages vers les entreprises, salaires des entreprises vers les ménages">
+        <defs>
+          <marker id="pt-reel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="p-reel"/></marker>
+          <marker id="pt-mon" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="p-mon"/></marker>
+        </defs>
+        <rect class="boite" x="3" y="10" width="112" height="230" rx="12"/>
+        <rect class="boite" x="325" y="10" width="112" height="230" rx="12"/>
+        <text class="agent" x="59" y="120" text-anchor="middle">Entreprises</text>
+        <text class="role" x="59" y="142" text-anchor="middle">Production</text>
+        <text class="agent" x="381" y="120" text-anchor="middle">Ménages</text>
+        <text class="role" x="381" y="142" text-anchor="middle">Répartition</text>
+        <text class="role" x="381" y="159" text-anchor="middle">et dépense</text>
+        <!-- 1. Biens et services : E -> M (réel) -->
+        <text class="lbl" x="220" y="40" text-anchor="middle">Biens et services</text>
+        <line class="reel" x1="117" y1="52" x2="321" y2="52" marker-end="url(#pt-reel)"/>
+        <!-- 2. Dépenses de consommation : M -> E (monétaire) -->
+        <text class="lbl" x="220" y="94" text-anchor="middle">Dépenses de consommation</text>
+        <line class="mon" x1="323" y1="106" x2="119" y2="106" marker-end="url(#pt-mon)"/>
+        <!-- 3. Travail : M -> E (réel) -->
+        <text class="lbl" x="220" y="148" text-anchor="middle">Travail</text>
+        <line class="reel" x1="323" y1="160" x2="119" y2="160" marker-end="url(#pt-reel)"/>
+        <!-- 4. Salaires : E -> M (monétaire) -->
+        <text class="lbl" x="220" y="202" text-anchor="middle">Salaires</text>
+        <line class="mon" x1="117" y1="214" x2="321" y2="214" marker-end="url(#pt-mon)"/>
+      </svg>
+      <div class="legende">
+        <span><svg viewBox="0 0 34 8" aria-hidden="true"><line class="reel" x1="0" y1="4" x2="34" y2="4"/></svg>Flux réel : biens, services, travail</span>
+        <span><svg viewBox="0 0 34 8" aria-hidden="true"><line class="mon" x1="0" y1="4" x2="34" y2="4"/></svg>Flux monétaire : argent</span>
+      </div>
+      <figcaption>circuit économique simplifié · 2 agents, 4 flux</figcaption>
+    </figure>
+    <p>Les ménages fournissent leur travail et reçoivent des salaires ; avec ces salaires, ils achètent les biens et services produits par les entreprises. Ce que les uns dépensent devient le revenu des autres.</p>
+  </section>
+
+  <!-- ===================== 3. MÉTHODES ===================== -->
+  <section class="f-section" id="methodes" data-court="Méthodes">
+    <h2><span class="n">3</span>Les méthodes qui rapportent des points</h2>
+
+    <div class="f-methode"><div class="f-etiquette">Méthode 1 — Identifier la discipline et justifier</div>
+      <p>Cherche le cœur de la question, puis justifie avec la définition.</p>
+      <div class="f-table-w"><table>
+        <thead><tr><th>Si la question porte sur…</th><th>Discipline</th><th>Justification type</th></tr></thead>
+        <tbody>
+          <tr><td>Production, prix, richesse, consommation, choix face à des moyens limités</td><td>Économie</td><td>« Elle porte sur l'allocation de ressources rares. »</td></tr>
+          <tr><td>Goûts, comportements, différences entre groupes (sexe, âge, milieu social, génération)</td><td>Sociologie</td><td>« Elle cherche à expliquer un comportement social. »</td></tr>
+          <tr><td>Élection, vote, gouvernement, lois, institutions, organisation de l'État</td><td>Science politique</td><td>« Elle porte sur la conquête ou l'exercice du pouvoir politique. »</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="f-piege"><div class="f-etiquette">Attention</div>
+      <p>Un même phénomène peut intéresser les trois disciplines. C'est la <strong>question posée</strong> qui détermine la discipline, pas le thème.</p></div>
+
+    <div class="f-methode"><div class="f-etiquette">Méthode 2 — Calculer une proportion (fiche outil 1 du manuel)</div>
+      <p><mark><strong>Proportion (en %) = effectif de la partie ÷ effectif de l'ensemble × 100</strong></mark></p>
+    </div>
+    <div class="f-exemple"><div class="f-etiquette">Exemple</div>
+      <p>Une classe de 35 élèves compte 14 filles. 14 ÷ 35 × 100 = 40 %. Les filles représentent 40 % des élèves de la classe.</p>
+      <div class="f-chiffres">
+        <div class="f-chiffre"><b data-compte="14">14</b><span>filles (la partie)</span></div>
+        <div class="f-chiffre"><b data-compte="35">35</b><span>élèves (l'ensemble)</span></div>
+        <div class="f-chiffre"><b data-compte="40" data-suffixe=" %">40 %</b><span>14 ÷ 35 × 100</span></div>
+      </div>
+    </div>
+
+    <div class="f-methode"><div class="f-etiquette">Méthode 3 — Rédiger une phrase de lecture</div>
+      <p>Elle doit contenir : la <strong>date</strong>, le <strong>lieu</strong>, la <strong>source</strong>, l'<strong>ensemble de référence</strong> et la <strong>valeur avec son unité</strong>.</p>
+      <ul>
+        <li>Modèle : « Selon l'INSEE, en France en 2021, 19 % des personnes déclarant avoir subi des discriminations au travail citent leur sexe comme principal motif. »</li>
+        <li>Avant de lire un graphique, repère : le titre, la source, la date, l'unité (% ici) et le champ (ici : France hors Mayotte, 15-74 ans, en emploi).</li>
+      </ul>
+    </div>
+    <div class="f-piege"><div class="f-etiquette">Piège classique</div>
+      <p>30 % ne veut pas dire « 30 % des femmes sont discriminées ». Cela veut dire : parmi les femmes <strong>qui déclarent avoir subi</strong> une discrimination au travail, 30 % citent leur sexe comme principal motif. Toujours se demander : 30 % <strong>de qui</strong> ?</p></div>
+
+    <div class="f-methode"><div class="f-etiquette">Méthode 4 — Raisonner sur une corrélation, en quatre questions</div>
+      <ol class="f-etapes">
+        <li>Les deux variables évoluent-elles ensemble ? Dans le même sens (positive) ou en sens opposé (négative) ?</li>
+        <li>Existe-t-il un mécanisme qui explique comment A agit sur B ?</li>
+        <li>Et si c'était l'inverse, B qui agit sur A ? (causalité inverse)</li>
+        <li>Une troisième variable pourrait-elle expliquer les deux ? (variable cachée)</li>
+      </ol>
+    </div>
+
+    <div class="f-methode"><div class="f-etiquette">Méthode 5 — Rédiger un paragraphe argumenté (AEI)</div>
+      <p>Attendu dès la seconde dans les lycées exigeants.</p>
+      <ul>
+        <li><strong>A</strong>ffirmer : l'idée en une phrase.</li>
+        <li><strong>E</strong>xpliquer : le mécanisme, avec les notions du cours (rareté, choix, comportement social, pouvoir…).</li>
+        <li><strong>I</strong>llustrer : un exemple précis ou une donnée chiffrée d'un document.</li>
+      </ul>
+    </div>
+    <div class="f-exemple"><div class="f-etiquette">Exemple</div>
+      <p><em>(A)</em> La rareté oblige à faire des choix. <em>(E)</em> Les ressources (terre, travail, capital) sont limitées alors que les besoins et les envies sont illimités : on ne peut pas tout produire, il faut donc décider comment allouer les ressources. <em>(I)</em> Une commune qui dispose d'un terrain doit choisir entre y construire une école ou un gymnase : utiliser le terrain pour l'un, c'est renoncer à l'autre.</p></div>
+  </section>
+
+  <!-- ===================== 4. EXERCICES ===================== -->
+  <section class="f-section saut" id="exercices" data-court="Exercices">
+    <h2><span class="n">4</span>Exercices d'entraînement</h2>
+    <p>Douze exercices, dont un bonus, classés du plus simple au plus exigeant, qui couvrent tout le chapitre. À faire sans regarder le cours ni les corrigés, puis corriger soi-même avec la partie 5.</p>
+    <div class="f-retiens"><div class="f-etiquette">Interro blanche proposée (45 min, sur 20)</div>
+      <p>Exercice 1 (4 pts), exercice 3 (4 pts), exercice 7 (6 pts), exercice 8 (6 pts). Les autres exercices servent à s'entraîner avant.</p></div>
+
+    <!-- Exercice 1 -->
+    <div class="f-exo" id="exo1"><span class="f-bareme">Interro · 4 pts</span><h3>Exercice 1 — Définitions (facile)</h3>
+      <ol>
+        <li>Définissez : rareté, sociologie, modèle, corrélation.</li>
+        <li>Complétez :
+          <ul>
+            <li>L'économie est la science qui étudie l'allocation des …………, c'est-à-dire comment ………… et comment répartir les richesses produites.</li>
+            <li>La sociologie est la science qui étudie ………… et ………….</li>
+            <li>La science politique étudie la façon dont le pouvoir politique se ………… et ………….</li>
+            <li>Une enquête est une démarche organisée de ………… d'informations permettant de confronter des ………… aux ………….</li>
+          </ul>
+        </li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li>Définitions : voir le tableau de la partie 1, mots-clés inclus.</li>
+          <li>Phrases à compléter : ressources rares / produire · les liens sociaux / les comportements sociaux · conquiert / s'exerce · collecte / hypothèses / faits.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 2 -->
+    <div class="f-exo" id="exo2"><h3>Exercice 2 — Vrai ou faux ? Justifiez (facile)</h3>
+      <p>Une réponse sans justification ne rapporte rien.</p>
+      <ol>
+        <li>La rareté signifie qu'une ressource a presque disparu.</li>
+        <li>Un four de boulangerie fait partie du capital.</li>
+        <li>Le pouvoir des parents sur leurs enfants est un pouvoir politique.</li>
+        <li>Un coup d'État est un moyen légal de conquérir le pouvoir.</li>
+        <li>Une corrélation entre deux variables prouve un lien de cause à effet.</li>
+        <li>Un bon modèle représente la réalité dans tous ses détails.</li>
+        <li>Une enquête qualitative repose souvent sur des entretiens.</li>
+        <li>Le sociologue doit dire si un comportement est bien ou mal.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li><strong>Faux.</strong> La rareté est relative : une ressource est rare quand elle est limitée <strong>par rapport aux besoins</strong>, même si elle existe en grande quantité. Le temps d'un lycéen est rare : 24 heures par jour ne suffisent pas pour tout faire.</li>
+          <li><strong>Vrai.</strong> Le four est un équipement qui sert à produire, il n'a pas d'autre destination que la production.</li>
+          <li><strong>Faux.</strong> Ce pouvoir ne s'exerce que sur les enfants de la famille, alors que le pouvoir politique s'exerce sur l'ensemble de la société.</li>
+          <li><strong>Faux.</strong> Le coup d'État est une conquête illégale, par le renversement souvent brutal du pouvoir en place. La conquête légale passe par l'élection.</li>
+          <li><strong>Faux.</strong> La corrélation montre seulement que deux variables évoluent ensemble ; il peut s'agir d'une causalité inverse, d'une variable cachée ou d'une coïncidence.</li>
+          <li><strong>Faux.</strong> Un modèle est une représentation <strong>simplifiée</strong> : il ne retient que certains éléments pour raisonner. Tout représenter le rendrait inutilisable.</li>
+          <li><strong>Vrai.</strong> L'enquête qualitative interroge peu de personnes, en profondeur, par entretiens ou observation.</li>
+          <li><strong>Faux.</strong> Les sciences sociales décrivent et expliquent les faits, sans jugement de valeur.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 3 -->
+    <div class="f-exo" id="exo3"><span class="f-bareme">Interro · 4 pts</span><h3>Exercice 3 — Quelle discipline ? (moyen)</h3>
+      <p>Pour chaque question, indiquez si elle relève principalement de l'économie, de la sociologie ou de la science politique, et justifiez en une phrase avec la définition.</p>
+      <ol>
+        <li>Comment une entreprise de vélos décide-t-elle du nombre d'ouvriers à embaucher ?</li>
+        <li>Pourquoi les adolescents passent-ils plus de temps sur TikTok que leurs parents ?</li>
+        <li>Comment le Premier ministre est-il nommé en France ?</li>
+        <li>Pourquoi le prix du chocolat a-t-il augmenté ?</li>
+        <li>Pourquoi les enfants de cadres font-ils plus souvent des études longues que les enfants d'ouvriers ?</li>
+        <li>Comment un parti politique gagne-t-il une élection ?</li>
+        <li>Comment une famille répartit-elle son budget entre logement, alimentation et loisirs ?</li>
+        <li>Pourquoi certains supporters restent-ils fidèles au même club toute leur vie ?</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <div class="f-table-w"><table>
+          <thead><tr><th>Question</th><th>Discipline</th><th>Justification</th></tr></thead>
+          <tbody>
+            <tr><td>1. Ouvriers à embaucher</td><td>Économie</td><td>Choix d'allocation d'une ressource rare, le travail, par une entreprise.</td></tr>
+            <tr><td>2. TikTok chez les adolescents</td><td>Sociologie</td><td>Différence de comportement entre générations : comportement social.</td></tr>
+            <tr><td>3. Nomination du Premier ministre</td><td>Science politique</td><td>Exercice du pouvoir politique, fonctionnement des institutions.</td></tr>
+            <tr><td>4. Prix du chocolat</td><td>Économie</td><td>Le prix reflète la rareté d'un bien par rapport à la demande.</td></tr>
+            <tr><td>5. Études des enfants de cadres</td><td>Sociologie</td><td>Comportement différent selon le milieu social.</td></tr>
+            <tr><td>6. Gagner une élection</td><td>Science politique</td><td>Conquête du pouvoir politique.</td></tr>
+            <tr><td>7. Budget familial</td><td>Économie</td><td>Un ménage alloue un revenu limité entre plusieurs usages.</td></tr>
+            <tr><td>8. Fidélité des supporters</td><td>Sociologie</td><td>Appartenance à un groupe et liens sociaux.</td></tr>
+          </tbody>
+        </table></div>
+      </div></details>
+    </div>
+
+    <!-- Exercice 4 -->
+    <div class="f-exo" id="exo4"><h3>Exercice 4 — Un même phénomène, trois regards (moyen)</h3>
+      <p>Sur le modèle de l'exemple du vélo vu en classe, formulez une question que pourrait se poser un économiste, une question de sociologue et une question de politiste sur chacun de ces phénomènes :</p>
+      <ol>
+        <li>Le succès des sites de vêtements de seconde main chez les adolescents.</li>
+        <li>L'interdiction du téléphone portable dans les collèges.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction (exemples de bonnes réponses)</summary><div>
+        <ol>
+          <li>Seconde main. Économiste : les adolescents achètent-ils d'occasion parce que les vêtements neufs coûtent trop cher pour leur budget ? Sociologue : pourquoi acheter d'occasion est-il devenu valorisant chez les jeunes, alors que c'était mal vu ? Politiste : l'État doit-il réglementer ces plateformes ou taxer la mode jetable ?</li>
+          <li>Téléphone au collège. Économiste : combien coûtent les casiers pour ranger les téléphones et qui les paie ? Sociologue : comment les relations entre élèves changent-elles sans téléphone pendant la récréation ? Politiste : qui a pris la décision, le gouvernement ou chaque établissement, et comment a-t-elle été acceptée ?</li>
+        </ol>
+        <p>Une bonne question commence par « pourquoi » ou « comment » et contient le mot-clé de la discipline : coût ou choix, comportement ou groupe, décision ou pouvoir.</p>
+      </div></details>
+    </div>
+
+    <!-- Exercice 5 -->
+    <div class="f-exo" id="exo5"><h3>Exercice 5 — Rareté et choix : la pizzeria de Luca (moyen)</h3>
+      <blockquote><em>Luca ouvre une pizzeria. Il achète de la farine, des tomates et de la mozzarella. Il installe un four à bois et des tables dans le local qu'il a acheté. Il emploie deux pizzaïolos et un serveur. Il lui reste 30 000 euros : il hésite entre acheter un second four et embaucher un livreur pour un an.</em></blockquote>
+      <ol>
+        <li>Classez les ressources de la pizzeria entre terre, travail et capital.</li>
+        <li>La pizzeria produit-elle des biens, des services ou les deux ? Justifiez.</li>
+        <li>En quoi l'hésitation de Luca illustre-t-elle la rareté et le problème de l'allocation des ressources ?</li>
+        <li>Appliquez les trois questions de base de l'économie à la pizzeria.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li>Terre : farine, tomates, mozzarella (ressources naturelles et agricoles). Travail : les deux pizzaïolos et le serveur. Capital : le four, les tables, le local.</li>
+          <li>Les deux. La pizza est un <strong>bien</strong> : matérielle, elle peut être emportée. Le service à table est un <strong>service</strong> : il est produit et consommé en même temps.</li>
+          <li>Luca ne dispose que de 30 000 euros : cette ressource est limitée par rapport à ses projets. Il doit donc choisir, car acheter le four, c'est renoncer au livreur. Il doit allouer une ressource rare entre deux usages possibles : c'est exactement la question de base de l'économie.</li>
+          <li>Que produire ? Quelles pizzas, et faut-il aussi faire des desserts ? Comment produire ? Avec plus de machines (un second four) ou plus de personnel (un livreur) ? Pour qui produire ? Pour les clients sur place ou aussi pour la livraison à domicile ?</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 6 -->
+    <div class="f-exo" id="exo6"><h3>Exercice 6 — Le pouvoir politique (moyen)</h3>
+      <ul class="f-lettres">
+        <li><strong>a.</strong> En 2022, les Français ont réélu leur président de la République au suffrage universel direct.</li>
+        <li><strong>b.</strong> En juillet 2023, au Niger, des militaires ont renversé le président élu et l'ont retenu prisonnier.</li>
+        <li><strong>c.</strong> En Corée du Nord, il n'y a pas d'élections libres et le dirigeant concentre tous les pouvoirs.</li>
+        <li><strong>d.</strong> Le proviseur d'un lycée fait appliquer le règlement intérieur aux élèves.</li>
+      </ul>
+      <ol>
+        <li>Laquelle de ces situations ne relève pas du pouvoir politique ? Justifiez.</li>
+        <li>Pour a et b, s'agit-il d'une conquête légale ou illégale du pouvoir ? Nommez chaque mode de conquête.</li>
+        <li>Pour a et c, le pouvoir s'exerce-t-il en démocratie ou en dictature ? Justifiez avec les définitions.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li>La situation d : le pouvoir du proviseur ne s'exerce que sur les élèves du lycée, pas sur l'ensemble de la société.</li>
+          <li>a : conquête légale, par l'<strong>élection</strong>. b : conquête illégale, par un <strong>coup d'État</strong>.</li>
+          <li>a : démocratie, le peuple choisit ses dirigeants par le vote. c : dictature, le peuple n'a pas de place, faute d'élections libres, et tous les pouvoirs sont concentrés entre les mains d'une seule personne.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 7 -->
+    <div class="f-exo" id="exo7"><span class="f-bareme">Interro · 6 pts</span><h3>Exercice 7 — Étude de document : l'enquête de l'INSEE (exigeant)</h3>
+      <p>Reprenez le document 2 du cours : <em>Les principaux motifs de discrimination au travail</em>, Insee Première n° 1983, février 2024 (enquête Emploi 2021).</p>
+      <ol>
+        <li>Présentez le document : nature, source, date des données, champ.</li>
+        <li>Rédigez une phrase de lecture pour la donnée « 30 % » concernant les femmes.</li>
+        <li>Un camarade écrit : « 30 % des femmes sont discriminées au travail. » Expliquez son erreur.</li>
+        <li>Pour l'ensemble des personnes concernées, quel est le principal motif de discrimination déclaré ? Quel groupe cite le plus souvent ses origines ?</li>
+        <li>L'enquête Emploi est-elle quantitative ou qualitative ? Porte-t-elle sur toute la population ? Justifiez.</li>
+        <li>Formulez deux hypothèses que les statisticiens de l'INSEE pouvaient vouloir tester.</li>
+        <li>Calcul : dans un échantillon, 2 000 personnes déclarent une discrimination au travail ; 380 citent leur sexe. Calculez la proportion et rédigez la phrase. Parmi elles, 800 sont des femmes, dont 240 citent leur sexe : calculez la proportion.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li>Graphique en barres horizontales, publié par l'INSEE (Insee Première n° 1983, février 2024), à partir de l'enquête Emploi 2021. Champ : France hors Mayotte, personnes de 15 à 74 ans en emploi, déclarant avoir subi des traitements inégalitaires ou des discriminations dans leur emploi actuel. Unité : pourcentage.</li>
+          <li>« Selon l'INSEE, en France en 2021, parmi les femmes qui déclarent avoir subi des traitements inégalitaires ou des discriminations au travail, 30 % citent leur sexe comme principal motif. »</li>
+          <li>Il se trompe d'ensemble de référence. Le pourcentage ne porte pas sur toutes les femmes, mais seulement sur celles qui déclarent une discrimination. On ne sait donc pas, avec ce document, quelle part de toutes les femmes est discriminée.</li>
+          <li>Pour l'ensemble, le sexe est le principal motif déclaré (19 %). Ce sont les <strong>immigrés</strong> qui citent le plus souvent leurs origines : plus de la moitié d'entre eux, la barre la plus longue du graphique.</li>
+          <li>Quantitative : elle produit des données chiffrées, en pourcentages, à partir d'un questionnaire. Elle ne porte pas sur toute la population mais sur un <strong>échantillon représentatif</strong>, de grande taille, ce qui permet de généraliser les résultats à la population française.</li>
+          <li>Exemples : les femmes déclarent plus souvent que les hommes être discriminées en raison de leur sexe ; les jeunes déclarent davantage de discriminations liées à l'âge ; les immigrés déclarent davantage de discriminations liées à l'origine ; un mauvais état de santé augmente le risque de discrimination.</li>
+          <li>380 ÷ 2 000 × 100 = <strong>19 %</strong> : 19 % des personnes déclarant une discrimination au travail citent leur sexe. 240 ÷ 800 × 100 = <strong>30 %</strong> : on retrouve les chiffres du document.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 8 -->
+    <div class="f-exo" id="exo8"><span class="f-bareme">Interro · 6 pts</span><h3>Exercice 8 — Corrélation ou causalité ? (exigeant)</h3>
+      <p>Pour chaque affirmation : 1) la corrélation est-elle positive ou négative ? 2) peut-on conclure à une causalité ? Si non, identifiez le piège : causalité inverse, variable cachée (nommez-la) ou coïncidence.</p>
+      <ol>
+        <li>Plus il y a de pompiers sur un incendie, plus les dégâts sont importants.</li>
+        <li>Les mois où l'on vend le plus de glaces sont aussi ceux où il y a le plus de noyades.</li>
+        <li>Plus le prix du paquet de cigarettes augmente, moins on vend de paquets.</li>
+        <li>Les personnes qui vont souvent à l'hôpital sont plus souvent malades que les autres.</li>
+        <li>Aux États-Unis, entre 2000 et 2009, la consommation de margarine dans l'État du Maine et le taux de divorce de cet État ont baissé en même temps.</li>
+        <li>Les élèves qui ont les meilleures notes en SES sont ceux qui aiment le plus la matière.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <div class="f-table-w"><table>
+          <thead><tr><th></th><th>Corrélation</th><th>Causalité ?</th></tr></thead>
+          <tbody>
+            <tr><td>1. Pompiers et dégâts</td><td>Positive</td><td>Non. Variable cachée : la <strong>taille de l'incendie</strong>, qui augmente à la fois le nombre de pompiers et les dégâts.</td></tr>
+            <tr><td>2. Glaces et noyades</td><td>Positive</td><td>Non. Variable cachée : la <strong>chaleur, l'été</strong>, qui fait vendre des glaces et pousse à se baigner.</td></tr>
+            <tr><td>3. Prix et ventes de cigarettes</td><td>Négative</td><td>Oui, causalité plausible : le paquet devient plus cher, donc certains fumeurs réduisent leur consommation ou arrêtent. C'est le but des hausses de taxes sur le tabac.</td></tr>
+            <tr><td>4. Hôpital et maladie</td><td>Positive</td><td>Non. <strong>Causalité inverse</strong> : ce n'est pas l'hôpital qui rend malade, c'est la maladie qui conduit à l'hôpital.</td></tr>
+            <tr><td>5. Margarine et divorces</td><td>Positive (baisse simultanée)</td><td>Non. <strong>Coïncidence</strong> : aucun mécanisme ne relie ces deux phénomènes.</td></tr>
+            <tr><td>6. Notes et goût pour la matière</td><td>Positive</td><td>Pas prouvée. Causalité possible <strong>dans les deux sens</strong> : aimer la matière pousse à travailler, mais avoir de bonnes notes fait aussi aimer la matière.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="f-piege"><div class="f-etiquette">Piège à noter pour la ligne 5</div>
+          <p>Deux variables qui <strong>baissent ensemble</strong> évoluent dans le même sens, la corrélation est donc <strong>positive</strong>, pas négative.</p></div>
+      </div></details>
+    </div>
+
+    <!-- Exercice 9 -->
+    <div class="f-exo" id="exo9"><h3>Exercice 9 — Lire des données (exigeant)</h3>
+      <p>Tableau fictif : temps de révision et note à l'interrogation de six élèves.</p>
+      <div class="f-table-w"><table>
+        <thead><tr><th>Élève</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead>
+        <tbody>
+          <tr><td>Temps de révision (heures)</td><td>0,5</td><td>1</td><td>1,5</td><td>2</td><td>3</td><td>4</td></tr>
+          <tr><td>Note (sur 20)</td><td>8</td><td>10</td><td>11</td><td>13</td><td>15</td><td>17</td></tr>
+        </tbody>
+      </table></div>
+      <ol>
+        <li>Quelle relation statistique observe-t-on ? Précisez son sens.</li>
+        <li>Peut-on en conclure que réviser plus fait avoir de meilleures notes ? Proposez un mécanisme.</li>
+        <li>Proposez deux autres variables qui pourraient expliquer les écarts de notes.</li>
+        <li>Pourquoi ces données ne suffisent-elles pas pour généraliser à tous les lycéens ?</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li>Une corrélation positive : plus le temps de révision est élevé, plus la note est haute.</li>
+          <li>Pas à elle seule. Mécanisme plausible : réviser permet de mémoriser les définitions et de s'entraîner aux méthodes, donc de mieux réussir. Mais il faut écarter les autres explications.</li>
+          <li>Le niveau de départ de l'élève, l'aide reçue à la maison ou en cours particuliers, le sommeil, l'attention en classe, l'intérêt pour la matière.</li>
+          <li>Six élèves ne forment pas un échantillon représentatif : l'échantillon est trop petit et ne reflète pas la diversité des lycéens. De plus, les données sont fictives.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 10 -->
+    <div class="f-exo" id="exo10"><h3>Exercice 10 — Donnée, enquête ou modèle ? (moyen)</h3>
+      <ol>
+        <li>Classez chaque élément : donnée, enquête ou modèle.
+          <ul class="f-lettres">
+            <li><strong>a.</strong> Chaque trimestre, l'INSEE interroge un échantillon représentatif de personnes sur leur situation face à l'emploi.</li>
+            <li><strong>b.</strong> « En 2021, 19 % des personnes déclarant une discrimination au travail citent leur sexe comme principal motif. »</li>
+            <li><strong>c.</strong> Le schéma du circuit économique entre les entreprises et les ménages.</li>
+            <li><strong>d.</strong> Une sociologue passe six mois avec des supporters de football et réalise une trentaine d'entretiens.</li>
+            <li><strong>e.</strong> Le nombre d'élèves inscrits en seconde dans un lycée.</li>
+            <li><strong>f.</strong> Un plan de métro, qui ne montre ni les rues ni les bâtiments.</li>
+          </ul>
+        </li>
+        <li>L'étude d est-elle une enquête quantitative ou qualitative ? Justifiez.</li>
+        <li>Expliquez en une phrase à quoi sert chacun des trois outils dans la démarche du chercheur.</li>
+        <li>Remettez dans l'ordre les étapes de la démarche : réaliser une enquête · formuler des hypothèses · observer la société et se poser une question · analyser les données obtenues.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ol>
+          <li><strong>a</strong> enquête (démarche organisée de collecte d'informations) · <strong>b</strong> donnée (information chiffrée issue d'une enquête) · <strong>c</strong> modèle · <strong>d</strong> enquête · <strong>e</strong> donnée · <strong>f</strong> modèle, par analogie : une représentation simplifiée qui ne garde que les lignes et les stations.</li>
+          <li>Qualitative : peu de personnes, observées et interrogées en profondeur, pour comprendre le sens que les supporters donnent à leur fidélité.</li>
+          <li>L'enquête sert à collecter des informations pour confronter des hypothèses aux faits. La donnée sert à décrire ou analyser un phénomène, souvent en chiffres. Le modèle sert à simplifier la réalité pour raisonner et comprendre des mécanismes.</li>
+          <li>Observer la société et se poser une question, puis formuler des hypothèses, puis réaliser une enquête, enfin analyser les données obtenues.</li>
+        </ol>
+      </div></details>
+    </div>
+
+    <!-- Exercice 11 -->
+    <div class="f-exo" id="exo11"><h3>Exercice 11 — Le circuit économique, un modèle (exigeant)</h3>
+      <ol>
+        <li>Reproduisez de mémoire le circuit économique simplifié : deux agents, quatre flèches, chacune nommée.</li>
+        <li>Classez les quatre flux en flux réels (biens, services, travail) et flux monétaires (argent).</li>
+        <li>Associez chaque agent à son opération : production, répartition, dépense.</li>
+        <li>Montrez que ce schéma est un modèle : citez deux acteurs qu'il laisse de côté et expliquez pourquoi il reste utile.</li>
+      </ol>
+      <details class="f-corr"><summary>Voir la correction</summary><div>
+        <ul>
+          <li><strong>Questions 1 et 2.</strong> Schéma : voir la <a href="#circuit">partie 2</a>. Flux réels : le travail (des ménages vers les entreprises) et les biens et services (des entreprises vers les ménages). Flux monétaires : les salaires (des entreprises vers les ménages) et les dépenses de consommation (des ménages vers les entreprises). Chaque flux réel a sa contrepartie monétaire en sens inverse.</li>
+          <li><strong>Question 3.</strong> Entreprises : <strong>production</strong>. Ménages : <strong>répartition</strong> (ils reçoivent les revenus, les salaires) et <strong>dépense</strong> (ils consomment).</li>
+          <li><strong>Question 4.</strong> C'est un modèle car il simplifie la réalité en ne gardant que deux agents. Il laisse de côté l'État (impôts, services publics), les banques (épargne, crédit) et le reste du monde (importations, exportations). Il reste utile parce qu'il montre l'essentiel : les revenus des uns sont les dépenses des autres, donc si les ménages consomment moins, les entreprises vendent moins et peuvent verser moins de salaires.</li>
+        </ul>
+      </div></details>
+    </div>
+
+    <!-- Exercice 12 -->
+    <div class="f-exo" id="exo12"><span class="f-bareme">Bonus</span><h3>Exercice 12 — Paragraphe argumenté (bonus, niveau Bossuet)</h3>
+      <p>Traitez un sujet en 10 à 15 lignes, en suivant la méthode AEI (une idée par paragraphe).</p>
+      <ul>
+        <li><strong>Sujet A</strong> : Montrez que l'économiste, le sociologue et le politiste peuvent porter des regards différents sur un même phénomène.</li>
+        <li><strong>Sujet B</strong> : Expliquez pourquoi une corrélation ne suffit pas à prouver une causalité.</li>
+      </ul>
+      <details class="f-corr"><summary>Voir la correction (Sujet B, exemple de rédaction)</summary><div>
+        <p><em>(A)</em> Une corrélation montre seulement que deux variables évoluent ensemble, elle ne dit pas laquelle agit sur l'autre. <em>(E)</em> D'abord, le lien peut aller dans l'autre sens : c'est la causalité inverse. Ensuite, une troisième variable peut faire varier les deux en même temps : c'est la variable cachée. Enfin, la corrélation peut n'être qu'une coïncidence. <em>(I)</em> Par exemple, plus il y a de pompiers sur un incendie, plus les dégâts sont importants, mais les pompiers ne causent pas les dégâts : c'est la taille de l'incendie qui explique à la fois le nombre de pompiers envoyés et l'ampleur des dégâts. Pour défendre une causalité, le chercheur doit donc proposer un mécanisme et écarter les autres explications.</p>
+        <p>Pour le Sujet A, la même structure s'applique : un paragraphe AEI par discipline, avec sa question de base et un exemple, comme le vélo en ville.</p>
+      </div></details>
+    </div>
+  </section>
+
+  <!-- ===================== 5. CORRIGÉS ===================== -->
+  <section class="f-section" id="corriges" data-court="Corrigés">
+    <h2><span class="n">5</span>Corrigés</h2>
+    <p>À lire seulement après avoir cherché. Pour une réponse rédigée, ce qui compte est la présence des notions et du raisonnement, pas la formulation exacte.</p>
+    <p>Chaque corrigé est replié sous son exercice, dans la partie 4 : touche « Voir la correction ».</p>
+    <div class="f-retiens"><div class="f-etiquette">Barème de l'interro blanche (sur 20)</div>
+      <ul>
+        <li><a href="#exo1">Exercice 1</a> : 0,5 point par définition et par phrase complétée (4 pts).</li>
+        <li><a href="#exo3">Exercice 3</a> : 0,5 point par question, dont 0,25 pour la discipline et 0,25 pour la justification (4 pts).</li>
+        <li><a href="#exo7">Exercice 7</a> : 1 point pour les questions 1, 2, 3, 5 et 7, 0,5 point pour les questions 4 et 6 (6 pts).</li>
+        <li><a href="#exo8">Exercice 8</a> : 1 point par ligne, dont 0,5 pour le sens de la corrélation et 0,5 pour la conclusion (6 pts).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== TESTE-TOI ===================== -->
+  <section class="f-section" id="teste" data-court="Teste-toi">
+    <h2><span class="n">6</span>Teste-toi</h2>
+    <div class="f-grille deux">
+      <div class="f-flip"><div><div class="recto">Définis la rareté.</div><div class="verso">Situation dans laquelle les ressources disponibles sont limitées au regard des usages possibles et des besoins ou désirs.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Quelles sont les trois questions auxquelles toute société doit répondre ?</div><div class="verso">Que produire ? comment produire ? pour qui produire (à qui distribuer la production) ?</div></div></div>
+      <div class="f-flip"><div><div class="recto">Qu'est-ce qui distingue le pouvoir politique des autres formes de pouvoir ?</div><div class="verso">Il s'exerce sur l'ensemble de la société, et non sur un seul groupe.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Définis un modèle.</div><div class="verso">Représentation simplifiée de la réalité qui en retient certains éléments afin de raisonner et d'en comprendre des mécanismes.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Quels sont les trois pièges qui empêchent de conclure d'une corrélation à une causalité ?</div><div class="verso">La causalité inverse, la variable cachée et la coïncidence.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Comment calcule-t-on une proportion ?</div><div class="verso">Proportion (en %) = effectif de la partie ÷ effectif de l'ensemble × 100</div></div></div>
+      <div class="f-flip"><div><div class="recto">Quels outils pour une enquête quantitative ? pour une enquête qualitative ?</div><div class="verso">Quantitative : questionnaire, statistiques. Qualitative : entretien, observation.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Deux variables qui baissent ensemble : corrélation positive ou négative ?</div><div class="verso">Positive : elles évoluent dans le même sens.</div></div></div>
+    </div>
+  </section>
+
+  <p class="f-fin">Fin de la fiche · Révisions Marcus</p>
+</main>
+</body>
+</html>
