@@ -432,6 +432,7 @@ function vResource(id) {
     body.append(pages);
     renderPdf(url, pages);
   } else if (/\.html?$/i.test(url)) {
+    if (["fiche", "entrainement", "corrige"].includes(r.type)) bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); try { const w = f.contentWindow; (w.ficheImprimer || w.print).call(w); } catch (e) { window.open(url, "_blank"); } } }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
     bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); if (f && f.requestFullscreen) f.requestFullscreen().catch(() => {}); else window.open(url, "_blank"); } }, svg("expand"), h("span", { class: "lbl" }, "Plein écran")));
     body.append(h("iframe", { src: url, title: r.titre, allow: "fullscreen; autoplay", allowfullscreen: true }));
   } else if (/\.(mp4|webm|m4v)$/i.test(url)) {
