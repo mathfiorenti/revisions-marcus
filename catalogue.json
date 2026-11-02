@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-31-8",
+  "version": "2026-11-03-1",
   "matieres": [
     {
       "id": "histoire",
@@ -18,8 +18,8 @@
               "id": "hist-fiches",
               "type": "fiche",
               "titre": "Fiches de révision",
-              "detail": "14 pages · frise, dates zéro faute, schémas, pièges",
-              "fichier": "contenus/histoire/mediterranee-antique-fiches.pdf"
+              "detail": "9 fiches · frises, dates zéro faute, schémas, pièges · imprimable",
+              "fichier": "contenus/histoire/mediterranee-antique-fiches.html"
             },
             {
               "id": "hist-fc",
@@ -50,8 +50,8 @@
               "id": "hist-dc",
               "type": "entrainement",
               "titre": "Développements construits",
-              "detail": "8 sujets et corrigés · 9 pages",
-              "fichier": "contenus/histoire/mediterranee-antique-developpements-construits.pdf"
+              "detail": "Méthode + 8 sujets, corrigés à déplier",
+              "fichier": "contenus/histoire/mediterranee-antique-developpements-construits.html"
             },
             {
               "id": "hist-v1",
@@ -123,22 +123,22 @@
               "id": "fr-fiche",
               "type": "fiche",
               "titre": "Fiche de révision",
-              "detail": "Pennac, Zola, focalisation · 11 pages",
-              "fichier": "contenus/francais/fiche-roman-sequences-1-2.pdf"
+              "detail": "Pennac, Zola, focalisation · Teste-toi",
+              "fichier": "contenus/francais/fiche-roman-sequences-1-2.html"
             },
             {
               "id": "fr-eval-sujet",
               "type": "entrainement",
               "titre": "Évaluation blanche · sujet",
-              "detail": "Le roman réaliste · 3 pages",
-              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-sujet.pdf"
+              "detail": "Le roman réaliste · 1 h",
+              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-sujet.html"
             },
             {
               "id": "fr-eval-corrige",
               "type": "corrige",
               "titre": "Évaluation blanche · corrigé",
-              "detail": "À ouvrir après avoir fait le sujet · 6 pages",
-              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-corrige.pdf"
+              "detail": "À ouvrir après avoir fait le sujet",
+              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-corrige.html"
             }
           ]
         }
@@ -168,8 +168,8 @@
               "id": "ses-exos",
               "type": "entrainement",
               "titre": "Cours, méthodes et exercices corrigés",
-              "detail": "Définitions, 12 exercices · 18 pages",
-              "fichier": "contenus/ses/ses-chapitre-1-revision-et-exercices.pdf"
+              "detail": "Définitions, méthodes, 12 exercices corrigés à déplier",
+              "fichier": "contenus/ses/ses-chapitre-1-revision-et-exercices.html"
             }
           ]
         }
