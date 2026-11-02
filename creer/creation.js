@@ -1,5 +1,5 @@
-/* Atelier parents — Révisions Marcus.
-   Un parent discute avec Claude (fonction Supabase « atelier ») pour créer un exercice interactif,
+/* Mode création — Révisions Marcus.
+   Marcus ou un parent discute avec Claude (fonction Supabase « atelier ») pour créer un exercice interactif,
    le teste dans l'aperçu, le retouche, puis le publie dans l'appli de Marcus.
    Protégé par le code famille (le même que l'appli de Marcus). La conversation reste sur cet appareil. */
 (function () {
@@ -43,6 +43,7 @@
 
   /* ---------- serveur ---------- */
   let CODE = lsGet("par.code", "") || lsGet("rev.code", "");
+  const AUTEUR = () => lsGet("par.auteur", "marcus");
   async function rpc(fn, body) {
     const r = await fetch(CFG.supabaseUrl + "/rest/v1/rpc/" + fn, { method: "POST", headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey, Authorization: "Bearer " + CFG.supabaseKey }, body: JSON.stringify(body) });
     if (!r.ok) { const e = new Error(await r.text()); e.status = r.status; e.badCode = r.status === 403; throw e; }
@@ -112,7 +113,7 @@
   function vVerrou() {
     const champ = h("input", { class: "txt-in code-in", type: "password", autocomplete: "off", autocapitalize: "characters", spellcheck: "false", placeholder: "Code famille", "aria-label": "Code famille", maxlength: "40" });
     const msg = h("p", { class: "small", "aria-live": "polite", style: { margin: 0, minHeight: "1.3em" } });
-    const bouton = h("button", { class: "btn", type: "submit" }, "Ouvrir l'atelier");
+    const bouton = h("button", { class: "btn", type: "submit" }, "Ouvrir le mode création");
     const carte = h("form", { class: "lock-card", onsubmit: async e => {
       e.preventDefault();
       const code = champ.value.trim().toUpperCase(); if (!code) return champ.focus();
@@ -123,8 +124,8 @@
       CODE = code; lsSet("par.code", code); render(); demarrer();
     } },
       h("span", { class: "lock-ico" }, iconeAtelier()),
-      h("h1", null, "Atelier parents"),
-      h("p", { class: "small", style: { margin: 0 } }, "Préparez des exercices pour " + (CFG.prenom || "Marcus") + " avec l'aide de Claude. Entrez le code famille (le même que dans son appli)."),
+      h("h1", null, "Mode création"),
+      h("p", { class: "small", style: { margin: 0 } }, "Crée des exercices de révision avec l'aide de Claude. Entre le code famille (le même que dans l'appli de révision)."),
       champ, msg, bouton);
     setTimeout(() => champ.focus(), 300);
     return h("div", { class: "view lock" }, carte);
@@ -132,6 +133,12 @@
   function iconeAtelier() { const s = document.createElement("span"); s.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M9 12l4.5-4.5 1.5 1.5L10.5 13.5H9z"/></svg>'; return s.firstChild; }
 
   /* ---------- atelier : conversation + aperçu ---------- */
+  const IDEES_MARCUS = [
+    "Un texte à trous en anglais sur le present perfect et le prétérit, avec une partie plus difficile.",
+    "Entraîne-moi pour le DST de français : questions sur le roman réaliste (Balzac, Flaubert, Zola).",
+    "J'ai pris mon cours en photo : fais-moi un exercice qui reprend exactement ce cours.",
+    "10 questions rapides sur les dates du chapitre d'histoire sur Athènes et Rome."
+  ];
   const IDEES = [
     "Un texte à trous en anglais sur le present perfect et le prétérit, avec une partie plus difficile.",
     "Prépare Marcus au DST de français : questions sur le roman réaliste (Balzac, Flaubert, Zola).",
@@ -144,9 +151,9 @@
       liste.replaceChildren();
       if (!C.messages.length) {
         liste.append(h("div", { class: "accueil-atelier" },
-          h("h2", null, "Que voulez-vous préparer pour " + (CFG.prenom || "Marcus") + " ?"),
-          h("p", { class: "small" }, "Décrivez l'exercice comme à un professeur particulier : la matière, le chapitre, le type d'exercice. Vous pouvez joindre des photos du cours ou un PDF, et dicter au lieu d'écrire. Claude prépare l'exercice, vous le testez, vous demandez des retouches, puis vous le publiez."),
-          h("div", { class: "idees" }, IDEES.map(t => h("button", { type: "button", class: "idee", onclick: () => { saisie.value = t; saisie.focus(); ajuster(); } }, t)))));
+          h("h2", null, AUTEUR() === "parent" ? "Que veux-tu préparer pour " + (CFG.prenom || "Marcus") + " ?" : "Qu'est-ce que tu veux réviser ?"),
+          h("p", { class: "small" }, "Décris l'exercice comme à un prof particulier : la matière, le chapitre, le type d'exercice. Tu peux joindre des photos du cours ou un PDF, et dicter au lieu d'écrire. Claude prépare l'exercice, tu le testes, tu demandes des retouches, puis tu l'ajoutes aux révisions."),
+          h("div", { class: "idees" }, (AUTEUR() === "parent" ? IDEES : IDEES_MARCUS).map(t => h("button", { type: "button", class: "idee", onclick: () => { saisie.value = t; saisie.focus(); ajuster(); } }, t)))));
       }
       C.messages.forEach((m, i) => liste.append(bulle(m, i)));
       if (envoi) liste.append(h("div", { class: "msg ia attente" }, h("span", { class: "points" }, h("i"), h("i"), h("i")), h("span", { class: "small" }, "Claude prépare l'exercice… (souvent 20 à 60 secondes)")));
@@ -164,7 +171,7 @@
     }
 
     /* zone de saisie */
-    const saisie = h("textarea", { class: "txt-in saisie", rows: "1", placeholder: "Écrivez ou dictez votre demande…", "aria-label": "Votre message" });
+    const saisie = h("textarea", { class: "txt-in saisie", rows: "1", placeholder: "Ta demande…", "aria-label": "Ton message" });
     const ajuster = () => { saisie.style.height = "auto"; saisie.style.height = Math.min(220, saisie.scrollHeight + 2) + "px"; };
     saisie.addEventListener("input", ajuster);
     saisie.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); envoyer(); } });
@@ -197,7 +204,7 @@
       envoi = true; sauver(); peindreFil(); envoyerBtn.disabled = true;
       try {
         const d = await fonction("atelier", {
-          code: CODE,
+          code: CODE, auteur: AUTEUR(),
           messages: C.messages.filter(m => !m.erreur).map(m => ({ role: m.role, texte: m.texte + (m.role === "assistant" && m.exercice ? "\n[Exercice proposé dans l'aperçu : « " + m.exercice.titre + " »" + (m.version ? ", version " + m.version : "") + "]" : ""), pieces: m.pieces && m.pieces.filter(p => p.data).length ? m.pieces.filter(p => p.data) : undefined })),
           exercice: C.exercice,
           contexte: { date: frDate(ymd(new Date())), dst: dstTexte(), chapitres: chapitresTexte() }
@@ -215,7 +222,7 @@
         if (d.exercice && matchMedia("(min-width: 980px)").matches) peindreApercu();
         else if (d.exercice) setTimeout(ouvrirApercu, 250);
       } catch (e) {
-        const t = e.status === 401 ? "Le code famille n'est plus valable : rouvrez l'atelier avec le nouveau code." :
+        const t = e.status === 401 ? "Le code famille n'est plus valable : rouvre le mode création avec le nouveau code." :
           e.status === 429 ? "La limite du jour est atteinte (pour maîtriser le coût). Réessayez demain." :
           e.status === 503 ? "L'IA n'est pas disponible pour l'instant (clé non configurée)." :
           e.name === "AbortError" ? "Claude a mis trop de temps à répondre. Réessayez, ou demandez un exercice plus court." :
@@ -233,7 +240,7 @@
     function peindreApercu() {
       const exo = C.exercice;
       apercu.replaceChildren();
-      if (!exo) { apercu.append(h("div", { class: "apercu-vide" }, h("strong", null, "Aperçu"), "L'exercice apparaîtra ici, tel que " + (CFG.prenom || "Marcus") + " le verra. Vous pourrez le tester avant de le publier.")); return; }
+      if (!exo) { apercu.append(h("div", { class: "apercu-vide" }, h("strong", null, "Aperçu"), "L'exercice apparaîtra ici, tel que " + (CFG.prenom || "Marcus") + " le verra. Tu pourras le tester avant de l'ajouter.")); return; }
       const pb = Exos.verifier(exo);
       const publie = C.statut === "publie";
       const zone = h("div", { class: "apercu-corps" });
@@ -252,7 +259,7 @@
           h("div", { class: "small statut-exo" }, publie ? "✓ Publié pour " + (CFG.prenom || "Marcus") : C.statut === "brouillon" ? "Enregistré en brouillon" : C.statut === "modifie" ? "Modifié depuis la publication : republiez pour mettre à jour" : "Pas encore publié"),
           h("div", { class: "row" },
             h("button", { class: "btn quiet", disabled: !!pb.length || null, onclick: () => publier("brouillon") }, "Brouillon"),
-            h("button", { class: "btn", disabled: !!pb.length || null, onclick: () => publier("publie") }, publie ? "Republier" : C.exoId ? "Republier les modifications" : "Publier pour " + (CFG.prenom || "Marcus")))));
+            h("button", { class: "btn", disabled: !!pb.length || null, onclick: () => publier("publie") }, publie ? "Republier" : C.exoId ? "Republier les modifications" : "Ajouter aux révisions"))));
     }
     async function publier(statut) {
       if (statut === "publie" && !C.exoId && !confirm("Publier « " + C.exercice.titre + " » ? " + (CFG.prenom || "Marcus") + " le verra tout de suite dans " + (MATIERES[C.exercice.matiere] || "sa matière") + ".")) return;
@@ -271,8 +278,10 @@
     function majCout() { const u = D.tableau && D.tableau.usage; cout.textContent = u && u.jour ? "Aujourd'hui : " + u.jour.n + " message" + (u.jour.n > 1 ? "s" : "") + " · " + euros(Number(u.jour.cout_usd || 0)) : ""; }
     majCout();
     const entete = h("header", { class: "atelier-head" },
-      h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Atelier parents"), h("h1", null, "Créer un exercice")),
-      h("div", { class: "atelier-outils" }, cout,
+      h("div", { class: "grow" }, h("a", { class: "eyebrow retour-appli", href: "../" }, "‹ Révisions"), h("h1", null, "Créer un exercice")),
+      h("div", { class: "atelier-outils" },
+        h("div", { class: "segmented petit", role: "group", "aria-label": "Qui crée ?" }, [["marcus", CFG.prenom || "Marcus"], ["parent", "Un parent"]].map(([v, l]) => h("button", { "aria-pressed": AUTEUR() === v ? "true" : "false", onclick: () => { lsSet("par.auteur", v); render(); } }, l))),
+        cout,
         C.exercice ? h("button", { class: "btn quiet petit apercu-btn", onclick: ouvrirApercu }, "Voir l'aperçu") : null,
         C.messages.length ? h("button", { class: "btn quiet petit", onclick: () => { if (!confirm("Commencer une nouvelle conversation ? L'exercice en cours " + (C.exoId ? "reste enregistré dans « Exercices »." : "non publié sera perdu."))) return; C = vide(); sauver(); render(); } }, "Nouvelle conversation") : null));
     peindreFil(); peindreApercu();
@@ -309,7 +318,7 @@
     rec.onresult = e => { let inter = ""; for (let i = e.resultIndex; i < e.results.length; i++) { const t = e.results[i][0].transcript; if (e.results[i].isFinal) final += t; else inter += t; } champ.value = base + final + inter; apres(); };
     rec.onend = () => { ecoute = null; btn.classList.remove("on"); };
     rec.onerror = ev => { if (ev.error === "not-allowed") toast("Autorisez le micro pour dicter."); };
-    try { rec.start(); ecoute = rec; btn.classList.add("on"); toast("Je vous écoute… touchez le micro pour arrêter."); } catch (e) {}
+    try { rec.start(); ecoute = rec; btn.classList.add("on"); toast("Je t'écoute… touche le micro pour arrêter."); } catch (e) {}
   }
   function svgIco(n) {
     const P = { mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>', clip: '<path d="M20 11.5l-7.8 7.8a5 5 0 0 1-7.1-7.1L13 4.3a3.3 3.3 0 0 1 4.7 4.7l-7.8 7.8a1.7 1.7 0 0 1-2.4-2.4l7.1-7.1"/>', send: '<path d="M4 12l16-8-6 16-2.5-6.5z"/><path d="M11.5 13.5L20 4"/>' };
@@ -322,7 +331,7 @@
     const groupe = (titre, l) => l.length ? h("section", { class: "sec" }, h("h2", null, titre), h("div", { class: "exo-liste" }, l.map(ligneExo))) : null;
     return h("div", { class: "view" },
       h("header", null, h("div", { class: "eyebrow" }, "Exercices"), h("h1", null, "Exercices de " + (CFG.prenom || "Marcus"))),
-      !exos.length ? h("div", { class: "empty-box" }, h("strong", null, "Aucun exercice pour l'instant"), "Créez-en un dans l'atelier : il apparaîtra ici, avec les notes de " + (CFG.prenom || "Marcus") + ".") : null,
+      !exos.length ? h("div", { class: "empty-box" }, h("strong", null, "Aucun exercice pour l'instant"), "Crée-en un dans l'onglet Créer : il apparaîtra ici, avec les notes de " + (CFG.prenom || "Marcus") + ".") : null,
       groupe("Publiés", exos.filter(e => e.statut === "publie")),
       groupe("Brouillons", exos.filter(e => e.statut === "brouillon")),
       groupe("Retirés (30 derniers jours)", exos.filter(e => e.statut === "retire")));
@@ -341,8 +350,8 @@
           h("button", { class: "btn quiet petit", onclick: () => changerStatut(e, "publie") }, "Publier")));
   }
   function reprendre(e) {
-    if (C.messages.length && C.exoId !== e.id && !confirm("Ouvrir cet exercice dans l'atelier ? La conversation en cours sera remplacée.")) return;
-    C = { messages: [{ role: "assistant", texte: "Voici l'exercice « " + e.titre + " ». Dites-moi ce que vous voulez changer : je renverrai une version complète à republier.", exercice: e.contenu, version: 1 }], exercice: e.contenu, exoId: e.id, statut: e.statut, version: 1 };
+    if (C.messages.length && C.exoId !== e.id && !confirm("Ouvrir cet exercice dans l'onglet Créer ? La conversation en cours sera remplacée.")) return;
+    C = { messages: [{ role: "assistant", texte: "Voici l'exercice « " + e.titre + " ». Dis-moi ce que tu veux changer : je renverrai une version complète à republier.", exercice: e.contenu, version: 1 }], exercice: e.contenu, exoId: e.id, statut: e.statut, version: 1 };
     sauver(); location.hash = "#/";
   }
   async function changerStatut(e, statut) {
@@ -409,11 +418,11 @@
       h("section", { class: "card" }, h("h2", null, "Dernières séances de flashcards"),
         sessions.length ? h("ul", { class: "log" }, sessions.map(s => h("li", null, h("span", null, s.titre + " · " + s.ok + " sues, " + s.mid + " presque, " + s.ko + " à revoir"), h("span", null, new Date(s.t).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }) + (s.min ? " · " + s.min + " min" : ""))))) : h("p", { class: "small", style: { margin: 0 } }, "Aucune séance pour l'instant.")),
       (pr.alertes || []).length ? h("section", { class: "card", style: { borderColor: "var(--ko)" } }, h("h2", null, "À regarder"), h("p", { class: "small", style: { margin: 0 } }, "La correction par l'IA a signalé " + pr.alertes.length + " réponse(s) hors sujet ou préoccupante(s), la dernière le " + frDate(new Date(pr.alertes[pr.alertes.length - 1].t).toISOString(), { day: "numeric", month: "long" }) + ". Le contenu n'est pas conservé.")) : null,
-      h("section", { class: "card" }, h("h2", null, "Coût de l'atelier"),
+      h("section", { class: "card" }, h("h2", null, "Coût du mode création"),
         h("p", { class: "small", style: { margin: 0 } }, "Aujourd'hui : " + ((u.jour && u.jour.n) || 0) + " message(s), " + euros(Number((u.jour && u.jour.cout_usd) || 0)) + " · ce mois-ci : " + euros(Number((u.mois && u.mois.cout_usd) || 0)) + ". Plafond : 80 messages ou environ 2,80 € par jour."),
-        h("div", { class: "row" }, h("button", { class: "btn quiet petit", onclick: () => { if (confirm("Fermer l'atelier sur cet appareil ? Le code famille sera redemandé.")) { CODE = ""; lsSet("par.code", ""); render(); } } }, "Fermer l'atelier sur cet appareil"),
+        h("div", { class: "row" }, h("button", { class: "btn quiet petit", onclick: () => { if (confirm("Fermer le mode création sur cet appareil ? Le code famille sera redemandé.")) { CODE = ""; lsSet("par.code", ""); render(); } } }, "Fermer le mode création sur cet appareil"),
           h("a", { class: "btn quiet petit", href: "../", target: "_blank", rel: "noopener" }, "Ouvrir l'appli de " + (CFG.prenom || "Marcus")))),
-      h("p", { class: "small", style: { textAlign: "center" } }, "Atelier · version " + VERSION));
+      h("p", { class: "small", style: { textAlign: "center" } }, "Mode création · version " + VERSION));
   }
 
   /* ---------- thème et démarrage ---------- */
@@ -423,7 +432,7 @@
   }
   async function demarrer() {
     await Promise.all([chargerCatalogue(), window.DST ? DST.charger("../dst.json") : null]);
-    try { await chargerTableau(); } catch (e) { if (e.badCode) toast("Le code famille a changé : entrez le nouveau code."); }
+    try { await chargerTableau(); } catch (e) { if (e.badCode) toast("Le code famille a changé : entre le nouveau code."); }
     if (!$(".saisie") || !$(".saisie").value) render();
   }
   if ("serviceWorker" in navigator && location.protocol !== "file:") addEventListener("load", () => navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(() => {}));

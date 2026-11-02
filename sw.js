@@ -64,7 +64,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   if (url.origin !== location.origin) return;
-  if (url.pathname.includes("/parents/")) return;                       // espace parents : son propre service worker
+  if (url.pathname.includes("/creer/")) return;                       // mode création : son propre service worker
   if (req.mode === "navigate" || /\.(js|css|json|html|webmanifest)$/.test(url.pathname) || url.pathname.endsWith("/")) {
     e.respondWith(reseauDabord(req));
     return;
