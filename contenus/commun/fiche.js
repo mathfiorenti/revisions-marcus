@@ -64,7 +64,7 @@
     document.querySelectorAll(".f-anim").forEach(el => el.classList.add("vu"));
     const fin = () => { fermes.forEach(d => (d.open = false)); removeEventListener("afterprint", fin); };
     addEventListener("afterprint", fin);
-    setTimeout(() => window.print(), 60);
+    setTimeout(() => window.print(), 350);
   }
   addEventListener("beforeprint", () => { document.querySelectorAll("details").forEach(d => { if (!d.open) { d.dataset.ferme = "1"; d.open = true; } }); });
   addEventListener("afterprint", () => { document.querySelectorAll("details[data-ferme]").forEach(d => { d.open = false; delete d.dataset.ferme; }); });

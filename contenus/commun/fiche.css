@@ -143,6 +143,7 @@ body.dans-appli .f-outils .imprimer{display:none}
   .f-carte,.f-def,.f-retiens,.f-piege,.f-methode,.f-exemple,.f-question,.f-exo,.f-schema,.f-chiffre,blockquote,.f-texte,table,tr,.f-frise li{break-inside:avoid}
   .f-carte,.f-def,.f-retiens,.f-piege,.f-methode,.f-exemple,.f-question,.f-exo{padding:9px 12px;margin:8px 0;border-radius:10px}
   details.f-corr{border-style:solid}
+  details.f-corr[open] > div,*{animation:none!important}
   details.f-corr > summary::before{content:""}
   .f-flip > div{transform:none!important;min-height:0}
   .f-flip .recto,.f-flip .verso{position:static;transform:none;backface-visibility:visible}
