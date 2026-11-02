@@ -637,3 +637,19 @@ body.locked .tabbar{display:none}
 .lock-card .btn{width:100%}
 .lock-card.shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+/* Prochains DST (accueil) */
+.dst{gap:14px}
+.dst .sec-head a{color:var(--accent);font-weight:600}
+.dst-sem{display:flex;flex-direction:column;gap:6px}
+.dst-w{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dst-w .small{text-transform:none;letter-spacing:0;font-weight:500}
+.dst-e{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-edge);text-decoration:none;color:var(--ink)}
+.dst-e.passe{opacity:.55}
+.dst-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dst-t{display:flex;flex-direction:column;flex:1;min-width:0}
+.dst-t b{font-weight:700}
+.dst-q{font-size:.78rem;font-weight:800;padding:4px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.dst-q.urgent{background:var(--ko-soft);color:var(--ko)}
+.dst-q.passe{background:var(--ok-soft);color:var(--ok)}
+.dst-vide{padding:8px 12px;color:var(--muted);font-size:.92rem}

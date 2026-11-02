@@ -1,0 +1,56 @@
+{
+  "source": "Planning DST 2026-2027 des secondes (version du 09/09/2026)",
+  "lieu": "Site Saint-Bernard",
+  "arrivee": "10 minutes avant le début",
+  "classes": {
+    "eme-ind": { "nom": "2nde Eme / Ind", "jour": 0, "heure": "9 h 15 – 11 h 15" },
+    "azu-cor": { "nom": "2nde Azu / Cor", "jour": 1, "heure": "9 h 15 – 11 h 15" },
+    "lil-tur": { "nom": "2nde Lil / Tur", "jour": 4, "heure": "14 h 30 – 16 h 30" }
+  },
+  "matieres": {
+    "FR": { "nom": "Français", "id": "francais" },
+    "HG": { "nom": "Histoire-géographie", "id": "histoire" },
+    "MATHS": { "nom": "Maths", "id": "maths" },
+    "SVT": { "nom": "SVT", "id": "svt" },
+    "PC": { "nom": "Physique-chimie", "id": "physique-chimie" },
+    "SES": { "nom": "SES", "id": "ses" },
+    "SNT": { "nom": "SNT", "id": null },
+    "LVA": { "nom": "Langue vivante A", "id": "anglais" },
+    "LVB": { "nom": "Langue vivante B", "id": null }
+  },
+  "semaines": [
+    { "lundi": "2026-10-05", "epreuves": [["MATHS", 1], ["SVT", 1]] },
+    { "lundi": "2026-10-12", "epreuves": [["LVA", 1], ["LVB", 1]] },
+    { "lundi": "2026-11-02", "epreuves": [["FR", 2]] },
+    { "lundi": "2026-11-09", "epreuves": [["HG", 2]] },
+    { "lundi": "2026-11-16", "epreuves": [["SES", 1], ["SNT", 1]] },
+    { "lundi": "2026-11-23", "epreuves": [["PC", 2]] },
+    { "lundi": "2026-11-30", "epreuves": [["MATHS", 2]] },
+    { "lundi": "2026-12-07", "epreuves": [["FR", 2]] },
+    { "lundi": "2026-12-14", "epreuves": [["SVT", 2]] },
+    { "lundi": "2027-01-04", "epreuves": [["PC", 2]] },
+    { "lundi": "2027-01-11", "epreuves": [["HG", 2]] },
+    { "lundi": "2027-01-18", "epreuves": [["MATHS", 2]] },
+    { "lundi": "2027-01-25", "epreuves": [["LVA", 1], ["LVB", 1]] },
+    { "lundi": "2027-02-01", "epreuves": [["SES", 1], ["SNT", 1]] },
+    { "lundi": "2027-02-22", "epreuves": [["SVT", 2]] },
+    { "lundi": "2027-03-01", "epreuves": [["FR", 2]] },
+    { "lundi": "2027-03-08", "epreuves": [["HG", 2]] },
+    { "lundi": "2027-03-15", "epreuves": [["MATHS", 2]] },
+    { "lundi": "2027-03-22", "epreuves": [["PC", 2]] },
+    { "lundi": "2027-03-29", "epreuves": [["LVA", 1], ["LVB", 1]] },
+    { "lundi": "2027-04-19", "epreuves": [["SES", 1], ["SNT", 1]] },
+    { "lundi": "2027-04-26", "epreuves": [["FR", 2]] },
+    { "lundi": "2027-05-10", "epreuves": [["SVT", 2]] }
+  ],
+  "vacances": [
+    { "nom": "Vacances de la Toussaint", "lundi": "2026-10-19" },
+    { "nom": "Vacances de la Toussaint", "lundi": "2026-10-26" },
+    { "nom": "Vacances de Noël", "lundi": "2026-12-21" },
+    { "nom": "Vacances de Noël", "lundi": "2026-12-28" },
+    { "nom": "Vacances d'hiver", "lundi": "2027-02-08" },
+    { "nom": "Vacances d'hiver", "lundi": "2027-02-15" },
+    { "nom": "Vacances de printemps", "lundi": "2027-04-05" },
+    { "nom": "Vacances de printemps", "lundi": "2027-04-12" }
+  ]
+}

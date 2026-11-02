@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "31/10 · 21 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "03/11 · 0 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -73,6 +73,7 @@ const KIND = {
   quiz: { label: "QCM", icon: "quiz", hue: "#2fbf71", ordre: 3 },
   animation: { label: "Cours animé", icon: "animation", hue: "#d65ce0", ordre: 4 },
   entrainement: { label: "Entraînement", icon: "entrainement", hue: "#ff7a45", ordre: 5 },
+  exercice: { label: "Exercice", icon: "entrainement", hue: "#14b8a6", ordre: 5.5 },
   corrige: { label: "Corrigé", icon: "corrige", hue: "#8b95a7", ordre: 6 },
   video: { label: "Vidéo", icon: "video", hue: "#ef5350", ordre: 7 }
 };
@@ -95,6 +96,30 @@ async function loadCatalogue() {
     } catch (e) { console.warn("flashcards", r.fichier, e); }
   }));
   S.loaded = true;
+}
+
+/* ---------------- exercices créés dans l'espace parents (base Supabase) ---------------- */
+S.exos = lsGet("rev.exos", []); if (!Array.isArray(S.exos)) S.exos = [];
+let exoRes = lsGet("rev.exoRes", {}), exoAttente = lsGet("rev.exoAttente", []);
+async function chargerExos() {
+  if (!SYNC.code || !navigator.onLine) return;
+  try {
+    const l = await rpc("lister_exercices", { code: SYNC.code });
+    if (Array.isArray(l)) { S.exos = l; lsSet("rev.exos", l); for (const e of l) if (e.resultat && (!exoRes[e.id] || exoRes[e.id].t < Date.parse(e.resultat.ts))) exoRes[e.id] = { sur20: Math.round(e.resultat.score / e.resultat.total * 200) / 10, t: Date.parse(e.resultat.ts) }; lsSet("rev.exoRes", exoRes); }
+  } catch (e) {}
+  envoyerResultats();
+}
+async function envoyerResultats() {
+  if (!SYNC.code || !navigator.onLine || !exoAttente.length) return;
+  const reste = [];
+  for (const r of exoAttente) { try { await rpc("enregistrer_resultat", r); } catch (e) { if (!e.badCode) reste.push(r); } }
+  exoAttente = reste; lsSet("rev.exoAttente", reste);
+}
+function exosDe(mid) { return S.exos.filter(e => e.matiere === mid); }
+function exoRessource(e) {
+  const r = exoRes[e.id];
+  return { id: "exo-" + e.id, type: "exercice", titre: e.titre, _href: "#/exo/" + e.id, _exo: e,
+    detail: r ? "Dernière note : " + String(r.sur20).replace(".", ",") + " / 20" : (window.Exos ? Exos.resume(e.contenu) : "") };
 }
 
 /* ---------------- progression locale + synchro ---------------- */
@@ -133,6 +158,7 @@ async function syncNow(opts) {
     lsSet("rev.progress", P);
     await rpc("ecrire_progression", { code: SYNC.code, p_donnees: P, p_appareil: DEVICE, p_profil: CFG.profil });
     SYNC.state = "ok"; SYNC.last = Date.now(); lsSet("rev.lastSync", SYNC.last); SYNC.lastRemote = remote;
+    if (!SYNC.exosT || Date.now() - SYNC.exosT > 60000) { SYNC.exosT = Date.now(); chargerExos().then(() => { if (!sess && /^\/?(m\/|$)/.test(location.hash.replace(/^#/, ""))) render(); }); }
     if (opts && opts.rerender) render();
   } catch (e) {
     SYNC.state = e.badCode ? "badcode" : "error";
@@ -141,7 +167,7 @@ async function syncNow(opts) {
 }
 function scheduleSync() { clearTimeout(SYNC.timer); SYNC.timer = setTimeout(syncNow, 2500); }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") { clearTimeout(SYNC.timer); syncNow(); } else syncNow({ rerender: !sess }); });
-addEventListener("online", () => syncNow());
+addEventListener("online", () => { syncNow(); envoyerResultats(); });
 
 /* ---------------- flashcards : répétition espacée ---------------- */
 const INT = [0, 1, 2, 4, 8, 16, 30], NEW_PER_DAY = 15, MAX_SESSION = 40, MASTER = 4;
@@ -216,6 +242,7 @@ function render() {
   else if (v === "r") { view = vResource(parts[1]); if (!view) return; }
   else if (v === "cartes") { setTab("accueil"); view = parts[1] ? vCardsSubject(parts[1], q.get("c")) : vCards(); }
   else if (v === "session") { setTab("accueil"); view = vSession(q); }
+  else if (v === "exo") { setTab("accueil"); view = vExo(parts[1]); }
   else if (v === "ajouter") { setTab("accueil"); view = vAdd(q.get("m")); }
   else if (v === "suivi") { setTab("suivi"); view = vStats(); }
   else if (v === "reglages") { setTab("reglages"); view = vSettings(); }
@@ -254,28 +281,52 @@ function topbar(label, href, extra) {
 
 /* ---------------- vues ---------------- */
 function greeting() { const hr = new Date().getHours(); return hr < 5 ? "Encore debout" : hr < 12 ? "Bonjour" : hr < 18 ? "Salut" : "Bonsoir"; }
-function counts(m) { let n = 0; for (const c of m.chapitres) n += c.ressources.length; return n; }
+function counts(m) { let n = exosDe(m.id).length; for (const c of m.chapitres) n += c.ressources.length; return n; }
 function isNew(dateStr) { return dateStr && dateStr >= addDays(today(), -7); }
 
 function vHome() {
   const grid = h("div", { class: "subjects stagger" }, stag(S.matieres.map(m => {
-    const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute));
+    const nb = counts(m), recent = m.chapitres.some(c => isNew(c.ajoute)) || exosDe(m.id).some(e => isNew((e.publie || "").slice(0, 10)) && !exoRes[e.id]);
     return h("a", { class: "subject" + (nb ? "" : " empty"), href: "#/m/" + m.id, style: { "--subj": subjColor(m) } },
       h("span", { class: "top" }, h("span", { class: "pic" }, svg(m.pictogramme)), recent ? h("span", { class: "new" }, "Nouveau") : null),
       h("h3", null, m.nom),
-      h("span", { class: "meta" }, nb ? plural(m.chapitres.length, "chapitre") : "Bientôt"));
+      h("span", { class: "meta" }, nb ? (m.chapitres.length ? plural(m.chapitres.length, "chapitre") : plural(exosDe(m.id).length, "exercice")) : "Bientôt"));
   })));
   return h("div", { class: "view" }, ...stag([
     h("header", { class: "hello" },
       h("div", null, h("div", { class: "eyebrow" }, frDate(today())), h("h1", null, greeting() + " " + (CFG.prenom || ""))),
       h("a", { class: "mini-add", href: "#/ajouter", "aria-label": "J'ajoute un nouveau cours" }, svg("camera"), h("span", null, "Nouveau cours"))),
+    vDst(),
     h("section", { class: "sec" }, h("div", { class: "sec-head" }, h("h2", null, "Tes matières")), grid)
   ]));
 }
 
-function resHref(r, m, c) { return r.type === "flashcards" ? "#/cartes/" + m.id + "?c=" + encodeURIComponent(c.id) : "#/r/" + r.id; }
+/* ---------------- prochains DST (dst.json) ---------------- */
+function vDst() {
+  if (!window.DST) return null;
+  const classe = lsGet("rev.classe", ""), sems = DST.prochains(classe);
+  if (!sems.length) return null;
+  const quandTxt = e => !e.date ? null : e.passe ? "Fait" : e.dans === 0 ? "Aujourd'hui" : e.dans === 1 ? "Demain" : e.dans > 1 && e.date ? "Dans " + e.dans + " jours" : null;
+  const lignes = sems.map(sw => {
+    const titre = h("div", { class: "dst-w" }, h("span", null, sw.quand), h("span", { class: "small" }, "du " + frDate(sw.lundi, { day: "numeric", month: "short" }) + " au " + frDate(addDays(sw.lundi, 4), { day: "numeric", month: "short" })));
+    const contenu = sw.vacances && !sw.epreuves.length ? [h("div", { class: "dst-vide" }, "🌴 " + sw.vacances)] : !sw.epreuves.length ? [h("div", { class: "dst-vide" }, "Pas de DST")] :
+      sw.epreuves.map(e => {
+        const m = e.id && S.matieres.find(x => x.id === e.id), q = quandTxt(e);
+        const inner = [h("span", { class: "dst-dot", style: { background: m ? subjColor(m) : "var(--muted)" } }),
+          h("span", { class: "dst-t" }, h("b", null, e.nom), h("span", { class: "small" }, e.heures + " h" + (e.date ? " · " + frDate(e.date, { weekday: "long", day: "numeric", month: "short" }) + " · " + e.heure : ""))),
+          q ? h("span", { class: "dst-q" + (e.passe ? " passe" : e.dans <= 1 ? " urgent" : "") }, q) : null];
+        return m ? h("a", { class: "dst-e" + (e.passe ? " passe" : ""), href: "#/m/" + m.id }, inner) : h("div", { class: "dst-e" + (e.passe ? " passe" : "") }, inner);
+      });
+    return h("div", { class: "dst-sem" }, titre, ...contenu);
+  });
+  return h("section", { class: "dst card" },
+    h("div", { class: "sec-head" }, h("h2", null, "Prochains DST"), !classe ? h("a", { class: "small", href: "#/reglages" }, "Indique ta classe pour avoir le jour") : null),
+    ...lignes);
+}
+
+function resHref(r, m, c) { if (r._href) return r._href; return r.type === "flashcards" ? "#/cartes/" + m.id + "?c=" + encodeURIComponent(c.id) : "#/r/" + r.id; }
 // Titre de la cartouche sans répéter l'étiquette du type (« QCM Athènes et Rome » → « Athènes et Rome »).
-const VERBES = { fiche: "Lire la fiche", flashcards: "Réviser le chapitre", quiz: "Faire le QCM", animation: "Regarder", entrainement: "S'entraîner", corrige: "Lire le corrigé", video: "Regarder" };
+const VERBES = { exercice: "Faire l'exercice", fiche: "Lire la fiche", flashcards: "Réviser le chapitre", quiz: "Faire le QCM", animation: "Regarder", entrainement: "S'entraîner", corrige: "Lire le corrigé", video: "Regarder" };
 function titreTuile(r, k) {
   if (r.type === "flashcards") return VERBES.flashcards;
   const norm = w => w.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/s$/, "");
@@ -289,7 +340,8 @@ function resTile(r, m, c) {
   const k = KIND[r.type] || KIND.fiche;
   let sous = r.detail || "";
   if (r.type === "flashcards") { const st = chapStats(x => deckOf(x).chapitre && deckOf(x).chapitre.id === c.id); sous = plural(st.n, "carte") + " · " + st.m + " maîtrisée" + (st.m > 1 ? "s" : ""); }
-  return h("a", { class: "tile" + (P.seen[r.id] || r.type === "flashcards" ? "" : " unseen"), href: resHref(r, m, c), style: { "--kind": k.hue } },
+  const pasFait = r.type === "exercice" ? !exoRes[r._exo.id] : !(P.seen[r.id] || r.type === "flashcards");
+  return h("a", { class: "tile" + (pasFait ? " unseen" : ""), href: resHref(r, m, c), style: { "--kind": k.hue } },
     h("span", { class: "ico" }, svg(k.icon)),
     h("span", { class: "kind" }, k.label),
     h("span", { class: "t" }, titreTuile(r, k)),
@@ -299,11 +351,15 @@ function vSubject(id) {
   const m = S.matieres.find(x => x.id === id);
   if (!m) return vHome();
   const col = subjColor(m);
-  const body = m.chapitres.length ? [...m.chapitres].reverse().map(c => {
+  const exos = exosDe(m.id), ids = new Set(m.chapitres.map(c => c.id));
+  const virtuels = [];
+  for (const e of exos) if (!ids.has(e.chapitre_id)) { const t = e.chapitre || "Exercices"; let v = virtuels.find(x => x.titre === t); if (!v) virtuels.push(v = { id: "v-" + t, titre: t, sousTitre: "Exercices préparés pour toi", ajoute: (e.publie || "").slice(0, 10), ressources: [], virtuel: true }); v.ressources.push(exoRessource(e)); }
+  const chapitres = [...m.chapitres.map(c => ({ ...c, ressources: c.ressources.concat(exos.filter(e => e.chapitre_id === c.id).map(exoRessource)) })), ...virtuels.reverse()];
+  const body = chapitres.length ? [...chapitres].reverse().map(c => {
     const main = c.ressources.filter(r => r.type !== "video").sort((a, b) => ((KIND[a.type] || {}).ordre || 9) - ((KIND[b.type] || {}).ordre || 9));
     const vids = c.ressources.filter(r => r.type === "video");
     return h("section", { class: "chapter", style: { "--subj": col } },
-      h("div", { class: "chapter-head" }, h("span", { class: "eyebrow" }, isNew(c.ajoute) ? "Nouveau" : "Chapitre"), h("h2", null, c.titre), c.sousTitre ? h("span", { class: "small" }, c.sousTitre) : null),
+      h("div", { class: "chapter-head" }, h("span", { class: "eyebrow" }, isNew(c.ajoute) || c.ressources.some(r => r._exo && isNew((r._exo.publie || "").slice(0, 10)) && !exoRes[r._exo.id]) ? "Nouveau" : c.virtuel ? "Exercices" : "Chapitre"), h("h2", null, c.titre), c.sousTitre ? h("span", { class: "small" }, c.sousTitre) : null),
       h("div", { class: "tiles" }, main.map(r => resTile(r, m, c))),
       vids.length ? h("details", { class: "vids" }, h("summary", null, svg("video"), plural(vids.length, "extrait vidéo", "extraits vidéo")),
         h("div", { class: "vid-list" }, vids.map(r => h("a", { href: "#/r/" + r.id }, svg("video"), h("span", null, r.titre), svg("chev"))))) : null);
@@ -312,6 +368,46 @@ function vSubject(id) {
     ...stag([topbar("Accueil", "#/", h("a", { class: "mini-add", href: "#/ajouter?m=" + m.id, "aria-label": "J'ajoute un nouveau cours en " + m.nom }, svg("camera"), h("span", null, "Nouveau cours"))),
     h("header", { class: "subj-hero" }, h("span", { class: "pic" }, svg(m.pictogramme)), h("div", { class: "grow" }, h("div", { class: "eyebrow" }, "Seconde"), h("h1", null, m.nom))),
     ...body]));
+}
+
+/* ---------------- exercice interactif ---------------- */
+async function corrigerOuverte(it, reponse, matiere) {
+  if (!SYNC.code || !navigator.onLine) return null;
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const r = await fetch(CFG.supabaseUrl + "/functions/v1/corriger", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json", apikey: CFG.supabaseKey },
+      body: JSON.stringify({ code: SYNC.code, matiere, recto: it.question, verso: it.attendu, plus: it.explication || "", reponse }) });
+    if (!r.ok) return null;
+    const d = await r.json();
+    if (d.alerte) { (P.alertes = P.alertes || []).push({ t: Date.now() }); saveLocal(); }
+    return d.verdict ? { verdict: d.verdict, correction: d.correction + (d.astuce ? " " + d.astuce : "") } : null;
+  } catch (e) { return null; } finally { clearTimeout(t); }
+}
+function vExo(id) {
+  const e = S.exos.find(x => x.id === id);
+  if (!e || !window.Exos) return vHome();
+  const m = S.matieres.find(x => x.id === e.matiere);
+  const zone = h("div");
+  const lancer = () => {
+    zone.replaceChildren(Exos.rendre(e.contenu, {
+      mode: "eleve",
+      corriger: (it, rep) => corrigerOuverte(it, rep, m ? m.nom : e.matiere),
+      refaire: () => { lancer(); window.scrollTo({ top: 0, behavior: "smooth" }); },
+      onFini: res => {
+        exoRes[e.id] = { sur20: res.sur20, t: Date.now() }; lsSet("rev.exoRes", exoRes);
+        P.days[today()] = (P.days[today()] || 0); markSeen("exo-" + e.id);
+        exoAttente.push({ code: SYNC.code, p_exercice: e.id, p_score: res.score, p_total: res.total, p_details: res.details, p_duree: res.duree, p_appareil: DEVICE }); lsSet("rev.exoAttente", exoAttente);
+        envoyerResultats();
+        if (res.sur20 >= 16) confetti();
+      }
+    }));
+  };
+  lancer();
+  const r = exoRes[e.id];
+  return h("div", { class: "view", style: { "--subj": m ? subjColor(m) : "var(--accent)" } },
+    topbar(m ? m.nom : "Accueil", m ? "#/m/" + m.id : "#/"),
+    h("header", null, h("div", { class: "eyebrow" }, (e.chapitre || "Exercice") + (r ? " · dernière note " + String(r.sur20).replace(".", ",") + "/20" : "")), h("h1", null, e.titre)),
+    zone);
 }
 
 /* ---------------- lecteur ---------------- */
@@ -1023,6 +1119,8 @@ function vStats() {
     h("section", { class: "sec" }, h("h2", null, "Notions qui coincent"),
       ns.length ? h("ul", { class: "notions" }, ns.map(o => h("li", null, h("span", { class: "nm" }, o.notion), h("span", { class: "rate" + (o.rate >= .5 ? " mid" : "") }, Math.round(o.rate * 100) + " %"), h("span", { class: "sub" }, (o.deck.matiere ? o.deck.matiere.nom + " · " : "") + o.n + " réponses")))) : h("div", { class: "empty-box" }, "Pas assez de réponses pour l'instant.")),
     (P.alertes || []).length ? h("section", { class: "card", style: { borderColor: "var(--ko)" } }, h("h2", null, "À regarder"), h("p", { class: "small", style: { margin: 0 } }, plural(P.alertes.length, "réponse") + " signalée" + (P.alertes.length > 1 ? "s" : "") + " par la correction IA comme hors sujet ou préoccupante (dernière le " + new Date(P.alertes[P.alertes.length - 1].t).toLocaleDateString("fr-FR", { day: "numeric", month: "long" }) + "). Le contenu n'est pas conservé : il peut valoir la peine d'en parler avec Marcus.")) : null,
+    S.exos.length ? h("section", { class: "card" }, h("h2", null, "Exercices"),
+      h("ul", { class: "log" }, S.exos.slice(0, 10).map(e => { const r = exoRes[e.id]; return h("li", null, h("span", null, ((S.matieres.find(x => x.id === e.matiere) || {}).nom || e.matiere) + " · " + e.titre), h("span", null, r ? String(r.sur20).replace(".", ",") + " / 20" : "pas encore fait")); }))) : null,
     h("section", { class: "card" }, h("h2", null, "Dernières sessions"),
       sessions.length ? h("ul", { class: "log" }, sessions.map(s => h("li", null, h("span", null, s.titre + " · " + s.ok + " sues, " + s.mid + " presque, " + s.ko + " à revoir"), h("span", null, new Date(s.t).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" }) + (s.app ? " · " + s.app : ""))))) : h("p", { class: "small", style: { margin: 0 } }, "Aucune session pour l'instant.")),
     h("section", { class: "card" }, h("h2", null, "Derniers supports ouverts"),
@@ -1051,6 +1149,9 @@ function vSettings() {
       h("p", { class: "small", style: { margin: 0 } }, "Le même code sur le téléphone et sur l'iPad : la progression se retrouve sur les deux, et le suivi est visible depuis n'importe quel appareil."),
       h("div", { class: "field" }, h("label", { for: "code" }, "Code"), input), status,
       h("div", { class: "row" }, h("button", { class: "btn", onclick: save }, "Enregistrer"), SYNC.code ? h("button", { class: "btn quiet", onclick: async () => { await syncNow({ rerender: false }); paint(); toast(SYNC.state === "ok" ? "Synchronisé." : "Synchro impossible pour l'instant."); } }, "Synchroniser maintenant") : null)),
+    h("section", { class: "card" }, h("h2", null, "Ma classe (DST)"),
+      h("p", { class: "small", style: { margin: 0 } }, "Pour afficher le jour et l'heure exacts de tes DST sur l'accueil."),
+      h("div", { class: "segmented", role: "group", "aria-label": "Classe" }, (window.DST ? DST.classes() : []).map(c => h("button", { "aria-pressed": lsGet("rev.classe", "") === c.id ? "true" : "false", onclick: () => { lsSet("rev.classe", lsGet("rev.classe", "") === c.id ? "" : c.id); render(); } }, c.nom.replace("2nde ", ""))))),
     h("section", { class: "card" }, h("h2", null, "Apparence"), seg),
     carteVoix(),
     h("section", { class: "card" }, h("h2", null, "Correction par une IA"),
@@ -1155,5 +1256,6 @@ document.addEventListener("pointermove", e => { const t = e.target.closest && e.
 applyTheme();
 splash();
 render();
-loadCatalogue().then(() => { render(); syncNow({ rerender: true }); refreshDemandes().then(() => { if (!sess && (location.hash === "" || location.hash === "#/")) render(); }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
+const dstPret = window.DST ? DST.charger("dst.json") : Promise.resolve();
+Promise.all([loadCatalogue(), dstPret]).then(() => { render(); syncNow({ rerender: true }); chargerExos().then(() => { if (!sess && /^#?\/?(m\/|$)/.test(location.hash.replace(/^#/, ""))) render(); }); refreshDemandes().then(() => { if (!sess && (location.hash === "" || location.hash === "#/")) render(); }); }).catch(() => { app.replaceChildren(h("div", { class: "empty-box" }, h("strong", null, "Impossible de charger les contenus"), "Vérifie la connexion, puis rouvre l'appli.")); });
 })();

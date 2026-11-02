@@ -1,8 +1,8 @@
 /* Service worker : appli disponible hors ligne.
    Le code de l'appli (HTML, JS, CSS, JSON) est pris sur le réseau en priorité : une nouvelle version
    s'applique dès la réouverture. Les contenus lourds (PDF, images) restent en cache d'abord. */
-const VERSION = "rev-2026-10-31-23";
-const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "manifest.webmanifest", "catalogue.json",
+const VERSION = "rev-2026-11-03-1";
+const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "exos.js", "exos.css", "dst.js", "dst.json", "manifest.webmanifest", "catalogue.json",
   "icones/icone-192.png", "icones/icone-512.png", "icones/apple-touch-icon.png", "vendor/pdf.min.js", "vendor/pdf.worker.min.js"];
 
 self.addEventListener("install", e => {
@@ -64,6 +64,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   if (url.origin !== location.origin) return;
+  if (url.pathname.includes("/parents/")) return;                       // espace parents : son propre service worker
   if (req.mode === "navigate" || /\.(js|css|json|html|webmanifest)$/.test(url.pathname) || url.pathname.endsWith("/")) {
     e.respondWith(reseauDabord(req));
     return;

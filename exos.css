@@ -1,0 +1,74 @@
+/* Exercices interactifs (exos.js) — utilise les variables de styles.css */
+.ex{display:flex;flex-direction:column;gap:18px}
+.ex-head{display:flex;flex-direction:column;gap:10px}
+.ex-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.86rem;color:var(--muted)}
+.ex-badge{font-size:.74rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--mid-soft);color:var(--mid)}
+.ex-consigne{margin:0;line-height:1.55}
+.ex-banque{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.9rem}
+.ex-banque > span:first-child{font-weight:700;margin-right:4px}
+.ex-mot{padding:4px 10px;border-radius:999px;background:var(--accent-soft);color:var(--ink);font-weight:600}
+.ex-partie{display:flex;flex-direction:column;gap:12px}
+.ex-partie > h3{font-family:var(--display);font-weight:400;font-size:1.2rem}
+.ex-item{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:18px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);transition:border-color .2s}
+.ex-item.ok{border-color:color-mix(in srgb,var(--ok) 60%,transparent)}
+.ex-item.mid{border-color:color-mix(in srgb,var(--mid) 60%,transparent)}
+.ex-item.ko{border-color:color-mix(in srgb,var(--ko) 60%,transparent)}
+.ex-num{display:flex;align-items:center;gap:10px}
+.ex-num > span:first-child{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:.9rem}
+.ex-type{font-size:.74rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ex-enonce,.ex-trous{margin:0;font-size:1.04rem;line-height:1.9}
+.ex-gap{font:inherit;font-size:1rem;color:var(--ink);background:var(--paper-2);border:none;border-bottom:2px solid var(--accent);border-radius:6px 6px 0 0;padding:2px 6px;margin:0 3px;min-width:4ch;max-width:100%;text-align:center}
+.ex-gap:focus{outline:none;background:var(--accent-soft)}
+.ex-gap.ok{border-color:var(--ok);background:var(--ok-soft)}
+.ex-gap.ko{border-color:var(--ko);background:var(--ko-soft);text-decoration:line-through;text-decoration-color:var(--ko)}
+.ex-fix{display:inline-block;margin:0 4px 0 2px;padding:1px 7px;border-radius:6px;background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:.92rem}
+.ex-fix-bloc{margin:0;font-size:.92rem;color:var(--ok);font-weight:600}
+.ex-choix-l{display:flex;flex-direction:column;gap:8px}
+.ex-choix-l.vf{flex-direction:row}
+.ex-choix-l.vf .ex-choix{flex:1;justify-content:center;text-align:center}
+.ex-choix{all:unset;box-sizing:border-box;display:flex;align-items:center;min-height:48px;padding:10px 14px;border-radius:14px;border:1.5px solid var(--line-2);background:var(--paper-2);cursor:pointer;line-height:1.35}
+.ex-choix[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.ex-choix.ok{border-color:var(--ok);background:var(--ok-soft);font-weight:700}
+.ex-choix.ko{border-color:var(--ko);background:var(--ko-soft)}
+.ex-choix:disabled{cursor:default}
+.ex-choix:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ex-assoc{display:flex;flex-direction:column;gap:8px}
+.ex-assoc-l{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
+@media (max-width:480px){.ex-assoc-l{grid-template-columns:1fr}}
+.ex-g{font-weight:600}
+.ex-sel{font:inherit;color:var(--ink);background:var(--paper-2);border:1.5px solid var(--line-2);border-radius:12px;padding:10px;min-height:46px;width:100%}
+.ex-sel.ok{border-color:var(--ok);background:var(--ok-soft)}
+.ex-sel.ko{border-color:var(--ko);background:var(--ko-soft)}
+.ex-ordre{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:o}
+.ex-ordre li{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:12px;background:var(--paper-2);border:1.5px solid var(--line-2);counter-increment:o}
+.ex-ordre li::before{content:counter(o);font-weight:800;color:var(--muted);min-width:1.2em}
+.ex-ordre li.ok{border-color:var(--ok);background:var(--ok-soft)}
+.ex-ordre li.ko{border-color:var(--ko);background:var(--ko-soft)}
+.ex-o-t{flex:1;line-height:1.35}
+.ex-o-b{display:flex;gap:4px}
+.ex-o-b button{all:unset;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;cursor:pointer}
+.ex-o-b button:disabled{opacity:.3;cursor:default}
+.ex-ta{font:inherit;color:var(--ink);background:var(--paper-2);border:1.5px solid var(--line-2);border-radius:12px;padding:12px;width:100%;resize:vertical;box-sizing:border-box}
+.ex-ta:focus{outline:none;border-color:var(--accent)}
+.ex-ia{padding:12px;border-radius:12px;background:var(--paper-2);line-height:1.45;display:flex;flex-direction:column;gap:8px}
+.ex-ia.ok{background:var(--ok-soft)}.ex-ia.mid{background:var(--mid-soft)}.ex-ia.ko{background:var(--ko-soft)}
+.ex-ia-src{display:block;font-size:.74rem;color:var(--muted);margin-top:4px}
+.ex-auto{display:flex;gap:8px;flex-wrap:wrap}
+.ex-auto button{all:unset;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line-2);cursor:pointer;font-weight:600}
+.ex-auto button:disabled{opacity:.5}
+.ex-foot{display:flex;justify-content:flex-end}
+.ex-verif{all:unset;box-sizing:border-box;min-height:42px;padding:8px 18px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:700;cursor:pointer}
+.ex-verif:disabled{opacity:.6}
+.ex-res{font-weight:800}
+.ex-item.ok .ex-res{color:var(--ok)}.ex-item.mid .ex-res{color:var(--mid)}.ex-item.ko .ex-res{color:var(--ko)}
+.ex-expl{padding:10px 12px;border-radius:12px;border-left:3px solid var(--accent);background:var(--accent-soft);font-size:.94rem;line-height:1.5}
+.ex-fin{align-self:center}
+.ex-score{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:22px;border-radius:22px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow)}
+.ex-score p{margin:0}
+.ex-note{display:flex;align-items:baseline;gap:6px}
+.ex-note b{font-family:var(--display);font-weight:400;font-size:3.2rem;line-height:1}
+.ex-note span{color:var(--muted);font-weight:700}
+.ex-sol mark{background:var(--ok-soft);color:var(--ok);font-weight:700;padding:0 4px;border-radius:4px}
+.ex-sol li.bon{color:var(--ok);font-weight:700}
+.ex-sol ul,.ex-sol ol{margin:0;padding-left:1.3em}
+.ex-sol p{margin:0}
