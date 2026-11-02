@@ -151,3 +151,4 @@ body.dans-appli .f-outils .imprimer{display:none}
   .f-flip .verso{margin-top:4px}
   a{color:inherit;text-decoration:none}
 }
+@media (max-width:600px){.f-outils button span{display:none}.f-outils button{padding:12px}.f-outils{opacity:.92}}
