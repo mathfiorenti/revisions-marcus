@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-03-1",
+  "version": "2026-11-07-5",
   "matieres": [
     {
       "id": "histoire",
@@ -197,7 +197,57 @@
       "couleur": "#4f8a2b",
       "couleurNuit": "#8fc66a",
       "pictogramme": "feuille",
-      "chapitres": []
+      "chapitres": [
+        {
+          "id": "svt-organisation-vivant",
+          "titre": "Organisation fonctionnelle du vivant",
+          "sousTitre": "Échelles du vivant, cellules spécialisées, MEC, métabolisme",
+          "ajoute": "2026-11-07",
+          "ressources": [
+            {
+              "id": "svt-organisation-vivant-fiche",
+              "type": "fiche",
+              "titre": "Fiche de révision",
+              "detail": "Tout le cours · 22 définitions, schémas, pièges de tes notes",
+              "fichier": "contenus/svt/svt-organisation-vivant-fiche.html"
+            },
+            {
+              "id": "svt-organisation-vivant-fc",
+              "type": "flashcards",
+              "titre": "Flashcards",
+              "detail": "4 parties · 53 cartes",
+              "fichier": "contenus/svt/svt-organisation-vivant-flashcards.json",
+              "decks": [
+                "svt-echelles",
+                "svt-cellules",
+                "svt-mec",
+                "svt-metabolisme"
+              ]
+            },
+            {
+              "id": "svt-organisation-vivant-labo",
+              "type": "quiz",
+              "titre": "Labo interactif",
+              "detail": "Simulateur du métabolisme, MEC, calculs au microscope, défi de 16 questions",
+              "fichier": "contenus/svt/svt-organisation-vivant-labo.html"
+            },
+            {
+              "id": "svt-organisation-vivant-dst-sujet",
+              "type": "entrainement",
+              "titre": "DST blanc · sujet",
+              "detail": "3 exercices type DST · 2 h · sur 20",
+              "fichier": "contenus/svt/svt-organisation-vivant-dst-blanc-sujet.html"
+            },
+            {
+              "id": "svt-organisation-vivant-dst-corrige",
+              "type": "corrige",
+              "titre": "DST blanc · corrigé",
+              "detail": "À ouvrir après avoir fait le sujet",
+              "fichier": "contenus/svt/svt-organisation-vivant-dst-blanc-corrige.html"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "geographie",

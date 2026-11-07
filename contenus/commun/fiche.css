@@ -10,9 +10,11 @@
 body[data-matiere="histoire"],body[data-matiere="geographie"]{--c:#e2a54f;--c-doux:rgb(226 165 79 / .15)}
 body[data-matiere="francais"]{--c:#ef7aa0;--c-doux:rgb(239 122 160 / .15)}
 body[data-matiere="ses"]{--c:#a68cf0;--c-doux:rgb(166 140 240 / .15)}
+body[data-matiere="svt"]{--c:#8fc66a;--c-doux:rgb(143 198 106 / .15)}
 :root[data-theme="light"] body[data-matiere="histoire"]{--c:#a2620f;--c-doux:#f5e6cf}
 :root[data-theme="light"] body[data-matiere="francais"]{--c:#b13c66;--c-doux:#f6dde6}
 :root[data-theme="light"] body[data-matiere="ses"]{--c:#5d43b8;--c-doux:#e7e1f8}
+:root[data-theme="light"] body[data-matiere="svt"]{--c:#3f7a1f;--c-doux:#e2efd8}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:70px}
 body{margin:0;background:var(--fond);color:var(--encre);font-family:var(--texte);font-size:17px;line-height:1.6}
@@ -129,7 +131,7 @@ body.dans-appli .f-outils .imprimer{display:none}
 @page{size:A4;margin:14mm 13mm 16mm}
 @media print{
   :root,:root[data-theme="light"]{--fond:#fff;--papier:#fff;--papier-2:#f6f4ef;--encre:#16191f;--doux:#555c6b;--trait:#d9d4c8;color-scheme:light}
-  body[data-matiere="histoire"]{--c:#9a5a0b;--c-doux:#f6ead8}body[data-matiere="francais"]{--c:#a8325d;--c-doux:#f7e3ea}body[data-matiere="ses"]{--c:#55399f;--c-doux:#ebe5f8}
+  body[data-matiere="histoire"]{--c:#9a5a0b;--c-doux:#f6ead8}body[data-matiere="francais"]{--c:#a8325d;--c-doux:#f7e3ea}body[data-matiere="ses"]{--c:#55399f;--c-doux:#ebe5f8}body[data-matiere="svt"]{--c:#3d7420;--c-doux:#e6f1dd}
   body{font-size:10.5pt;line-height:1.45;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .f-page{max-width:none;padding:0}
   .f-barre,.f-sommaire,.f-outils{display:none!important}

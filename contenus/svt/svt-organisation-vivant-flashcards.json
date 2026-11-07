@@ -1,0 +1,530 @@
+{
+ "decks": {
+  "svt-echelles": {
+   "titre": "Les échelles du vivant",
+   "sousTitre": "Niveaux, microscopes, calculs",
+   "ordre": 1
+  },
+  "svt-cellules": {
+   "titre": "La spécialisation des cellules",
+   "sousTitre": "Sang, pomme de terre, cellules souches",
+   "ordre": 2
+  },
+  "svt-mec": {
+   "titre": "Les matrices extracellulaires",
+   "sousTitre": "Collagène et cohésion des tissus",
+   "ordre": 3
+  },
+  "svt-metabolisme": {
+   "titre": "Le métabolisme des cellules",
+   "sousTitre": "Photosynthèse, respiration, fermentation",
+   "ordre": 4
+  }
+ },
+ "cards": [
+  {
+   "id": "svt-echelles-01",
+   "deck": "svt-echelles",
+   "n": 1,
+   "notion": "Échelles du vivant",
+   "type": "Méthode",
+   "recto": "Range les 7 échelles du vivant, du plus grand au plus petit.",
+   "verso": "Organisme, système, organe, tissu, cellule, organite, molécule.",
+   "plus": "Chaque niveau est formé du niveau inférieur : un organe est fait de tissus, un tissu de cellules."
+  },
+  {
+   "id": "svt-echelles-02",
+   "deck": "svt-echelles",
+   "n": 2,
+   "notion": "Échelles du vivant",
+   "type": "Exemple",
+   "recto": "Cite un exemple de système et un exemple d'organe de ta planche.",
+   "verso": "Système : le système digestif. Organes : l'œil, le cœur, la feuille."
+  },
+  {
+   "id": "svt-echelles-03",
+   "deck": "svt-echelles",
+   "n": 3,
+   "notion": "Échelles du vivant",
+   "type": "Chiffre",
+   "recto": "Quel est l'ordre de grandeur d'une cellule ?",
+   "verso": "10 puissance moins 5 mètres, soit environ 10 micromètres.",
+   "plus": "Exemple : une hématie mesure 7 à 8 µm."
+  },
+  {
+   "id": "svt-echelles-04",
+   "deck": "svt-echelles",
+   "n": 4,
+   "notion": "Échelles du vivant",
+   "type": "Chiffre",
+   "recto": "Quel est l'ordre de grandeur d'une molécule comme l'insuline ou l'ADN ?",
+   "verso": "10 puissance moins 9 mètres, c'est-à-dire de l'ordre du nanomètre."
+  },
+  {
+   "id": "svt-echelles-05",
+   "deck": "svt-echelles",
+   "n": 5,
+   "notion": "Échelles du vivant",
+   "type": "Chiffre",
+   "recto": "Quel est l'ordre de grandeur d'un organite comme la mitochondrie ?",
+   "verso": "10 puissance moins 6 mètres, soit environ 1 micromètre."
+  },
+  {
+   "id": "svt-echelles-06",
+   "deck": "svt-echelles",
+   "n": 6,
+   "notion": "Observer selon l'échelle",
+   "type": "Méthode",
+   "recto": "Que peut-on observer à l'œil nu ?",
+   "verso": "L'organisme, le système et l'organe."
+  },
+  {
+   "id": "svt-echelles-07",
+   "deck": "svt-echelles",
+   "n": 7,
+   "notion": "Observer selon l'échelle",
+   "type": "Méthode",
+   "recto": "Que peut-on observer au microscope optique ?",
+   "verso": "Les tissus et les cellules.",
+   "plus": "Nuance : certains gros organites (noyau, chloroplastes, amyloplastes) se voient aussi au microscope optique."
+  },
+  {
+   "id": "svt-echelles-08",
+   "deck": "svt-echelles",
+   "n": 8,
+   "notion": "Observer selon l'échelle",
+   "type": "Méthode",
+   "recto": "Quel microscope faut-il pour observer un organite en détail ?",
+   "verso": "Le microscope électronique.",
+   "plus": "Les fibres de collagène de la MEC ont été observées au MET, microscope électronique à transmission."
+  },
+  {
+   "id": "svt-echelles-09",
+   "deck": "svt-echelles",
+   "n": 9,
+   "notion": "Taille réelle",
+   "type": "Formule",
+   "recto": "Comment calcule-t-on la taille réelle à partir d'un grossissement ?",
+   "verso": "Taille réelle = taille mesurée sur l'image divisée par le grossissement.",
+   "plus": "Exemple : 3 mm sur une photo ×400 → 3 ÷ 400 = 0,0075 mm = 7,5 µm."
+  },
+  {
+   "id": "svt-echelles-10",
+   "deck": "svt-echelles",
+   "n": 10,
+   "notion": "Taille réelle",
+   "type": "Formule",
+   "recto": "Comment calcule-t-on la taille réelle avec une barre d'échelle ?",
+   "verso": "On mesure l'objet et la barre, puis : taille de l'objet divisée par taille de la barre, multipliée par la valeur de la barre.",
+   "plus": "Produit en croix. Avantage : reste juste même si l'image est agrandie ou réduite."
+  },
+  {
+   "id": "svt-echelles-11",
+   "deck": "svt-echelles",
+   "n": 11,
+   "notion": "Taille réelle",
+   "type": "Chiffre",
+   "recto": "Combien de micromètres dans un millimètre ?",
+   "verso": "1 000 micromètres.",
+   "plus": "Et 1 µm = 1 000 nm. 1 µm = 10⁻⁶ m ; 1 nm = 10⁻⁹ m."
+  },
+  {
+   "id": "svt-echelles-12",
+   "deck": "svt-echelles",
+   "n": 12,
+   "notion": "Schéma d'observation",
+   "type": "Méthode",
+   "recto": "Quels éléments obligatoires dans un schéma d'observation ?",
+   "verso": "Un titre complet souligné, le grossissement, un dessin au crayon de ce qu'on voit, des traits de légende à la règle, horizontaux et qui ne se croisent pas."
+  },
+  {
+   "id": "svt-cellules-01",
+   "deck": "svt-cellules",
+   "n": 1,
+   "notion": "Cellule spécialisée",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'une cellule spécialisée ?",
+   "verso": "Une cellule caractérisée par sa structure, c'est-à-dire sa forme, et par sa fonction ; elle peut posséder des organites et des molécules spécifiques.",
+   "plus": "Bilan de ton cours, à savoir mot pour mot."
+  },
+  {
+   "id": "svt-cellules-02",
+   "deck": "svt-cellules",
+   "n": 2,
+   "notion": "Hématie",
+   "type": "Définition",
+   "recto": "Comment appelle-t-on aussi les hématies ?",
+   "verso": "Les globules rouges."
+  },
+  {
+   "id": "svt-cellules-03",
+   "deck": "svt-cellules",
+   "n": 3,
+   "notion": "Hématie",
+   "type": "Exemple",
+   "recto": "Cite trois caractéristiques structurales de l'hématie.",
+   "verso": "Forme de disque biconcave, absence de noyau (cellule anucléée), cytoplasme concentré en hémoglobine.",
+   "plus": "Aussi : diamètre de 7 à 8 µm, déformabilité, durée de vie de 120 jours."
+  },
+  {
+   "id": "svt-cellules-04",
+   "deck": "svt-cellules",
+   "n": 4,
+   "notion": "Hématie",
+   "type": "Pourquoi ?",
+   "recto": "Quelle est la fonction de l'hématie ?",
+   "verso": "Le transport des gaz respiratoires : le dioxygène et le dioxyde de carbone.",
+   "plus": "Lien structure-fonction : sans noyau, plus de place pour l'hémoglobine qui fixe le dioxygène."
+  },
+  {
+   "id": "svt-cellules-05",
+   "deck": "svt-cellules",
+   "n": 5,
+   "notion": "Hématie",
+   "type": "Chiffre",
+   "recto": "Quelle est la durée de vie d'une hématie ?",
+   "verso": "Environ 120 jours."
+  },
+  {
+   "id": "svt-cellules-06",
+   "deck": "svt-cellules",
+   "n": 6,
+   "notion": "Leucocyte",
+   "type": "Définition",
+   "recto": "Comment appelle-t-on aussi les leucocytes, et quelle est leur fonction ?",
+   "verso": "Les globules blancs ; ils défendent l'organisme.",
+   "plus": "Piège des notes : seuls certains lymphocytes portent des anticorps membranaires, pas tous les leucocytes."
+  },
+  {
+   "id": "svt-cellules-07",
+   "deck": "svt-cellules",
+   "n": 7,
+   "notion": "Leucocyte",
+   "type": "Exemple",
+   "recto": "Quelles caractéristiques structurales distinguent un leucocyte d'une hématie ?",
+   "verso": "Le leucocyte a un noyau volumineux et mesure de 7 à 12 µm.",
+   "plus": "Sur ton frottis : granulocyte (noyau lobé) et lymphocyte (gros noyau rond)."
+  },
+  {
+   "id": "svt-cellules-08",
+   "deck": "svt-cellules",
+   "n": 8,
+   "notion": "Pomme de terre",
+   "type": "Définition",
+   "recto": "Qu'est-ce que le lugol ?",
+   "verso": "Le réactif de l'amidon : il le colore en bleu-violet foncé.",
+   "plus": "Piège des notes : on dit souvent bleu-noir, pas noir."
+  },
+  {
+   "id": "svt-cellules-09",
+   "deck": "svt-cellules",
+   "n": 9,
+   "notion": "Pomme de terre",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'un amyloplaste ?",
+   "verso": "Un organite qui stocke l'amidon."
+  },
+  {
+   "id": "svt-cellules-10",
+   "deck": "svt-cellules",
+   "n": 10,
+   "notion": "Pomme de terre",
+   "type": "Conclusion",
+   "recto": "Quelle conclusion tire-t-on du TP sur la pomme de terre ?",
+   "verso": "Les cellules de pomme de terre sont spécialisées dans le stockage de l'amidon grâce à la présence d'amyloplastes."
+  },
+  {
+   "id": "svt-cellules-11",
+   "deck": "svt-cellules",
+   "n": 11,
+   "notion": "Différenciation",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'une cellule souche ?",
+   "verso": "Une cellule non spécialisée, capable de se diviser indéfiniment et de se transformer en cellule spécialisée pour réparer les tissus du corps.",
+   "plus": "Définition soulignée dans ton cours."
+  },
+  {
+   "id": "svt-cellules-12",
+   "deck": "svt-cellules",
+   "n": 12,
+   "notion": "Différenciation",
+   "type": "Définition",
+   "recto": "Qu'est-ce que la différenciation cellulaire ?",
+   "verso": "La transformation d'une cellule souche, non spécialisée, en cellule spécialisée."
+  },
+  {
+   "id": "svt-cellules-13",
+   "deck": "svt-cellules",
+   "n": 13,
+   "notion": "Différenciation",
+   "type": "Lieu",
+   "recto": "Où sont produites les hématies et les leucocytes ?",
+   "verso": "Dans la moelle osseuse, par différenciation de cellules souches."
+  },
+  {
+   "id": "svt-cellules-14",
+   "deck": "svt-cellules",
+   "n": 14,
+   "notion": "Unicellulaire",
+   "type": "Définition",
+   "recto": "Que se passe-t-il chez un organisme unicellulaire ?",
+   "verso": "Toutes les fonctions sont assurées par une seule cellule.",
+   "plus": "Exemples : bactérie, levure."
+  },
+  {
+   "id": "svt-mec-01",
+   "deck": "svt-mec",
+   "n": 1,
+   "notion": "Matrice extracellulaire",
+   "type": "Définition",
+   "recto": "Qu'est-ce que la matrice extracellulaire ?",
+   "verso": "Un réseau de molécules de nature chimique variée, situé entre les cellules, qui permet leur adhérence et la formation de tissus solides et résistants.",
+   "plus": "Piège des notes : dans ton bilan, le mot attendu est sans doute « adhérence » plutôt qu'« organisation »."
+  },
+  {
+   "id": "svt-mec-02",
+   "deck": "svt-mec",
+   "n": 2,
+   "notion": "Matrice extracellulaire",
+   "type": "Méthode",
+   "recto": "Quels sont les trois rôles de la MEC ?",
+   "verso": "La cohésion des cellules, le maintien de leur forme, la communication entre les cellules."
+  },
+  {
+   "id": "svt-mec-03",
+   "deck": "svt-mec",
+   "n": 3,
+   "notion": "Matrice extracellulaire",
+   "type": "Problème",
+   "recto": "Quel est le problème posé par le cours sur les MEC ?",
+   "verso": "Comment l'organisation des matrices extracellulaires assure-t-elle la cohésion tissulaire ?"
+  },
+  {
+   "id": "svt-mec-04",
+   "deck": "svt-mec",
+   "n": 4,
+   "notion": "Collagène",
+   "type": "Définition",
+   "recto": "Qu'est-ce que le collagène ?",
+   "verso": "Une protéine de la matrice extracellulaire qui forme des fibres résistantes."
+  },
+  {
+   "id": "svt-mec-05",
+   "deck": "svt-mec",
+   "n": 5,
+   "notion": "Collagène",
+   "type": "Chiffre",
+   "recto": "Quel est le diamètre d'une fibre de collagène chez une personne saine, et chez le malade ?",
+   "verso": "Environ 70 nanomètres chez une personne saine, seulement 20 nanomètres chez le malade.",
+   "plus": "Observé au MET : les fibres du malade sont aussi déformées et moins bien organisées."
+  },
+  {
+   "id": "svt-mec-06",
+   "deck": "svt-mec",
+   "n": 6,
+   "notion": "Collagène",
+   "type": "Exemple",
+   "recto": "Quels symptômes présente le malade étudié page 19 ?",
+   "verso": "Une peau extrêmement déformable, étirable, fine et fragile, des tendons très laxes et des problèmes viscéraux."
+  },
+  {
+   "id": "svt-mec-07",
+   "deck": "svt-mec",
+   "n": 7,
+   "notion": "Collagène",
+   "type": "Pourquoi ?",
+   "recto": "Pourquoi la peau du malade est-elle fragile et très étirable ?",
+   "verso": "Ses fibres de collagène sont plus fines et désorganisées : la MEC relie moins bien les cellules, qui forment un tissu moins cohésif.",
+   "plus": "Raisonnement de la molécule à l'organisme : c'est ce qu'on attend au DST."
+  },
+  {
+   "id": "svt-mec-08",
+   "deck": "svt-mec",
+   "n": 8,
+   "notion": "Matrice extracellulaire",
+   "type": "Conclusion",
+   "recto": "De quoi dépend la cohésion d'un tissu ?",
+   "verso": "De l'organisation des molécules de sa matrice extracellulaire, comme le collagène."
+  },
+  {
+   "id": "svt-mec-09",
+   "deck": "svt-mec",
+   "n": 9,
+   "notion": "Matrice extracellulaire",
+   "type": "Définition",
+   "recto": "Que signifie MET ?",
+   "verso": "Microscope électronique à transmission.",
+   "plus": "Il permet d'observer des structures de quelques nanomètres, comme les fibres de collagène."
+  },
+  {
+   "id": "svt-metabolisme-01",
+   "deck": "svt-metabolisme",
+   "n": 1,
+   "notion": "Métabolisme",
+   "type": "Définition",
+   "recto": "Qu'est-ce que le métabolisme d'une cellule ?",
+   "verso": "L'ensemble des transformations biochimiques, réactions chimiques et transformations de matière et d'énergie, qui se déroulent dans la cellule."
+  },
+  {
+   "id": "svt-metabolisme-02",
+   "deck": "svt-metabolisme",
+   "n": 2,
+   "notion": "Métabolisme",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'une voie métabolique ?",
+   "verso": "Une succession de réactions biochimiques transformant une molécule en une autre.",
+   "plus": "Piège des notes : « l'ensemble des réactions chimiques », c'est le métabolisme, pas une voie métabolique."
+  },
+  {
+   "id": "svt-metabolisme-03",
+   "deck": "svt-metabolisme",
+   "n": 3,
+   "notion": "Métabolisme",
+   "type": "Pourquoi ?",
+   "recto": "De quoi dépend le métabolisme d'une cellule ?",
+   "verso": "De son équipement spécialisé : ses organites et ses macromolécules, dont les enzymes.",
+   "plus": "Sans chloroplastes, pas de photosynthèse."
+  },
+  {
+   "id": "svt-metabolisme-04",
+   "deck": "svt-metabolisme",
+   "n": 4,
+   "notion": "Photosynthèse",
+   "type": "Définition",
+   "recto": "Qu'est-ce que la photosynthèse ?",
+   "verso": "Une voie métabolique cellulaire produisant du glucose à partir de dioxyde de carbone et d'eau, en utilisant l'énergie lumineuse.",
+   "plus": "Elle rejette aussi du dioxygène."
+  },
+  {
+   "id": "svt-metabolisme-05",
+   "deck": "svt-metabolisme",
+   "n": 5,
+   "notion": "Photosynthèse",
+   "type": "Lieu",
+   "recto": "Dans quel organite se déroule la photosynthèse ?",
+   "verso": "Dans les chloroplastes.",
+   "plus": "Seulement dans les cellules chlorophylliennes, pas dans une racine ni un tubercule."
+  },
+  {
+   "id": "svt-metabolisme-06",
+   "deck": "svt-metabolisme",
+   "n": 6,
+   "notion": "Autotrophe",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'un organisme autotrophe ?",
+   "verso": "Un organisme qui fabrique sa matière organique à partir de la matière minérale, grâce à la photosynthèse."
+  },
+  {
+   "id": "svt-metabolisme-07",
+   "deck": "svt-metabolisme",
+   "n": 7,
+   "notion": "Respiration",
+   "type": "Définition",
+   "recto": "Qu'est-ce que la respiration cellulaire ?",
+   "verso": "Une voie métabolique qui dégrade totalement le glucose en dioxyde de carbone en consommant du dioxygène, afin de produire de l'énergie utilisable par la cellule."
+  },
+  {
+   "id": "svt-metabolisme-08",
+   "deck": "svt-metabolisme",
+   "n": 8,
+   "notion": "Respiration",
+   "type": "Lieu",
+   "recto": "Dans quel organite se déroule la respiration ?",
+   "verso": "Dans les mitochondries."
+  },
+  {
+   "id": "svt-metabolisme-09",
+   "deck": "svt-metabolisme",
+   "n": 9,
+   "notion": "Respiration",
+   "type": "Formule",
+   "recto": "Écris le bilan de la respiration en mots.",
+   "verso": "Glucose plus dioxygène donnent dioxyde de carbone plus eau plus énergie.",
+   "plus": "Écris CO₂ avec le 2 en indice."
+  },
+  {
+   "id": "svt-metabolisme-10",
+   "deck": "svt-metabolisme",
+   "n": 10,
+   "notion": "Hétérotrophe",
+   "type": "Définition",
+   "recto": "Qu'est-ce qu'une cellule ou un organisme hétérotrophe ?",
+   "verso": "Il utilise des molécules organiques pour produire ses propres molécules."
+  },
+  {
+   "id": "svt-metabolisme-11",
+   "deck": "svt-metabolisme",
+   "n": 11,
+   "notion": "Fermentation",
+   "type": "Définition",
+   "recto": "Qu'est-ce que la fermentation ?",
+   "verso": "Une voie métabolique qui dégrade partiellement le glucose en produisant une molécule organique, éthanol ou acide lactique, pour fournir de l'énergie à la cellule, sans dioxygène."
+  },
+  {
+   "id": "svt-metabolisme-12",
+   "deck": "svt-metabolisme",
+   "n": 12,
+   "notion": "Fermentation",
+   "type": "Définition",
+   "recto": "Que signifie anaérobie ?",
+   "verso": "Qui se déroule sans dioxygène, comme la fermentation.",
+   "plus": "Le contraire : aérobie, comme la respiration."
+  },
+  {
+   "id": "svt-metabolisme-13",
+   "deck": "svt-metabolisme",
+   "n": 13,
+   "notion": "Fermentation",
+   "type": "Exemple",
+   "recto": "Quelles molécules organiques une fermentation peut-elle produire ?",
+   "verso": "De l'éthanol (fermentation alcoolique) ou de l'acide lactique (fermentation lactique)."
+  },
+  {
+   "id": "svt-metabolisme-14",
+   "deck": "svt-metabolisme",
+   "n": 14,
+   "notion": "Fermentation",
+   "type": "Pourquoi ?",
+   "recto": "Pourquoi la fermentation fournit-elle moins d'énergie que la respiration ?",
+   "verso": "Parce qu'elle ne dégrade le glucose que partiellement : l'éthanol ou l'acide lactique produits contiennent encore de l'énergie."
+  },
+  {
+   "id": "svt-metabolisme-15",
+   "deck": "svt-metabolisme",
+   "n": 15,
+   "notion": "Levures",
+   "type": "Conclusion",
+   "recto": "Que fait une levure en présence de dioxygène ?",
+   "verso": "Elle respire : elle consomme du glucose et du dioxygène, produit très peu d'éthanol et se multiplie beaucoup.",
+   "plus": "Exercice 5 page 49, expérience 1."
+  },
+  {
+   "id": "svt-metabolisme-16",
+   "deck": "svt-metabolisme",
+   "n": 16,
+   "notion": "Levures",
+   "type": "Conclusion",
+   "recto": "Que fait une levure en absence de dioxygène ?",
+   "verso": "Elle fermente : elle utilise le glucose et produit de l'éthanol, et se multiplie très peu.",
+   "plus": "Piège de ta copie : la fermentation alcoolique produit de l'éthanol."
+  },
+  {
+   "id": "svt-metabolisme-17",
+   "deck": "svt-metabolisme",
+   "n": 17,
+   "notion": "Levures",
+   "type": "Pourquoi ?",
+   "recto": "Pourquoi les levures se multiplient-elles beaucoup plus en présence de dioxygène ?",
+   "verso": "Parce que la respiration fournit beaucoup plus d'énergie que la fermentation."
+  },
+  {
+   "id": "svt-metabolisme-18",
+   "deck": "svt-metabolisme",
+   "n": 18,
+   "notion": "Photosynthèse",
+   "type": "Piège",
+   "recto": "Une plante respire-t-elle ?",
+   "verso": "Oui : ses cellules ont des mitochondries et respirent jour et nuit ; le jour, la photosynthèse l'emporte."
+  }
+ ]
+}

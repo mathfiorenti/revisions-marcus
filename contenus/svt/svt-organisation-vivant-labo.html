@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SVT · Labo interactif — Organisation fonctionnelle du vivant</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&family=Young+Serif&display=swap">
+<script>
+try{var t=JSON.parse(localStorage.getItem("rev.theme")||'"dark"');var s=t==="dark"||(t==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.dataset.theme=s?"dark":"light";}catch(e){document.documentElement.dataset.theme="dark";}
+</script>
+<style>
+:root{--fond:#0b0e14;--papier:#151a24;--papier-2:#1c2230;--encre:#eef1f7;--doux:#9aa3b5;--trait:rgb(255 255 255 / .1);--c:#8fc66a;--c-doux:rgb(143 198 106 / .15);--ok:#5fd39e;--ok-doux:rgb(95 211 158 / .14);--ko:#ff8a80;--ko-doux:rgb(255 138 128 / .14);--mid:#f2c063;--mid-doux:rgb(242 192 99 / .14);--sol:#e6b422;--titre:"Young Serif",Georgia,serif;--texte:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,sans-serif;color-scheme:dark}
+:root[data-theme="light"]{--fond:#f3efe6;--papier:#fffdf8;--papier-2:#f4efe4;--encre:#1d2330;--doux:#5f6676;--trait:#e3ddcf;--c:#3f7a1f;--c-doux:#e2efd8;--ok:#1d7f55;--ok-doux:#dcf0e5;--ko:#bf3f37;--ko-doux:#f7dfdb;--mid:#a8700b;--mid-doux:#f6ead0;--sol:#c48a00;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--fond);color:var(--encre);font-family:var(--texte);font-size:17px;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(40px + env(safe-area-inset-bottom,0px))}
+h1,h2,h3{font-family:var(--titre);font-weight:400;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.9rem,7vw,2.6rem);margin:6px 0 8px}
+h2{font-size:clamp(1.4rem,5vw,1.8rem);margin:4px 0 6px}
+.sur{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--c)}
+.doux{color:var(--doux)}
+.carte{background:var(--papier);border:1px solid var(--trait);border-radius:20px;padding:16px;margin:12px 0}
+.tuiles{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+@media (min-width:560px){.tuiles{grid-template-columns:1fr 1fr}}
+.tuile{all:unset;cursor:pointer;display:flex;gap:14px;align-items:center;background:var(--papier);border:1px solid var(--trait);border-radius:20px;padding:16px;transition:transform .15s}
+.tuile:active{transform:scale(.98)}
+.tuile .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--c-doux);font-size:1.5rem;flex-shrink:0}
+.tuile b{display:block;font-size:1.02rem}
+.tuile span.doux{font-size:.86rem}
+.tuile .etat{margin-left:auto;font-size:.8rem;font-weight:800;color:var(--ok);white-space:nowrap}
+.tuile.star{border-color:color-mix(in srgb,var(--mid) 55%,transparent)}
+.badge{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--mid-doux);color:var(--mid);margin-left:6px;vertical-align:middle}
+.haut{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.retour{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--papier-2);border:1px solid var(--trait);font-weight:800;font-size:.88rem}
+.btn{all:unset;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:999px;background:var(--c);color:#fff;font-weight:800;text-align:center;min-height:22px}
+:root[data-theme="dark"] .btn{color:#10200a}
+:root[data-theme="dark"] .btn.sec{color:var(--encre)}
+.btn.sec{background:var(--papier-2);color:var(--encre);border:1px solid var(--trait)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.ligne{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{all:unset;cursor:pointer;padding:11px 15px;border-radius:14px;background:var(--papier-2);border:1px solid var(--trait);font-weight:700;transition:all .15s}
+.chip.pris{opacity:.3;pointer-events:none}
+.chip.bon{background:var(--ok-doux);border-color:var(--ok)}
+.chip.faux{background:var(--ko-doux);border-color:var(--ko);animation:secoue .35s}
+@keyframes secoue{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.pile{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.pile div{padding:10px 14px;border-radius:12px;background:var(--c-doux);font-weight:700;display:flex;gap:10px;animation:entre .3s}
+.pile div i{font-style:normal;color:var(--c);font-weight:800;min-width:18px}
+@keyframes entre{from{opacity:0;transform:translateY(-6px)}}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.opt{all:unset;cursor:pointer;padding:13px 15px;border-radius:14px;background:var(--papier-2);border:1.5px solid var(--trait);font-weight:600}
+.opt.bon{background:var(--ok-doux);border-color:var(--ok)}
+.opt.faux{background:var(--ko-doux);border-color:var(--ko)}
+.opt[disabled]{pointer-events:none}
+.expl{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--papier-2);font-size:.95rem;animation:entre .3s}
+.expl b.ok{color:var(--ok)}.expl b.ko{color:var(--ko)}
+.barre-p{height:8px;border-radius:99px;background:var(--papier-2);overflow:hidden;margin:8px 0 2px}
+.barre-p > div{height:100%;background:var(--c);border-radius:99px;transition:width .4s}
+input[type=number],input[type=text]{font:inherit;font-size:1.1rem;font-weight:700;padding:11px 14px;border-radius:14px;border:1.5px solid var(--trait);background:var(--papier-2);color:var(--encre);width:150px}
+.unite{font-weight:800;align-self:center}
+.calc{font-variant-numeric:tabular-nums;background:var(--papier-2);border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:700}
+/* simulateur */
+.seg{display:flex;background:var(--papier-2);border-radius:14px;padding:4px;gap:4px;border:1px solid var(--trait)}
+.seg button{all:unset;cursor:pointer;flex:1;text-align:center;padding:9px 6px;border-radius:10px;font-weight:800;font-size:.88rem}
+.seg button.on{background:var(--c);color:#fff}
+:root[data-theme="dark"] .seg button.on{color:#10200a}
+.reglages{display:grid;gap:10px;margin:12px 0}
+.bascule{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:14px;background:var(--papier-2);border:1px solid var(--trait);font-weight:700}
+.sw{all:unset;cursor:pointer;width:52px;height:30px;border-radius:99px;background:var(--trait);position:relative;transition:background .2s;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgb(0 0 0 / .3)}
+.sw.on{background:var(--c)}.sw.on::after{left:25px}
+#scene{display:block;width:100%;height:auto;border-radius:18px;background:var(--papier-2)}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.res > div{padding:10px 12px;border-radius:14px;background:var(--papier-2);font-size:.92rem}
+.res b{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--doux);margin-bottom:2px}
+.energie{height:14px;border-radius:99px;background:var(--trait);overflow:hidden;margin-top:6px}
+.energie > div{height:100%;background:linear-gradient(90deg,var(--mid),var(--ok));transition:width .6s}
+.voie{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:800;font-size:.85rem;margin:2px 4px 2px 0}
+.v-ph{background:rgb(63 154 58 / .2);color:#56b34f}.v-re{background:rgb(200 103 58 / .2);color:#e07b4a}.v-fe{background:rgb(166 140 240 / .2);color:#9f86ee}.v-0{background:var(--ko-doux);color:var(--ko)}
+/* MEC */
+input[type=range]{width:100%;accent-color:var(--c);height:30px}
+.jauge{display:flex;align-items:center;gap:10px;font-weight:800}
+.score-gros{font-family:var(--titre);font-size:3rem;color:var(--c);line-height:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+"use strict";
+const $ = (s, r = document) => r.querySelector(s);
+const el = (h) => { const t = document.createElement("template"); t.innerHTML = h.trim(); return t.content.firstElementChild; };
+const melange = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fr = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toString().replace(".", ",");
+const app = $("#app");
+let faits = {}; try { faits = JSON.parse(localStorage.getItem("svt-labo.faits") || "{}"); } catch (e) {}
+const marquer = (k, v) => { faits[k] = v; try { localStorage.setItem("svt-labo.faits", JSON.stringify(faits)); } catch (e) {} };
+
+const ACTIVITES = [
+  { k: "echelles", ic: "🔭", t: "Les échelles du vivant", d: "Range-les et choisis le bon instrument", f: echelles },
+  { k: "taille", ic: "📏", t: "Calcule la taille réelle", d: "Grossissement et barre d'échelle", f: taille },
+  { k: "cellules", ic: "🩸", t: "Qui suis-je ?", d: "Reconnais la cellule spécialisée", f: cellules },
+  { k: "mec", ic: "🧶", t: "La MEC sous tension", d: "Collagène et cohésion d'un tissu", f: mec, star: true },
+  { k: "simu", ic: "⚡", t: "Simulateur du métabolisme", d: "Lumière, dioxygène : quelle voie ?", f: simu, star: true },
+  { k: "defi", ic: "🏁", t: "Défi final", d: "16 questions sur tout le chapitre", f: defi }
+];
+
+function accueil() {
+  app.innerHTML = "";
+  app.append(el(`<div><div class="sur">SVT · Labo interactif</div><h1>Organisation fonctionnelle du vivant</h1><p class="doux">Six activités pour t'entraîner avant le DST. Les deux marquées ★ portent sur ce que ton professeur vient de faire.</p></div>`));
+  const g = el(`<div class="tuiles"></div>`);
+  ACTIVITES.forEach(a => {
+    const etat = faits[a.k] ? `<span class="etat">✓ ${faits[a.k] === true ? "fait" : faits[a.k]}</span>` : "";
+    const b = el(`<button class="tuile${a.star ? " star" : ""}"><span class="ic">${a.ic}</span><span><b>${a.t}${a.star ? '<span class="badge">★ DST</span>' : ""}</b><span class="doux">${a.d}</span></span>${etat}</button>`);
+    b.onclick = () => { scrollTo(0, 0); a.f(); };
+    g.append(b);
+  });
+  app.append(g);
+}
+function entete(titre, sous) {
+  app.innerHTML = "";
+  const h = el(`<div><div class="haut"><button class="retour">‹ Labo</button></div><h2>${titre}</h2>${sous ? `<p class="doux" style="margin:0 0 6px">${sous}</p>` : ""}</div>`);
+  $(".retour", h).onclick = () => { scrollTo(0, 0); accueil(); };
+  app.append(h);
+}
+
+/* ---------- 1. Échelles ---------- */
+function echelles() {
+  entete("Les échelles du vivant", "Touche les échelles dans l'ordre, de la plus grande à la plus petite.");
+  const ordre = ["Organisme", "Système", "Organe", "Tissu", "Cellule", "Organite", "Molécule"];
+  const tailles = ["10 m à 10⁻⁶ m", "1 m à 10⁻¹ m", "10⁻¹ m", "10⁻² m", "10⁻⁵ m", "10⁻⁶ m", "10⁻⁹ m"];
+  const c = el(`<div class="carte"><div class="pile"></div><div class="chips"></div><div class="msg"></div></div>`);
+  app.append(c);
+  let i = 0, erreurs = 0;
+  melange(ordre).forEach(n => {
+    const b = el(`<button class="chip">${n}</button>`);
+    b.onclick = () => {
+      if (n === ordre[i]) { b.classList.add("pris"); $(".pile", c).append(el(`<div><i>${i + 1}</i>${n}<span class="doux" style="margin-left:auto;font-weight:600">${tailles[i]}</span></div>`)); i++; if (i === ordre.length) etape2(erreurs); }
+      else { erreurs++; b.classList.remove("faux"); void b.offsetWidth; b.classList.add("faux"); $(".msg", c).innerHTML = `<p class="doux">Pas encore : ${i ? `cherche l'échelle juste en dessous de « ${ordre[i - 1]} ».` : "commence par la plus grande."}</p>`; }
+    };
+    $(".chips", c).append(b);
+  });
+  function etape2(e1) {
+    $(".msg", c).innerHTML = `<p><b style="color:var(--ok)">Bravo !</b> ${e1 ? e1 + " erreur(s) en route." : "Sans faute."} Chaque niveau est formé du niveau inférieur.</p>`;
+    const items = melange([["un cœur", 0], ["un frottis de cellules sanguines", 1], ["la structure interne d'une mitochondrie", 2], ["un papillon", 0], ["un tissu de feuille", 1], ["des amyloplastes de pomme de terre", 1], ["des fibres de collagène de 70 nm", 2]]);
+    const instr = ["Œil nu", "Microscope optique", "Microscope électronique"];
+    let k = 0, bons = 0;
+    const q = el(`<div class="carte"><h3 style="font-size:1.15rem">Et pour l'observer ?</h3><p class="doux q-t"></p><div class="opts"></div><div class="fb"></div></div>`);
+    app.append(q);
+    const pose = () => {
+      if (k === items.length) { q.innerHTML = `<h3 style="font-size:1.15rem">Résultat : ${bons}/${items.length}</h3><p class="doux">Retiens : œil nu → organisme, système, organe ; MO → tissu, cellule (et les gros organites) ; ME → organites en détail, molécules.</p>`; marquer("echelles", bons + "/" + items.length); return; }
+      const [obj, rep] = items[k];
+      $(".q-t", q).textContent = `Quel instrument pour observer ${obj} ?`;
+      const o = $(".opts", q); o.innerHTML = ""; $(".fb", q).innerHTML = "";
+      instr.forEach((t, j) => { const b = el(`<button class="opt">${t}</button>`); b.onclick = () => {
+        o.querySelectorAll(".opt").forEach((x, jj) => { x.disabled = true; if (jj === rep) x.classList.add("bon"); });
+        if (j === rep) bons++; else b.classList.add("faux");
+        const pourquoi = rep === 1 && obj.includes("amyloplastes") ? "Les amyloplastes sont de gros organites : tu les as vus au microscope optique en TP." : rep === 2 ? "Ces structures sont bien trop petites pour le microscope optique (limite ≈ 0,2 µm)." : rep === 0 ? "Visible à l'œil nu : échelle de l'organisme, du système ou de l'organe." : "Échelle du tissu ou de la cellule : microscope optique.";
+        $(".fb", q).innerHTML = `<div class="expl"><b class="${j === rep ? "ok" : "ko"}">${j === rep ? "Oui." : "Non."}</b> ${pourquoi}</div><div class="ligne"><button class="btn">Suivant</button></div>`;
+        $(".fb .btn", q).onclick = () => { k++; pose(); };
+      }; o.append(b); });
+    };
+    pose(); q.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+/* ---------- 2. Taille réelle ---------- */
+function taille() {
+  entete("Calcule la taille réelle", "Six calculs tirés au hasard. Réponds en µm (virgule ou point acceptés).");
+  const objets = [["une hématie", 7.5], ["un leucocyte", 12], ["une cellule d'élodée", 60], ["un chloroplaste", 5], ["une cellule de pomme de terre", 150], ["une levure", 8], ["un amyloplaste", 20], ["une cellule d'épiderme d'oignon", 200]];
+  const exos = [];
+  melange(objets).slice(0, 6).forEach(([nom, reel], i) => {
+    if (i % 2 === 0) {
+      const G = melange([100, 400, 600, 1000])[0];
+      const mm = reel * G / 1000; // taille sur l'image en mm
+      const cm = mm >= 10;
+      exos.push({ txt: `Sur une photographie au grossissement <b>×${G}</b>, ${nom} mesure <b>${cm ? fr(mm / 10) + " cm" : fr(mm) + " mm"}</b>. Quelle est sa taille réelle ?`, rep: reel,
+        sol: `${cm ? `On convertit : ${fr(mm / 10)} cm = ${fr(mm)} mm. ` : ""}Taille réelle = ${fr(mm)} mm ÷ ${G} = ${fr(mm / G, 5)} mm = <b>${fr(reel)} µm</b> (× 1 000 pour passer des mm aux µm).` });
+    } else {
+      const val = melange([10, 20, 50])[0], barre = melange([1, 2, 2.5])[0];
+      const mes = reel / val * barre;
+      exos.push({ txt: `Une barre d'échelle de <b>${val} µm</b> mesure <b>${fr(barre)} cm</b> sur le document ; ${nom} mesure <b>${fr(mes, 3)} cm</b>. Quelle est sa taille réelle ?`, rep: reel,
+        sol: `Taille réelle = (${fr(mes, 3)} ÷ ${fr(barre)}) × ${val} = ${fr(mes / barre, 4)} × ${val} = <b>${fr(reel)} µm</b>.` });
+    }
+  });
+  let k = 0, bons = 0;
+  const c = el(`<div class="carte"><div class="barre-p"><div style="width:0"></div></div><p class="doux n" style="font-size:.85rem;margin:0"></p><p class="q" style="font-size:1.05rem"></p><div class="ligne"><input type="text" inputmode="decimal" placeholder="ta réponse" aria-label="Ta réponse en micromètres"><span class="unite">µm</span><button class="btn ok">Vérifier</button><button class="btn sec aide">Indice</button></div><div class="fb"></div></div>`);
+  app.append(c);
+  const inp = $("input", c);
+  const pose = () => {
+    if (k === exos.length) { c.innerHTML = `<p class="score-gros">${bons}/${exos.length}</p><p>${bons === exos.length ? "Parfait : la méthode est acquise." : "Relis la méthode dans ta fiche (partie 1) et recommence : les nombres changent à chaque fois."}</p><div class="ligne"><button class="btn">Nouvelle série</button></div>`; $(".btn", c).onclick = taille; marquer("taille", bons + "/" + exos.length); return; }
+    $(".barre-p > div", c).style.width = (k / exos.length * 100) + "%";
+    $(".n", c).textContent = `Calcul ${k + 1} sur ${exos.length} · ${k % 2 === 0 ? "avec un grossissement" : "avec une barre d'échelle"}`;
+    $(".q", c).innerHTML = exos[k].txt; $(".fb", c).innerHTML = ""; inp.value = ""; inp.disabled = false; $(".ok", c).disabled = false;
+  };
+  $(".aide", c).onclick = () => { $(".fb", c).innerHTML = `<div class="expl">${k % 2 === 0 ? "Taille réelle = taille mesurée ÷ grossissement. Pense à convertir : 1 cm = 10 mm et 1 mm = 1 000 µm." : "Taille réelle = (taille de l'objet ÷ taille de la barre) × valeur de la barre."}</div>`; };
+  const verifier = () => {
+    const v = parseFloat(inp.value.replace(",", ".").replace(/\s/g, ""));
+    if (isNaN(v)) { inp.focus(); return; }
+    const e = exos[k], juste = Math.abs(v - e.rep) <= e.rep * 0.03;
+    if (juste) bons++;
+    inp.disabled = true; $(".ok", c).disabled = true;
+    let conseil = "";
+    if (!juste && Math.abs(v - e.rep * 1000) <= e.rep * 30) conseil = " Ton résultat est 1 000 fois trop grand : as-tu converti les mm en µm dans le bon sens ?";
+    else if (!juste && Math.abs(v - e.rep / 1000) <= e.rep / 30) conseil = " Ton résultat est 1 000 fois trop petit : il est en mm, pas en µm.";
+    else if (!juste && Math.abs(v - e.rep * 10) <= e.rep * 0.3) conseil = " Ton résultat est 10 fois trop grand : as-tu converti les cm en mm ?";
+    $(".fb", c).innerHTML = `<div class="expl"><b class="${juste ? "ok" : "ko"}">${juste ? "Juste !" : "Pas tout à fait."}</b>${conseil}<br>${e.sol}</div><div class="ligne"><button class="btn">${k + 1 < exos.length ? "Calcul suivant" : "Voir mon score"}</button></div>`;
+    $(".fb .btn", c).onclick = () => { k++; pose(); };
+  };
+  $(".ok", c).onclick = verifier;
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") verifier(); });
+  pose();
+}
+
+/* ---------- 3. Qui suis-je ? ---------- */
+function cellules() {
+  entete("Qui suis-je ?", "Lis les indices et reconnais la cellule.");
+  const C = ["Hématie", "Leucocyte", "Cellule de pomme de terre", "Cellule souche", "Cellule de feuille", "Levure"];
+  const Q = melange([
+    ["Je n'ai pas de noyau, j'ai la forme d'un disque biconcave et je vis environ 120 jours.", 0, "L'hématie (globule rouge) est anucléée : son cytoplasme est rempli d'hémoglobine."],
+    ["Je mesure 7 à 8 µm et je suis très déformable pour passer dans les plus petits vaisseaux.", 0, "Déformabilité et petite taille : caractéristiques structurales de l'hématie."],
+    ["J'ai un noyau volumineux et je défends l'organisme.", 1, "Le leucocyte (globule blanc) : noyau volumineux, 7 à 12 µm, fonction de défense."],
+    ["Certains d'entre nous portent des anticorps sur leur membrane.", 1, "Ce sont certains leucocytes, les lymphocytes B — pas tous les globules blancs."],
+    ["Le lugol me colore en bleu-violet foncé car je suis bourrée d'amyloplastes.", 2, "Les cellules du tubercule sont spécialisées dans le stockage de l'amidon."],
+    ["Je ne suis pas spécialisée, je peux me diviser indéfiniment et devenir une hématie ou un leucocyte.", 3, "C'est la cellule souche de la moelle osseuse, qui se différencie."],
+    ["Je vis dans la moelle osseuse et je suis à l'origine de toutes les cellules du sang.", 3, "La différenciation des cellules souches de la moelle osseuse produit hématies et leucocytes."],
+    ["Mes chloroplastes me permettent de fabriquer du glucose à la lumière.", 4, "Une cellule chlorophyllienne de feuille réalise la photosynthèse."],
+    ["Je suis un organisme à moi toute seule : sans dioxygène, je fabrique de l'éthanol.", 5, "La levure est unicellulaire : elle respire avec O₂ et fait la fermentation alcoolique sans O₂."],
+    ["Je respire le jour comme la nuit, mais à la lumière je rejette plus de dioxygène que je n'en consomme.", 4, "La cellule de feuille fait photosynthèse ET respiration ; à la lumière, la photosynthèse l'emporte."]
+  ]);
+  let k = 0, bons = 0;
+  const c = el(`<div class="carte"><div class="barre-p"><div></div></div><p class="q" style="font-size:1.1rem;font-weight:700;margin-top:12px"></p><div class="opts"></div><div class="fb"></div></div>`);
+  app.append(c);
+  const pose = () => {
+    if (k === Q.length) { c.innerHTML = `<p class="score-gros">${bons}/${Q.length}</p><p>Le réflexe à garder : une cellule spécialisée se décrit par sa <b>structure</b> (forme, noyau, organites, molécules) et sa <b>fonction</b>.</p><div class="ligne"><button class="btn">Recommencer</button></div>`; $(".btn", c).onclick = cellules; marquer("cellules", bons + "/" + Q.length); return; }
+    const [txt, rep, ex] = Q[k];
+    $(".barre-p > div", c).style.width = (k / Q.length * 100) + "%";
+    $(".q", c).textContent = "« " + txt + " »"; $(".fb", c).innerHTML = "";
+    const o = $(".opts", c); o.innerHTML = "";
+    C.forEach((n, j) => { const b = el(`<button class="opt">${n}</button>`); b.onclick = () => {
+      o.querySelectorAll(".opt").forEach((x, jj) => { x.disabled = true; if (jj === rep) x.classList.add("bon"); });
+      if (j === rep) bons++; else b.classList.add("faux");
+      $(".fb", c).innerHTML = `<div class="expl"><b class="${j === rep ? "ok" : "ko"}">${j === rep ? "Bien vu." : "C'était : " + C[rep] + "."}</b> ${ex}</div><div class="ligne"><button class="btn">Suivant</button></div>`;
+      $(".fb .btn", c).onclick = () => { k++; pose(); };
+    }; o.append(b); });
+  };
+  pose();
+}
+
+/* ---------- 4. MEC ---------- */
+function mec() {
+  entete("La MEC sous tension", "Règle le diamètre des fibres de collagène, puis tire sur le tissu.");
+  const c = el(`<div class="carte">
+    <svg id="tissu" viewBox="0 0 640 240" style="display:block;width:100%;height:auto;border-radius:16px;background:var(--papier-2)" role="img" aria-label="Tissu : cellules reliées par des fibres de collagène"></svg>
+    <p class="doux" style="font-size:.85rem;margin:6px 0 0;text-align:center">Cellules en vert, reliées par la MEC : fibres de collagène en orange.</p>
+    <div style="margin-top:12px"><div class="jauge"><span>Diamètre des fibres</span><span id="dval" style="margin-left:auto;color:var(--c)">70 nm</span></div>
+    <input id="diam" type="range" min="20" max="70" step="5" value="70" aria-label="Diamètre des fibres de collagène"></div>
+    <div class="jauge" style="margin-top:6px"><span>Cohésion du tissu</span><span id="coh" style="margin-left:auto"></span></div>
+    <div class="energie"><div id="cohb" style="width:100%"></div></div>
+    <div class="ligne"><button class="btn" id="tirer">Tirer sur le tissu</button><button class="btn sec" id="sain">Personne saine</button><button class="btn sec" id="malade">Malade (p. 19)</button></div>
+    <div id="cmt" class="expl"></div></div>`);
+  app.append(c);
+  const svg = $("#tissu", c), ns = "http://www.w3.org/2000/svg";
+  const cols = 6, rows = 3, cel = [];
+  for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) cel.push({ x: 320 + (q - 2.5) * 68, y: 60 + r * 85, q, r });
+  let d = 70, etire = 0;
+  function dessin() {
+    svg.innerHTML = "";
+    const f = 1 + etire * (70 - d) / 50 * 0.6 + etire * 0.04; // étirement : plus les fibres sont fines, plus le tissu s'allonge
+    const desord = (70 - d) / 50;
+    const pos = cel.map(p => ({ x: 320 + (p.x - 320) * f + Math.sin(p.q * 7 + p.r * 3) * desord * 8, y: p.y + Math.cos(p.q * 5 + p.r) * desord * 8 }));
+    const w = 1 + d / 70 * 5;
+    for (let i = 0; i < cel.length; i++) for (let j = i + 1; j < cel.length; j++) {
+      const a = cel[i], b = cel[j]; if (Math.abs(a.q - b.q) + Math.abs(a.r - b.r) !== 1) continue;
+      const casse = etire && d <= 30 && ((a.q * 3 + a.r * 5 + b.q) % 4 === 0);
+      const L = document.createElementNS(ns, "line");
+      L.setAttribute("x1", pos[i].x); L.setAttribute("y1", pos[i].y); L.setAttribute("x2", pos[j].x); L.setAttribute("y2", pos[j].y);
+      L.setAttribute("stroke", casse ? "var(--ko)" : "#d9a05b"); L.setAttribute("stroke-width", casse ? 1 : w); L.setAttribute("stroke-linecap", "round");
+      if (casse) L.setAttribute("stroke-dasharray", "4 10");
+      svg.append(L);
+    }
+    pos.forEach(p => { const C = document.createElementNS(ns, "ellipse"); C.setAttribute("cx", p.x); C.setAttribute("cy", p.y); C.setAttribute("rx", 24); C.setAttribute("ry", 22); C.setAttribute("fill", "var(--c-doux)"); C.setAttribute("stroke", "var(--c)"); C.setAttribute("stroke-width", 2.5); svg.append(C);
+      const N = document.createElementNS(ns, "circle"); N.setAttribute("cx", p.x); N.setAttribute("cy", p.y); N.setAttribute("r", 7); N.setAttribute("fill", "var(--c)"); svg.append(N); });
+
+    const coh = Math.round(20 + (d - 20) / 50 * 80);
+    $("#dval", c).textContent = d + " nm"; $("#coh", c).textContent = coh + " %"; $("#cohb", c).style.width = coh + "%";
+    $("#cmt", c).innerHTML = d >= 65 ? `<b class="ok">Tissu sain.</b> Fibres épaisses (≈ 70 nm) et bien organisées : la MEC relie solidement les cellules. Le tissu résiste à l'étirement.` :
+      d <= 30 ? `<b class="ko">Comme chez le malade.</b> Fibres fines (≈ 20 nm) et désorganisées : la MEC relie mal les cellules, le tissu est fragile et trop étirable${etire ? ", des liaisons cèdent" : ""}. D'où une peau très étirable, fine et fragile.` :
+      `Fibres plus fines : la cohésion diminue, le tissu s'étire davantage.`;
+  }
+  $("#diam", c).oninput = e => { d = +e.target.value; dessin(); };
+  $("#tirer", c).onclick = () => { etire = etire ? 0 : 1; $("#tirer", c).textContent = etire ? "Relâcher" : "Tirer sur le tissu"; dessin(); };
+  $("#sain", c).onclick = () => { d = 70; $("#diam", c).value = 70; dessin(); };
+  $("#malade", c).onclick = () => { d = 20; $("#diam", c).value = 20; dessin(); };
+  dessin();
+  const Q = [
+    ["Que se passe-t-il quand les fibres de collagène sont plus fines ?", ["Les cellules sont moins bien reliées : le tissu perd sa cohésion", "Les cellules se divisent plus vite", "Le tissu devient plus rigide", "Les cellules perdent leur noyau"], 0, "La MEC relie les cellules : si ses fibres sont fines et désorganisées, la cohésion du tissu diminue."],
+    ["Où se trouve la matrice extracellulaire ?", ["Entre les cellules", "Dans le noyau", "Dans le cytoplasme", "Dans les mitochondries"], 0, "Extra-cellulaire = à l'extérieur des cellules, entre elles."],
+    ["Quel raisonnement est attendu au DST sur la maladie de la p. 19 ?", ["Molécule → fibres → MEC → tissu → symptômes", "Organisme → cellule → noyau", "Symptômes → médicament", "Cellule → organite → énergie"], 0, "On part de l'anomalie moléculaire du collagène et on remonte jusqu'aux symptômes de l'organisme."]
+  ];
+  let bons = 0, k = 0;
+  const qz = el(`<div class="carte"><h3 style="font-size:1.15rem">3 questions pour vérifier</h3><p class="q" style="font-weight:700"></p><div class="opts"></div><div class="fb"></div></div>`);
+  app.append(qz);
+  const pose = () => {
+    if (k === Q.length) { qz.innerHTML = `<h3 style="font-size:1.15rem">${bons}/3</h3><p class="doux">À savoir par cœur : la MEC permet la cohésion des cellules, le maintien de leur forme et la communication entre les cellules.</p>`; marquer("mec", bons + "/3"); return; }
+    const [t, o, r, e] = Q[k], ordre = melange([0, 1, 2, 3]);
+    $(".q", qz).textContent = t; $(".fb", qz).innerHTML = ""; const box = $(".opts", qz); box.innerHTML = "";
+    ordre.forEach(j => { const b = el(`<button class="opt">${o[j]}</button>`); b.dataset.j = j; b.onclick = () => {
+      box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.j === r) x.classList.add("bon"); });
+      if (j === r) bons++; else b.classList.add("faux");
+      $(".fb", qz).innerHTML = `<div class="expl"><b class="${j === r ? "ok" : "ko"}">${j === r ? "Oui." : "Non."}</b> ${e}</div><div class="ligne"><button class="btn">Suivant</button></div>`;
+      $(".fb .btn", qz).onclick = () => { k++; pose(); };
+    }; box.append(b); });
+  };
+  pose();
+}
+
+/* ---------- 5. Simulateur du métabolisme ---------- */
+function simu() {
+  entete("Simulateur du métabolisme", "Choisis une cellule, allume ou éteins la lumière, mets ou retire le dioxygène : observe ce qui entre, ce qui sort, et l'énergie produite.");
+  const c = el(`<div class="carte">
+    <div class="seg" id="cell"><button data-v="feuille" class="on">🌿 Feuille</button><button data-v="muscle">💪 Muscle</button><button data-v="levure">🍞 Levure</button></div>
+    <div class="reglages"><div class="bascule"><span>☀️ Lumière</span><button class="sw on" id="lum" aria-label="Lumière"></button></div><div class="bascule"><span>🫧 Dioxygène disponible</span><button class="sw on" id="oxy" aria-label="Dioxygène"></button></div></div>
+    <svg id="scene" viewBox="0 0 360 300" role="img" aria-label="Schéma de la cellule et des échanges"></svg>
+    <div id="voies" style="margin-top:10px"></div>
+    <div class="res"><div><b>Entre dans la cellule (bleu)</b><span id="in"></span></div><div><b>Sort de la cellule (couleur)</b><span id="out"></span></div></div>
+    <div style="margin-top:10px"><div class="jauge"><span>Énergie utilisable produite</span><span id="enl" style="margin-left:auto"></span></div><div class="energie"><div id="en"></div></div></div>
+    <div class="expl" id="exp"></div></div>`);
+  app.append(c);
+  const S = { cell: "feuille", lum: true, oxy: true };
+  $("#cell", c).querySelectorAll("button").forEach(b => b.onclick = () => { S.cell = b.dataset.v; $("#cell", c).querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); maj(); });
+  $("#lum", c).onclick = e => { S.lum = !S.lum; e.currentTarget.classList.toggle("on", S.lum); maj(); };
+  $("#oxy", c).onclick = e => { S.oxy = !S.oxy; e.currentTarget.classList.toggle("on", S.oxy); maj(); };
+  function etat() {
+    const { cell, lum, oxy } = S;
+    if (cell === "feuille") {
+      if (lum) return { v: ["ph", "re"], in: "CO₂, eau, lumière", out: "O₂ (en excès)", e: 85, x: "À la lumière, la cellule chlorophyllienne fait la <b>photosynthèse</b> (chloroplastes) : elle fabrique du glucose à partir de CO₂ et d'eau. Elle fait aussi la <b>respiration</b> (mitochondries). La photosynthèse produit plus de O₂ que la respiration n'en consomme : on mesure un rejet de O₂." + (oxy ? "" : " Même sans dioxygène dans le milieu, la photosynthèse en fabrique : la respiration peut continuer.") };
+      if (oxy) return { v: ["re"], in: "glucose (ses réserves), O₂", out: "CO₂, eau", e: 80, x: "Dans le noir, plus de photosynthèse : la cellule ne fait plus que la <b>respiration</b>. Elle consomme du O₂ et rejette du CO₂, comme une cellule animale." };
+      return { v: ["0"], in: "presque rien", out: "presque rien", e: 8, x: "Ni lumière ni dioxygène : pas de photosynthèse, pas de respiration. La cellule ne produit presque plus d'énergie et ne peut pas tenir longtemps." };
+    }
+    const note = lum ? " La lumière ne change rien ici : cette cellule n'a pas de chloroplastes." : "";
+    if (cell === "muscle") {
+      if (oxy) return { v: ["re"], in: "glucose, O₂", out: "CO₂, eau", e: 100, x: "Avec assez de dioxygène, la cellule musculaire fait la <b>respiration</b> dans ses mitochondries : dégradation <b>totale</b> du glucose, beaucoup d'énergie (footing, effort modéré)." + note };
+      return { v: ["fe"], in: "glucose", out: "acide lactique", e: 22, x: "Effort intense : le sang n'apporte plus assez de O₂. La cellule réalise la <b>fermentation lactique</b>, anaérobie : dégradation <b>partielle</b> du glucose, peu d'énergie, l'acide lactique s'accumule dans le sang." + note };
+    }
+    if (oxy) return { v: ["re"], in: "glucose, O₂", out: "CO₂, eau", e: 100, x: "Avec du dioxygène, la levure <b>respire</b> : beaucoup d'énergie, elle se multiplie beaucoup et produit très peu d'éthanol (expérience 1 de l'ex. 5 p. 49)." + note };
+    return { v: ["fe"], in: "glucose", out: "éthanol, CO₂", e: 22, x: "Sans dioxygène, la levure fait la <b>fermentation alcoolique</b> : elle produit de l'éthanol, reçoit peu d'énergie et se multiplie très peu (expérience 3)." + note };
+  }
+  const NOM = { ph: ["v-ph", "Photosynthèse · chloroplaste"], re: ["v-re", "Respiration · mitochondrie"], fe: ["v-fe", "Fermentation · cytoplasme"], 0: ["v-0", "Presque aucune voie active"] };
+  function maj() {
+    const E = etat();
+    $("#voies", c).innerHTML = E.v.map(v => `<span class="voie ${NOM[v][0]}">${NOM[v][1]}</span>`).join("");
+    $("#in", c).textContent = E.in; $("#out", c).textContent = E.out;
+    $("#en", c).style.width = E.e + "%"; $("#enl", c).textContent = E.e >= 80 ? "beaucoup" : E.e >= 20 ? "peu" : "presque rien";
+    $("#exp", c).innerHTML = E.x;
+    scene(E);
+  }
+  function scene(E) {
+    const s = $("#scene", c), { cell, lum } = S;
+    const forme = cell === "feuille" ? `<rect x="88" y="62" width="184" height="176" rx="16" fill="var(--papier)" stroke="var(--c)" stroke-width="7"/>` : cell === "muscle" ? `<rect x="48" y="96" width="264" height="108" rx="54" fill="var(--papier)" stroke="#e07b4a" stroke-width="4"/>` : `<ellipse cx="180" cy="150" rx="98" ry="84" fill="var(--papier)" stroke="#c9a46a" stroke-width="4"/>`;
+    const actif = v => E.v.includes(v);
+    const T = (x, y, t, f, coul, g) => `<text x="${x}" y="${y}" text-anchor="middle" fill="${coul}" font-size="${f}" font-weight="${g || 800}" font-family="Atkinson Hyperlegible Next, sans-serif">${t}</text>`;
+    let org = "";
+    if (cell === "feuille") org += `<ellipse cx="150" cy="118" rx="50" ry="24" fill="#3f9a3a" opacity="${actif("ph") ? 1 : .35}"/>` + T(150, 123, "chloroplaste", 12.5, "#fff");
+    const mx = cell === "feuille" ? 212 : 150, my = cell === "feuille" ? 190 : 140;
+    org += `<ellipse cx="${mx}" cy="${my}" rx="48" ry="22" fill="#c8673a" opacity="${actif("re") ? 1 : .3}"/>` + T(mx, my + 5, "mitochondrie", 12, "#fff");
+    if (cell !== "feuille") org += `<circle cx="228" cy="150" r="20" fill="var(--papier-2)" stroke="var(--doux)" stroke-width="2"/>` + T(228, 154, "noyau", 11, "var(--doux)", 600);
+    if (actif("fe")) org += T(cell === "muscle" ? 150 : 170, cell === "muscle" ? 186 : 196, "fermentation", 13, "#9f86ee");
+    const soleil = lum ? `<g><circle cx="30" cy="30" r="15" fill="var(--sol)"/><g stroke="var(--sol)" stroke-width="3.5" stroke-linecap="round">${[0, 45, 90, 135, 180, 225, 270, 315].map(a => { const r = Math.PI * a / 180; return `<line x1="${30 + Math.cos(r) * 20}" y1="${30 + Math.sin(r) * 20}" x2="${30 + Math.cos(r) * 27}" y2="${30 + Math.sin(r) * 27}"/>`; }).join("")}</g></g>` : `<text x="10" y="42" font-size="28">🌙</text>`;
+    const mols = (txt, chemin, coul, n) => Array.from({ length: n }, (_, i) => { const deb = (i * 2.6 / n).toFixed(2); return `<g opacity="0"><rect x="-29" y="-13" width="58" height="26" rx="13" fill="${coul}"/>${T(0, 5, txt, 13, "#fff")}<animateMotion dur="2.6s" begin="${deb}s" repeatCount="indefinite" path="${chemin}"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.15;0.85;1" dur="2.6s" begin="${deb}s" repeatCount="indefinite"/></g>`; }).join("");
+    let flux = "";
+    const ENTREE_G = "M 0 150 L 82 150", ENTREE_H = "M 180 0 L 180 80", SORTIE_D = "M 278 150 L 360 150", SORTIE_B = "M 180 222 L 180 300";
+    const ins = E.in.includes("presque") ? [] : E.in.split(", ").filter(x => x !== "lumière" && !x.startsWith("glucose ("));
+    const outs = E.out.includes("presque") ? [] : E.out.split(", ");
+    const court = x => x.replace(" (en excès)", "").replace("acide lactique", "ac. lact.");
+    ins.forEach((m, i) => flux += mols(court(m), i ? ENTREE_H : ENTREE_G, "#4a7fd6", 1));
+    outs.forEach((m, i) => flux += mols(court(m), i ? SORTIE_B : SORTIE_D, m.includes("O₂") && !m.includes("CO₂") ? "#2f95b5" : m.includes("CO₂") ? "#6f7786" : m.includes("éthanol") ? "#8b6fe0" : "#a95bcc", 1));
+    s.innerHTML = soleil + forme + org + flux;
+  }
+  maj();
+  // défis
+  const D = [
+    ["Fais produire de l'éthanol à une cellule.", s => s.cell === "levure" && !s.oxy, "Levure sans dioxygène : fermentation alcoolique."],
+    ["Fais rejeter du dioxygène à une cellule.", s => s.cell === "feuille" && s.lum, "Seule une cellule chlorophyllienne éclairée rejette du O₂ (photosynthèse > respiration)."],
+    ["Montre une cellule végétale qui respire sans faire de photosynthèse.", s => s.cell === "feuille" && !s.lum && s.oxy, "Dans le noir, la cellule de feuille ne fait plus que respirer."],
+    ["Reproduis la situation d'un 400 m à fond.", s => s.cell === "muscle" && !s.oxy, "Muscle en manque de O₂ : fermentation lactique."]
+  ];
+  let dk = 0;
+  const df = el(`<div class="carte"><h3 style="font-size:1.15rem">Défis du simulateur</h3><p class="q" style="font-weight:700"></p><div class="ligne"><button class="btn">J'ai réglé, vérifier</button></div><div class="fb"></div></div>`);
+  app.append(df);
+  const poseD = () => {
+    if (dk === D.length) { df.innerHTML = `<h3 style="font-size:1.15rem">Les 4 défis sont réussis 🎉</h3><p class="doux">Tu sais prévoir la voie métabolique selon la cellule et les conditions : c'est exactement ce qu'on te demandera d'interpréter dans un document au DST.</p>`; marquer("simu", true); return; }
+    $(".q", df).textContent = `Défi ${dk + 1}/4 · ${D[dk][0]}`; $(".fb", df).innerHTML = "";
+  };
+  $(".btn", df).onclick = () => {
+    const ok = D[dk][1](S);
+    $(".fb", df).innerHTML = `<div class="expl"><b class="${ok ? "ok" : "ko"}">${ok ? "Réussi !" : "Pas encore."}</b> ${ok ? D[dk][2] : "Change la cellule ou les réglages, puis vérifie à nouveau."}</div>`;
+    if (ok) setTimeout(() => { dk++; poseD(); }, 1600);
+  };
+  poseD();
+}
+
+/* ---------- 6. Défi final ---------- */
+const QCM = [
+  ["Quelle est la plus petite de ces échelles du vivant ?", ["La molécule", "L'organite", "La cellule", "Le tissu"], "La molécule (≈ 10⁻⁹ m) est plus petite que l'organite (≈ 10⁻⁶ m)."],
+  ["Que peut-on observer au microscope optique d'après ton cours ?", ["Les tissus et les cellules", "Les molécules", "La structure interne des mitochondries", "Rien de plus qu'à l'œil nu"], "MO : tissus et cellules (et quelques gros organites comme les chloroplastes ou les amyloplastes)."],
+  ["Sur une photo ×400, un objet mesure 4 mm. Taille réelle ?", ["10 µm", "1,6 mm", "100 µm", "1 µm"], "4 mm ÷ 400 = 0,01 mm = 10 µm."],
+  ["Quelle caractéristique de l'hématie favorise le transport du dioxygène ?", ["L'absence de noyau, qui laisse la place à l'hémoglobine", "Son noyau volumineux", "Ses anticorps membranaires", "Ses amyloplastes"], "Anucléée, l'hématie a un cytoplasme concentré en hémoglobine, qui fixe le O₂."],
+  ["Le lugol colore…", ["l'amidon en bleu-violet foncé", "le glucose en rouge", "les noyaux en vert", "le collagène en noir"], "Le lugol est le réactif de l'amidon, stocké dans les amyloplastes."],
+  ["Une cellule souche est une cellule…", ["non spécialisée, capable de se diviser et de se transformer en cellule spécialisée", "spécialisée dans la défense", "sans noyau", "de la matrice extracellulaire"], "C'est la définition soulignée dans ton cours."],
+  ["Où sont produites les cellules du sang ?", ["Dans la moelle osseuse", "Dans le cœur", "Dans le foie", "Dans les poumons"], "Par différenciation des cellules souches de la moelle osseuse."],
+  ["Lequel n'est PAS un rôle de la matrice extracellulaire ?", ["Produire de l'énergie", "Assurer la cohésion des cellules", "Maintenir leur forme", "Permettre la communication entre cellules"], "L'énergie est produite par le métabolisme (respiration, fermentation), pas par la MEC."],
+  ["Chez le malade de la p. 19, les fibres de collagène mesurent…", ["20 nm au lieu de 70 nm", "70 nm au lieu de 20 nm", "20 µm au lieu de 70 µm", "la même taille mais elles sont plus nombreuses"], "Observées au MET : plus fines (20 nm au lieu de 70 nm), déformées et désorganisées."],
+  ["Une voie métabolique, c'est…", ["une succession de réactions transformant une molécule en une autre", "l'ensemble de toutes les réactions de la cellule", "un organite", "une molécule d'énergie"], "Piège : « l'ensemble des réactions », c'est le métabolisme."],
+  ["La photosynthèse consomme…", ["du CO₂ et de l'eau, avec l'énergie lumineuse", "du glucose et du O₂", "seulement du glucose", "du O₂ et de l'eau"], "Elle produit du glucose (et rejette du O₂) dans les chloroplastes."],
+  ["La respiration cellulaire se déroule dans…", ["les mitochondries", "les chloroplastes", "les amyloplastes", "la matrice extracellulaire"], "Respiration : glucose + O₂ → CO₂ + eau + énergie, dans les mitochondries."],
+  ["La fermentation est…", ["une dégradation partielle du glucose, sans dioxygène", "une dégradation totale du glucose avec dioxygène", "une fabrication de glucose à la lumière", "le stockage de l'amidon"], "Elle produit de l'éthanol ou de l'acide lactique et peu d'énergie."],
+  ["Pourquoi les levures se multiplient-elles plus en présence de dioxygène ?", ["La respiration fournit beaucoup plus d'énergie que la fermentation", "Le dioxygène leur sert de nourriture", "L'éthanol les nourrit", "La fermentation les tue immédiatement"], "Dégradation totale du glucose = beaucoup plus d'énergie = plus de croissance."],
+  ["Un organisme autotrophe…", ["fabrique sa matière organique à partir de matière minérale", "se nourrit d'autres êtres vivants", "vit sans dioxygène", "ne respire jamais"], "Les végétaux chlorophylliens sont autotrophes grâce à la photosynthèse."],
+  ["Une feuille éclairée réalise…", ["la photosynthèse et la respiration", "seulement la photosynthèse", "seulement la respiration", "la fermentation lactique"], "Ses cellules respirent en permanence ; à la lumière, la photosynthèse l'emporte."]
+];
+function defi(liste) {
+  const questions = liste || melange(QCM.map((q, i) => i));
+  entete("Défi final", liste ? `On refait tes ${liste.length} erreur(s).` : "16 questions sur tout le chapitre, avec l'explication à chaque fois.");
+  let k = 0, bons = 0; const rates = [];
+  const c = el(`<div class="carte"><div class="barre-p"><div></div></div><p class="doux n" style="font-size:.85rem;margin:0"></p><p class="q" style="font-size:1.1rem;font-weight:700"></p><div class="opts"></div><div class="fb"></div></div>`);
+  app.append(c);
+  const pose = () => {
+    if (k === questions.length) {
+      const note = Math.round(bons / questions.length * 20 * 2) / 2;
+      c.innerHTML = `<p class="score-gros">${bons}/${questions.length}</p><p>Soit environ <b>${fr(note, 1)}/20</b>. ${bons === questions.length ? "Impeccable !" : bons >= questions.length * 0.75 ? "Très bien : revois les questions ratées." : "Relis la fiche, puis refais tes erreurs."}</p><div class="ligne">${rates.length ? '<button class="btn" id="err">Refaire mes erreurs</button>' : ""}<button class="btn sec" id="re">Nouveau défi</button></div>`;
+      if (rates.length) $("#err", c).onclick = () => defi(rates.slice());
+      $("#re", c).onclick = () => defi();
+      if (!liste) marquer("defi", bons + "/" + questions.length);
+      return;
+    }
+    const [t, o, e] = QCM[questions[k]], ordre = melange([0, 1, 2, 3]);
+    $(".barre-p > div", c).style.width = (k / questions.length * 100) + "%";
+    $(".n", c).textContent = `Question ${k + 1} sur ${questions.length}`;
+    $(".q", c).textContent = t; $(".fb", c).innerHTML = "";
+    const box = $(".opts", c); box.innerHTML = "";
+    ordre.forEach(j => { const b = el(`<button class="opt">${o[j]}</button>`); b.dataset.j = j; b.onclick = () => {
+      box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.j === 0) x.classList.add("bon"); });
+      if (j === 0) bons++; else { b.classList.add("faux"); rates.push(questions[k]); }
+      $(".fb", c).innerHTML = `<div class="expl"><b class="${j === 0 ? "ok" : "ko"}">${j === 0 ? "Juste." : "Non."}</b> ${e}</div><div class="ligne"><button class="btn">${k + 1 < questions.length ? "Question suivante" : "Voir mon score"}</button></div>`;
+      $(".fb .btn", c).onclick = () => { k++; pose(); };
+    }; box.append(b); });
+  };
+  pose();
+}
+
+accueil();
+</script>
+</body>
+</html>
