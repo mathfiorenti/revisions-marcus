@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SVT · Organisation fonctionnelle du vivant — Fiches de révision</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&family=Young+Serif&display=swap">
+<link rel="stylesheet" href="../commun/fiche.css">
+<script src="../commun/fiche.js" defer></script>
+<style>
+.f-def .src{display:inline-block;font-family:var(--texte);font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--c-doux);color:var(--c);margin-left:8px;vertical-align:middle}
+.f-def .src.plus{background:var(--mid-doux);color:var(--mid)}
+.etoile{display:inline-block;font-family:var(--texte);font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--mid-doux);color:var(--mid);vertical-align:middle;margin-left:6px;letter-spacing:.04em}
+.svg-t{fill:var(--encre);font-family:var(--texte);font-size:15px}
+.svg-d{fill:var(--doux);font-family:var(--texte);font-size:13px}
+.svg-c{fill:var(--c)}.svg-cs{stroke:var(--c)}.svg-cd{fill:var(--c-doux)}
+.svg-p{fill:var(--papier-2);stroke:var(--trait)}
+.svg-l{stroke:var(--doux);fill:none}
+.svg-ok{fill:var(--ok)}.svg-ko{fill:var(--ko)}.svg-mid{fill:var(--mid)}
+.calc{font-variant-numeric:tabular-nums;background:var(--papier-2);border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:700}
+.escalier{display:flex;flex-direction:column;gap:6px}
+.escalier > div{margin:0 calc(var(--i) * 9px);display:grid;grid-template-columns:auto 1fr;gap:0 10px;padding:9px 14px;border-radius:12px;background:var(--c-doux)}
+.escalier b{font-weight:800}.escalier .t{text-align:right;color:var(--c);font-weight:800;white-space:nowrap}.escalier .e{grid-column:1 / -1;color:var(--doux);font-size:.88rem}
+.chaine{display:flex;flex-direction:column;align-items:stretch;max-width:460px;margin:0 auto}
+.chaine > div{padding:10px 14px;border-radius:14px;background:var(--c-doux);text-align:center}
+.chaine > div b{display:block}.chaine > div span{color:var(--doux);font-size:.92rem}
+.chaine > div.fin{background:var(--ko-doux);border:1px solid var(--ko)}
+.chaine .fl{text-align:center;color:var(--c);font-weight:800;font-size:1.2rem;line-height:1.4}
+.voie3 ul{margin:.4em 0 0;padding-left:1.1em;font-size:.95rem}
+@media print{body{font-size:9.5pt;line-height:1.38}.f-def,.f-carte,.f-retiens,.f-piege,.f-methode,.f-exemple,.f-question{padding:6px 10px;margin:5px 0}.f-schema{padding:8px;margin:8px 0}.escalier > div{padding:4px 10px}h3{margin:10px 0 4px}.f-flip .recto,.f-flip .verso{padding:6px 10px}}
+.verif{list-style:none;padding:0;margin:.4em 0 0}
+.verif li{position:relative;padding:10px 12px 10px 40px;margin:8px 0;border-radius:12px;background:var(--papier);border:1px solid var(--trait);display:flex;flex-direction:column;gap:3px}
+.verif li::before{content:"";position:absolute;left:12px;top:13px;width:16px;height:16px;border-radius:5px;border:2px solid var(--doux)}
+.verif .ou{font-weight:800}.verif .ecrit{color:var(--doux);font-size:.93rem}.verif .juste{font-size:.97rem}
+.lex td:first-child{font-weight:800;color:var(--c);white-space:nowrap}
+</style>
+</head>
+<body data-matiere="svt">
+<main class="f-page">
+  <header class="f-hero">
+    <div class="f-sur">SVT · Seconde · Interro de la semaine</div>
+    <h1>Matrices extracellulaires et métabolisme des cellules</h1>
+    <p class="f-sous">Les deux derniers cours en détail, le début du chapitre en rappels, et à la fin la liste des points à vérifier dans tes notes.</p>
+    <div class="f-chips"><span class="f-chip">Interro · 1 h</span><span class="f-chip">MEC ★</span><span class="f-chip">Métabolisme ★</span><span class="f-chip">Rappels du début</span><span class="f-chip">À vérifier dans tes notes</span></div>
+  </header>
+
+  <section class="f-section" id="vue" data-court="L'interro">
+    <h2><span class="n">0</span>Ce qui t'attend à l'interro</h2>
+    <div class="f-retiens"><div class="f-etiquette">Une interro d'1 heure, cette semaine</div>
+      <p>Elle porte <strong>surtout sur les deux derniers cours</strong> : les <strong>matrices extracellulaires</strong> (partie 2) et le <strong>métabolisme des cellules</strong> (partie 3). Le début du chapitre (échelles du vivant, cellules spécialisées) est résumé en rappels dans la partie 1 : il peut servir, mais ce n'est pas le cœur de l'interro.</p>
+    </div>
+    <div class="f-grille deux">
+      <div class="f-carte"><b>Ce qu'on peut te demander</b><ul style="margin:.4em 0 0"><li>des <b>définitions</b> mot pour mot (MEC, métabolisme, voie métabolique, photosynthèse, respiration, fermentation, autotrophe, hétérotrophe) ;</li><li>d'<b>exploiter un document</b> (collagène au MET, courbe de dioxygène, expérience sur les levures) ;</li><li>de <b>comparer</b> respiration et fermentation.</li></ul></div>
+      <div class="f-carte"><b>Comment lire cette fiche</b><ul style="margin:.4em 0 0"><li><span class="src" style="display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--c-doux);color:var(--c)">Dans ton cours</span> : définition de ton professeur, à savoir mot pour mot.</li><li><b style="color:var(--mid)">Complément</b> : précise ton cours, utile pour gagner des points.</li><li><b style="color:var(--ko)">Piège</b> : erreur fréquente ou erreur repérée dans tes notes.</li></ul></div>
+    </div>
+  </section>
+
+  <section class="f-section" id="rappels" data-court="Rappels">
+    <h2><span class="n">1</span>Rappels : le début du chapitre</h2>
+    <p class="doux" style="color:var(--doux)">L'essentiel à avoir en tête, sans entrer dans le détail.</p>
+    <h3>Les échelles du vivant</h3>
+    <figure class="f-schema"><div class="escalier"><div style="--i:0"><b>Organisme</b><span class="t">10 m à 10⁻⁶ m</span></div><div style="--i:1"><b>Système</b><span class="t">1 m à 10⁻¹ m</span></div><div style="--i:2"><b>Organe</b><span class="t">10⁻¹ m</span></div><div style="--i:3"><b>Tissu</b><span class="t">10⁻² m</span></div><div style="--i:4"><b>Cellule</b><span class="t">10⁻⁵ m</span></div><div style="--i:5"><b>Organite</b><span class="t">10⁻⁶ m</span></div><div style="--i:6"><b>Molécule</b><span class="t">10⁻⁹ m</span></div></div>
+      <figcaption>Chaque niveau est formé du niveau inférieur. Œil nu : organisme, système, organe · microscope optique : tissu, cellule · microscope électronique : organite, molécule.</figcaption></figure>
+    <div class="f-methode"><div class="f-etiquette">Calculer une taille réelle</div>
+      <p><b>Avec un grossissement :</b> taille réelle = taille mesurée ÷ grossissement (ex. 3 mm sur une photo ×400 → 0,0075 mm = 7,5 µm).<br><b>Avec une barre d'échelle :</b> taille réelle = (taille de l'objet ÷ taille de la barre) × valeur de la barre.<br>1 mm = 1 000 µm · 1 µm = 1 000 nm.</p>
+    </div>
+    <h3>La spécialisation des cellules</h3>
+    <div class="f-def"><b>Cellule spécialisée</b>Chez les organismes pluricellulaires, les cellules sont caractérisées par leur <strong>structure</strong> (forme) et leur <strong>fonction</strong> ; elles peuvent posséder des <strong>organites</strong> et des <strong>molécules spécifiques</strong>. <span class="src">Dans ton cours</span></div>
+    <div class="f-table-w"><table>
+      <thead><tr><th>Cellule</th><th>Structure</th><th>Fonction</th></tr></thead>
+      <tbody>
+        <tr><td><b>Hématie</b> (globule rouge)</td><td>disque biconcave, sans noyau, 7-8 µm, riche en hémoglobine, vit 120 jours</td><td>transport de O₂ et CO₂</td></tr>
+        <tr><td><b>Leucocyte</b> (globule blanc)</td><td>noyau volumineux, 7-12 µm</td><td>défense de l'organisme</td></tr>
+        <tr><td><b>Cellule de pomme de terre</b></td><td>nombreux amyloplastes (organites qui stockent l'amidon, colorés par le lugol)</td><td>stockage de l'amidon</td></tr>
+      </tbody></table></div>
+    <div class="f-grille deux">
+      <div class="f-def"><b>Cellule souche</b>Cellule <strong>non spécialisée</strong>, capable de se diviser indéfiniment et de se transformer en cellule spécialisée pour réparer les tissus du corps. <span class="src">Dans ton cours</span></div>
+      <div class="f-def"><b>Différenciation</b>Transformation d'une cellule souche en cellule spécialisée. Les cellules du sang naissent ainsi dans la <strong>moelle osseuse</strong>. <span class="src plus">Complément</span></div>
+    </div>
+    <p style="font-size:.95rem">Chez un organisme <b>unicellulaire</b> (bactérie, levure), une seule cellule assure toutes les fonctions.</p>
+  </section>
+
+  <section class="f-section" id="mec" data-court="MEC ★">
+    <h2><span class="n">2</span>Les matrices extracellulaires <span class="etoile">★ priorité interro</span></h2>
+    <p><b>Problème du cours :</b> comment l'organisation des matrices extracellulaires assure-t-elle la cohésion des tissus ?</p>
+    <div class="f-def"><b>Matrice extracellulaire (MEC)</b>Réseau de <strong>molécules</strong> de nature chimique variée, situé <strong>entre les cellules</strong>, qui les relie entre elles et permet la formation de tissus solides et résistants. <span class="src">Dans ton cours</span></div>
+    <div class="f-grille trois">
+      <div class="f-carte" style="text-align:center"><b style="color:var(--c);font-size:1.15rem">Cohésion</b><br>des cellules</div>
+      <div class="f-carte" style="text-align:center"><b style="color:var(--c);font-size:1.15rem">Maintien</b><br>de leur forme</div>
+      <div class="f-carte" style="text-align:center"><b style="color:var(--c);font-size:1.15rem">Communication</b><br>entre les cellules</div>
+    </div>
+    <p style="text-align:center;color:var(--doux);font-size:.9rem;margin-top:-4px">Les 3 rôles de la MEC à citer (ton bilan).</p>
+
+    <h3>De quoi est faite la MEC ?</h3>
+    <figure class="f-schema">
+      <svg viewBox="0 0 360 200" style="max-width:460px" role="img" aria-label="Cellules d'un tissu séparées par une matrice extracellulaire faite de fibres">
+        <rect x="4" y="4" width="352" height="192" rx="16" fill="var(--papier-2)"/>
+        <g stroke="#d9a05b" stroke-width="4" stroke-linecap="round" fill="none"><path d="M10 60 Q90 40 180 70 T350 50"/><path d="M10 140 Q100 170 190 130 T350 150"/><path d="M60 10 Q80 100 50 190"/><path d="M180 10 Q160 100 200 190"/><path d="M300 10 Q320 100 290 190"/></g>
+        <g fill="var(--c-doux)" stroke="var(--c)" stroke-width="3"><ellipse cx="115" cy="100" rx="38" ry="30"/><ellipse cx="245" cy="98" rx="38" ry="30"/></g>
+        <g fill="var(--c)"><circle cx="115" cy="100" r="10"/><circle cx="245" cy="98" r="10"/></g>
+        <text x="115" y="146" text-anchor="middle" class="svg-t" font-weight="800">cellule</text><text x="245" y="146" text-anchor="middle" class="svg-t" font-weight="800">cellule</text>
+        <text x="180" y="28" text-anchor="middle" class="svg-t" font-weight="800" style="fill:#c4802f">MEC</text>
+      </svg>
+      <figcaption>Les cellules sont « enchâssées » dans un réseau de molécules qu'elles fabriquent elles-mêmes et qui les relie entre elles.</figcaption>
+    </figure>
+    <div class="f-exemple"><div class="f-etiquette">Complément · les molécules de la MEC</div>
+      <p>Ton cours dit « réseau de molécules de nature chimique variée ». On y trouve surtout des <b>protéines fibreuses</b> : le <b>collagène</b> (solidité) et l'élastine (élasticité), ainsi que des sucres complexes. Ce sont les cellules qui fabriquent ces molécules et les libèrent autour d'elles.</p>
+    </div>
+    <div class="f-grille deux">
+      <div class="f-def"><b>Collagène</b>Protéine de la MEC formant des <strong>fibres</strong> très résistantes (environ 70 nm de diamètre chez une personne saine) : elle donne sa solidité aux tissus (peau, tendons). <span class="src plus">Complément</span></div>
+      <div class="f-def"><b>MET</b>Microscope électronique à transmission : il permet de voir les fibres de collagène, de l'ordre de quelques dizaines de nanomètres. <span class="src plus">Complément</span></div>
+    </div>
+
+    <h3>Le raisonnement du cours (questions p. 19)</h3>
+    <div class="f-chiffres">
+      <div class="f-chiffre"><b data-compte="70" data-suffixe=" nm">70 nm</b><span>diamètre normal d'une fibre de collagène</span></div>
+      <div class="f-chiffre"><b data-compte="20" data-suffixe=" nm">20 nm</b><span>chez le malade : 3,5 fois plus fine</span></div>
+    </div>
+    <figure class="f-schema"><div class="chaine"><div><b>Molécule</b><span>anomalie du collagène</span></div><span class="fl">↓</span><div><b>Fibres (vues au MET)</b><span>plus fines, déformées, désorganisées</span></div><span class="fl">↓</span><div><b>MEC</b><span>mal organisée, moins cohésive</span></div><span class="fl">↓</span><div><b>Tissu (peau)</b><span>cellules mal reliées : tissu fragile</span></div><span class="fl">↓</span><div class="fin"><b>Organisme : symptômes</b><span>peau très étirable, fine, fragile ; tendons laxes</span></div></div>
+      <figcaption>Le raisonnement traverse les échelles : de la molécule à l'organisme. C'est ce qu'on attend de toi.</figcaption>
+    </figure>
+    <div class="f-retiens"><div class="f-etiquette">La phrase-bilan à savoir écrire</div>
+      <p>Chez le malade, les fibres de collagène sont plus fines (20 nm au lieu de 70 nm) et désorganisées : la MEC relie moins bien les cellules de la peau. Moins cohésives, ces cellules forment un tissu fragile et trop étirable. <strong>La cohésion d'un tissu dépend donc de l'organisation des molécules de sa MEC.</strong></p>
+    </div>
+    <div class="f-methode"><div class="f-etiquette">Exemple de réponse rédigée (question p. 19)</div>
+      <p><b>Je vois</b> qu'au MET, les fibres de collagène du malade mesurent 20 nm de diamètre au lieu de 70 nm chez une personne saine, et qu'elles sont déformées et désorganisées. <b>Je sais</b> que le collagène est une molécule de la MEC, qui assure la cohésion des cellules. <b>J'en déduis</b> que la MEC du malade relie mal les cellules de sa peau : le tissu est moins cohésif, ce qui explique une peau fragile et très étirable.</p>
+    </div>
+    <div class="f-piege"><div class="f-etiquette">Piège · à vérifier dans ton bilan</div>
+      <p>Dans le texte à trous, tu as complété « ces molécules permettent l'<i>organisation</i> entre les cellules ». Le mot attendu est très probablement <strong>« l'adhérence »</strong> (le programme dit que les molécules de la MEC permettent l'<b>adhérence cellulaire</b>). Vérifie avec la correction de ton professeur.</p>
+      <p>Ne confonds pas : la MEC est <b>à l'extérieur</b> des cellules (<i>extra</i>cellulaire), le cytoplasme est à l'intérieur.</p>
+    </div>
+    <div class="f-exemple"><div class="f-etiquette">Pour aller plus loin (programme de seconde)</div>
+      <p>Les végétaux ont aussi une MEC : c'est la <strong>paroi</strong>, riche en cellulose, qui entoure chaque cellule et la rend rigide. C'est elle qui dessine les « polygones » que tu vois au microscope dans la pomme de terre ou l'oignon.</p>
+    </div>
+    <div class="f-question"><div class="f-etiquette">Teste-toi en 3 minutes</div>
+      <ol><li>Définis la MEC.</li><li>Cite ses trois rôles.</li><li>Quel est le diamètre normal d'une fibre de collagène ? et chez le malade ?</li><li>Explique en une phrase pourquoi la peau du malade est très étirable.</li></ol>
+    </div>
+  </section>
+
+  <section class="f-section" id="metabolisme" data-court="Métabolisme ★">
+    <h2><span class="n">3</span>Le métabolisme des cellules <span class="etoile">★ priorité interro</span></h2>
+    <div class="f-def"><b>Métabolisme</b>Ensemble des transformations biochimiques (réactions chimiques, transformations de matière et d'énergie) qui se déroulent dans une cellule pour assurer ses besoins. <span class="src">Dans ton cours</span></div>
+    <div class="f-def"><b>Voie métabolique</b>Succession de réactions biochimiques transformant une molécule en une autre. <span class="src">Dans ton cours</span></div>
+    <div class="f-piege"><div class="f-etiquette">Piège · à corriger dans tes notes</div>
+      <p>À côté de « voie métabolique », tu as noté « (c'est l'ensemble des réactions chimiques) » : ça, c'est la définition du <strong>métabolisme</strong>. Une <strong>voie</strong> métabolique est <strong>une</strong> chaîne de réactions (la respiration, la photosynthèse…) ; le métabolisme est l'ensemble de toutes ces voies.</p>
+    </div>
+    <div class="f-def"><b>Équipement spécialisé</b>Le métabolisme dépend de l'équipement de chaque cellule : ses <strong>organites</strong> et ses <strong>macromolécules</strong>, dont les <strong>enzymes</strong>. <span class="src">Dans ton cours</span> <br><span style="color:var(--doux);font-size:.92rem">Une enzyme est une protéine qui permet à une réaction précise de se faire dans la cellule. Sans chloroplastes, une cellule ne peut pas faire la photosynthèse.</span></div>
+
+    <h3>Les trois voies métaboliques à connaître</h3>
+    <div class="f-grille trois"><div class="f-carte voie3" style="border-top:5px solid #3f9a3a"><b style="color:#3f9a3a;font-size:1.1rem">Photosynthèse</b><ul><li><b>Consomme :</b> CO₂ + eau + énergie lumineuse</li><li><b>Produit :</b> glucose (+ O₂ rejeté)</li><li><b>Dioxygène :</b> produit</li><li><b>Glucose :</b> fabriqué</li><li><b>Organite :</b> chloroplaste</li><li><b>Qui ? :</b> cellules chlorophylliennes (feuilles)</li></ul></div><div class="f-carte voie3" style="border-top:5px solid #c8673a"><b style="color:#c8673a;font-size:1.1rem">Respiration</b><ul><li><b>Consomme :</b> glucose + O₂</li><li><b>Produit :</b> CO₂ + eau + <b>beaucoup</b> d'énergie</li><li><b>Dioxygène :</b> nécessaire (<b>aérobie</b>)</li><li><b>Glucose :</b> dégradé <b>totalement</b></li><li><b>Organite :</b> mitochondrie</li><li><b>Qui ? :</b> presque toutes les cellules, végétales comprises</li></ul></div><div class="f-carte voie3" style="border-top:5px solid #8b6fe0"><b style="color:#8b6fe0;font-size:1.1rem">Fermentation</b><ul><li><b>Consomme :</b> glucose</li><li><b>Produit :</b> éthanol ou acide lactique + <b>peu</b> d'énergie</li><li><b>Dioxygène :</b> pas nécessaire (<b>anaérobie</b>)</li><li><b>Glucose :</b> dégradé <b>partiellement</b></li><li><b>Organite :</b> aucun (cytoplasme)</li><li><b>Qui ? :</b> levures, muscles en effort intense, bactéries du yaourt</li></ul></div></div>
+
+    <div class="f-def"><b>Photosynthèse</b>Voie métabolique cellulaire produisant du <strong>glucose</strong> à partir de <strong>CO₂</strong> et d'<strong>eau</strong>, en utilisant l'<strong>énergie lumineuse</strong>. Elle a lieu dans les <strong>chloroplastes</strong>. <span class="src">Dans ton cours</span></div>
+    <div class="f-def"><b>Autotrophe</b>Se dit d'un organisme (ou d'une cellule) qui fabrique sa propre matière organique à partir de matière minérale (grâce à la photosynthèse). <span class="src">Dans ton cours</span></div>
+    <div class="f-def"><b>Respiration cellulaire</b>Voie métabolique cellulaire qui dégrade <strong>totalement</strong> le glucose en dioxyde de carbone (et eau) en consommant du <strong>dioxygène</strong>, afin de produire de l'<strong>énergie</strong> utilisable par la cellule. Elle a lieu dans les <strong>mitochondries</strong>. <span class="src">Dans ton cours</span></div>
+    <div class="f-def"><b>Hétérotrophe</b>Se dit d'une cellule ou d'un organisme qui utilise des molécules organiques (prises dans son milieu ou sa nourriture) pour produire ses propres molécules. <span class="src">Dans ton cours</span></div>
+    <div class="f-def"><b>Fermentation</b>Voie métabolique cellulaire qui dégrade <strong>partiellement</strong> le glucose en produisant une molécule organique (<strong>éthanol</strong> ou <strong>acide lactique</strong>) pour fournir de l'énergie à la cellule. Elle ne nécessite pas de dioxygène. <span class="src">Dans ton cours</span></div>
+    <div class="f-grille deux">
+      <div class="f-def"><b>Anaérobie</b>Qui se déroule sans dioxygène (la fermentation). <span class="src">Dans ton cours</span></div>
+      <div class="f-def"><b>Aérobie</b>Qui nécessite du dioxygène (la respiration). <span class="src plus">Complément</span></div>
+    </div>
+
+
+    <h3>Reconnaître la voie métabolique dans un document</h3>
+    <div class="f-table-w"><table>
+      <thead><tr><th>Si le document montre…</th><th>alors c'est…</th></tr></thead>
+      <tbody>
+        <tr><td>une <b>consommation de O₂</b> (et un rejet de CO₂)</td><td><b>respiration</b></td></tr>
+        <tr><td>un <b>rejet de O₂</b> à la lumière (et une consommation de CO₂)</td><td><b>photosynthèse</b> (plus forte que la respiration)</td></tr>
+        <tr><td>une production d'<b>éthanol</b> ou d'<b>acide lactique</b>, sans O₂</td><td><b>fermentation</b></td></tr>
+        <tr><td>une forte <b>croissance</b> (multiplication des cellules)</td><td>beaucoup d'énergie, donc plutôt <b>respiration</b></td></tr>
+      </tbody></table></div>
+    <div class="f-retiens"><div class="f-etiquette">Lire une courbe de dioxygène (ExAO)</div>
+      <p>Une sonde mesure le O₂ dans une enceinte fermée. La courbe montre le <strong>bilan</strong> de toutes les voies en même temps : si elle descend, la cellule consomme plus de O₂ qu'elle n'en produit (respiration) ; si elle monte à la lumière, la photosynthèse produit plus de O₂ que la respiration n'en consomme. <strong>Une plante éclairée respire toujours</strong> : on ne le voit simplement pas sur la courbe.</p>
+    </div>
+    <h3>Les bilans à écrire (en mots)</h3>
+    <div class="f-fleches">
+      <div><b>Photosynthèse</b><br>CO₂ + eau <span style="color:var(--c)">—lumière→</span> glucose + O₂</div>
+      <div><b>Respiration</b><br>glucose + O₂ → CO₂ + eau + énergie</div>
+      <div><b>Fermentation alcoolique</b><br>glucose → éthanol + CO₂ + un peu d'énergie</div>
+      <div><b>Fermentation lactique</b><br>glucose → acide lactique + un peu d'énergie</div>
+    </div>
+
+    <h3>Deux métabolismes reliés dans une même cellule de feuille</h3>
+    <figure class="f-schema">
+      <svg viewBox="0 0 360 360" style="max-width:460px" role="img" aria-label="Cellule chlorophyllienne : le chloroplaste fabrique glucose et dioxygène utilisés par la mitochondrie">
+        <defs><marker id="fl3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--encre)"/></marker></defs>
+        <g style="font-family:var(--texte)">
+          <circle cx="34" cy="34" r="18" fill="#e6b422"/><text x="62" y="30" class="svg-t" font-weight="800">lumière</text>
+          <line x1="48" y1="50" x2="92" y2="112" stroke="#e6b422" stroke-width="4" marker-end="url(#fl3)"/>
+          <rect x="60" y="80" width="240" height="200" rx="24" fill="var(--papier-2)" stroke="var(--c)" stroke-width="6"/>
+          <ellipse cx="140" cy="135" rx="62" ry="32" fill="#3f9a3a"/><text x="140" y="132" text-anchor="middle" fill="#fff" font-weight="800" font-size="14">chloroplaste</text><text x="140" y="150" text-anchor="middle" fill="#fff" font-size="12">photosynthèse</text>
+          <ellipse cx="220" cy="228" rx="62" ry="30" fill="#c8673a"/><text x="220" y="225" text-anchor="middle" fill="#fff" font-weight="800" font-size="14">mitochondrie</text><text x="220" y="243" text-anchor="middle" fill="#fff" font-size="12">respiration</text>
+          <path d="M200 140 Q250 150 240 192" fill="none" stroke="var(--encre)" stroke-width="2.5" marker-end="url(#fl3)"/><text x="294" y="184" text-anchor="end" class="svg-t" font-size="13" font-weight="700">glucose, O₂</text>
+          <path d="M160 222 Q110 210 122 172" fill="none" stroke="var(--encre)" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#fl3)"/><text x="70" y="268" class="svg-t" font-size="13" font-weight="700">CO₂, eau</text>
+          <line x1="10" y1="330" x2="80" y2="270" stroke="var(--doux)" stroke-width="2.5" marker-end="url(#fl3)"/><text x="6" y="352" class="svg-d" font-size="13">CO₂ + eau entrent</text>
+          <line x1="250" y1="98" x2="330" y2="30" stroke="var(--doux)" stroke-width="2.5" marker-end="url(#fl3)"/><text x="354" y="20" text-anchor="end" class="svg-d" font-size="13">O₂ en excès</text>
+          <line x1="285" y1="262" x2="340" y2="320" stroke="var(--doux)" stroke-width="2.5" marker-end="url(#fl3)"/><text x="354" y="345" text-anchor="end" class="svg-d" font-size="13">énergie</text>
+        </g>
+      </svg>
+      <figcaption>Les produits de l'une sont les réactifs de l'autre : les voies métaboliques sont <b>interconnectées</b>.</figcaption>
+    </figure>
+    <div class="f-piege"><div class="f-etiquette">Pièges classiques (dont tes notes)</div>
+      <ul>
+        <li>« La photosynthèse, métabolisme des cellules végétales » : seulement des cellules <strong>chlorophylliennes</strong> (avec chloroplastes). Une cellule de racine ou de tubercule de pomme de terre ne fait pas la photosynthèse : l'amidon qu'elle stocke vient des feuilles.</li>
+        <li>Les plantes <strong>respirent aussi</strong>, jour et nuit. Une plante est autotrophe, mais ses cellules ont des mitochondries. Le jour, la photosynthèse l'emporte : on mesure un dégagement de O₂.</li>
+        <li>Écris <strong>CO₂</strong> avec le 2 <strong>en bas</strong> (en indice : 2 atomes d'oxygène), pas « CO² ».</li>
+        <li>Fermentation ≠ absence d'énergie : elle en fournit, mais <strong>beaucoup moins</strong> que la respiration, car le glucose n'est dégradé que partiellement (l'éthanol contient encore de l'énergie : il brûle !).</li>
+      </ul>
+    </div>
+
+    <h3>L'exemple des levures (exercice 5 p. 49)</h3>
+    <div class="f-table-w"><table>
+      <thead><tr><th>Expérience</th><th>Éthanol</th><th>Croissance</th><th>Métabolisme</th></tr></thead>
+      <tbody>
+        <tr><td>1 · O₂ présent</td><td>très faible</td><td>importante</td><td><b>respiration</b></td></tr>
+        <tr><td>2 · air appauvri</td><td>plus important</td><td>beaucoup plus faible</td><td>surtout <b>fermentation</b></td></tr>
+        <tr><td>3 · sans O₂</td><td>grande quantité</td><td>très faible</td><td><b>fermentation</b></td></tr>
+      </tbody></table></div>
+    <div class="f-retiens"><div class="f-etiquette">Conclusion modèle</div>
+      <p>La levure est un organisme unicellulaire capable de <strong>deux métabolismes</strong> selon son milieu : en présence de dioxygène, elle respire (consommation de glucose et de O₂) ; sans dioxygène, elle fermente (glucose → éthanol). La respiration fournissant beaucoup plus d'énergie, les levures se multiplient bien plus quand elles respirent.</p>
+    </div>
+    <div class="f-piege"><div class="f-etiquette">Piège · à corriger dans ta copie</div>
+      <p>À la question 2, tu as écrit « c'est la fermentation alcoolique car les levures <i>ne produisent pas</i> d'éthanol » : c'est l'inverse, la fermentation alcoolique <strong>produit</strong> de l'éthanol. Et dans l'expérience 3, la croissance est très faible mais pas nulle : la fermentation fournit un peu d'énergie.</p>
+    </div>
+    <div class="f-question"><div class="f-etiquette">Teste-toi en 3 minutes</div>
+      <ol><li>Différence entre métabolisme et voie métabolique ?</li><li>Quel organite pour la respiration ? pour la photosynthèse ?</li><li>Pourquoi la respiration fournit-elle plus d'énergie que la fermentation ?</li><li>Une plante est-elle autotrophe ou hétérotrophe ? Ses cellules respirent-elles ?</li></ol>
+    </div>
+  </section>
+
+
+  <section class="f-section" id="outils" data-court="Méthode">
+    <h2><span class="n">4</span>Méthode et lexique</h2>
+    <div class="f-methode"><div class="f-etiquette">Exploiter un document : je vois → je sais → j'en déduis</div>
+      <ol class="f-etapes">
+        <li><b>Je vois</b> : je décris avec des valeurs chiffrées et leurs unités, en comparant au <b>témoin</b> (personne saine, présence de O₂, lumière…).</li>
+        <li><b>Je sais</b> : j'apporte la connaissance du cours qui explique l'observation.</li>
+        <li><b>J'en déduis</b> : je réponds exactement à la question posée.</li>
+      </ol>
+    </div>
+    <div class="f-table-w"><table>
+      <thead><tr><th>Verbe de consigne</th><th>Ce qu'on attend</th></tr></thead>
+      <tbody>
+        <tr><td><b>Définir</b></td><td>La définition du cours, mot pour mot.</td></tr>
+        <tr><td><b>Décrire</b></td><td>Ce qu'on voit, avec des chiffres et unités, sans expliquer.</td></tr>
+        <tr><td><b>Expliquer / interpréter</b></td><td>Donner la cause avec une connaissance du cours (« car », « grâce à »).</td></tr>
+        <tr><td><b>Justifier</b></td><td>Prouver avec un argument tiré du document.</td></tr>
+        <tr><td><b>Comparer</b></td><td>Points communs ET différences, idéalement en tableau.</td></tr>
+      </tbody></table></div>
+    <h3>Lexique · à savoir pour l'interro</h3>
+    <div class="f-table-w"><table class="lex">
+      <tbody>
+        <tr><td>MEC</td><td>Réseau de molécules variées entre les cellules ; permet leur adhérence et des tissus solides et résistants. Rôles : cohésion, maintien de la forme, communication.</td></tr>
+        <tr><td>Collagène</td><td>Protéine fibreuse de la MEC qui donne sa solidité aux tissus (fibres d'environ 70 nm).</td></tr>
+        <tr><td>MET</td><td>Microscope électronique à transmission.</td></tr>
+        <tr><td>Métabolisme</td><td>Ensemble des transformations biochimiques d'une cellule.</td></tr>
+        <tr><td>Voie métabolique</td><td>Succession de réactions transformant une molécule en une autre.</td></tr>
+        <tr><td>Enzyme</td><td>Macromolécule (protéine) qui permet une réaction précise dans la cellule.</td></tr>
+        <tr><td>Photosynthèse</td><td>CO₂ + eau + lumière → glucose (+ O₂), dans les chloroplastes.</td></tr>
+        <tr><td>Respiration</td><td>Glucose + O₂ → CO₂ + eau + énergie ; dégradation totale, dans les mitochondries.</td></tr>
+        <tr><td>Fermentation</td><td>Dégradation partielle du glucose sans O₂ → éthanol ou acide lactique + peu d'énergie.</td></tr>
+        <tr><td>Autotrophe</td><td>Fabrique sa matière organique à partir de matière minérale.</td></tr>
+        <tr><td>Hétérotrophe</td><td>Utilise des molécules organiques pour produire ses propres molécules.</td></tr>
+        <tr><td>Aérobie / anaérobie</td><td>Avec dioxygène / sans dioxygène.</td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section class="f-section" id="teste" data-court="Teste-toi">
+    <h2><span class="n">5</span>Teste-toi</h2>
+    <p style="color:var(--doux)">Touche une carte pour la retourner.</p>
+    <div class="f-grille deux">
+      <div class="f-flip"><div><div class="recto">Définis la matrice extracellulaire.</div><div class="verso">Réseau de molécules de nature chimique variée, entre les cellules, qui permet leur adhérence et la formation de tissus solides et résistants.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Quels sont les 3 rôles de la MEC ?</div><div class="verso">La cohésion des cellules, le maintien de leur forme, la communication entre les cellules.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Pourquoi la peau du malade (p. 19) est-elle très étirable ?</div><div class="verso">Ses fibres de collagène sont plus fines (20 nm au lieu de 70) et désorganisées : la MEC relie mal les cellules, le tissu est moins cohésif.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Métabolisme ou voie métabolique : lequel est « l'ensemble » ?</div><div class="verso">Le métabolisme = l'ensemble des transformations. Une voie métabolique = une succession de réactions.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Photosynthèse : réactifs, produits, organite ?</div><div class="verso">CO₂ + eau + énergie lumineuse → glucose (+ O₂), dans les chloroplastes.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Respiration : réactifs, produits, organite ?</div><div class="verso">Glucose + O₂ → CO₂ + eau + énergie, dans les mitochondries.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Qu'est-ce qu'une fermentation ?</div><div class="verso">Dégradation partielle du glucose, sans O₂, qui produit de l'éthanol ou de l'acide lactique et peu d'énergie.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Pourquoi la fermentation fournit-elle moins d'énergie ?</div><div class="verso">Le glucose n'est dégradé que partiellement : l'éthanol ou l'acide lactique contiennent encore de l'énergie.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Autotrophe ou hétérotrophe : une plante ? un humain ?</div><div class="verso">Plante : autotrophe (photosynthèse). Humain : hétérotrophe (utilise des molécules organiques de sa nourriture).</div></div></div>
+      <div class="f-flip"><div><div class="recto">Une plante éclairée respire-t-elle ?</div><div class="verso">Oui, jour et nuit. À la lumière, la photosynthèse produit plus de O₂ que la respiration n'en consomme.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Que fait une levure sans dioxygène ?</div><div class="verso">Elle fait la fermentation alcoolique : elle produit de l'éthanol (et du CO₂), reçoit peu d'énergie et se multiplie peu.</div></div></div>
+      <div class="f-flip"><div><div class="recto">Que fait un muscle en effort intense, quand le O₂ manque ?</div><div class="verso">Il fait la fermentation lactique : il produit de l'acide lactique.</div></div></div>
+    </div>
+  </section>
+
+  <section class="f-section" id="verifier" data-court="À vérifier">
+    <h2><span class="n">6</span>Avant l'interro : vérifie ces points dans tes notes</h2>
+    <p>En relisant ton classeur, j'ai repéré quelques erreurs ou imprécisions. Corrige-les dans tes notes (au stylo vert, par exemple) pour ne pas les apprendre de travers. Coche chaque point une fois corrigé.</p>
+    <div class="f-retiens"><div class="f-etiquette">Les plus importants pour l'interro</div>
+      <ul class="verif">
+        <li><span class="ou">Bilan sur les matrices extracellulaires</span><span class="ecrit">Tu as écrit : « ces molécules permettent l'<i>organisation</i> entre les cellules »</span><span class="juste">Le mot attendu est très probablement <b>« l'adhérence »</b> : les molécules de la MEC permettent l'adhérence des cellules. <b>À vérifier avec la correction de ton professeur.</b></span></li>
+        <li><span class="ou">Le métabolisme des cellules, définition de la voie métabolique</span><span class="ecrit">Tu as écrit : « (c'est l'ensemble des réactions chimiques) » à côté de « voie métabolique »</span><span class="juste">Ça, c'est la définition du <b>métabolisme</b>. Une <b>voie métabolique</b> est <b>une</b> succession de réactions qui transforme une molécule en une autre.</span></li>
+        <li><span class="ou">Photosynthèse et respiration</span><span class="ecrit">Tu as écrit : « CO² »</span><span class="juste">On écrit <b>CO₂</b> : le 2 est <b>en bas</b> (en indice), il indique 2 atomes d'oxygène.</span></li>
+        <li><span class="ou">Exercice 5 p. 49, question 2</span><span class="ecrit">Tu as écrit : « c'est la fermentation alcoolique car les levures <i>ne produisent pas</i> d'éthanol »</span><span class="juste">C'est l'inverse : la fermentation alcoolique <b>produit</b> de l'éthanol. Et dans l'expérience 3, la croissance est très faible mais pas nulle.</span></li>
+        <li><span class="ou">« La photosynthèse : métabolisme des cellules végétales »</span><span class="ecrit">Tu as écrit : toutes les cellules végétales feraient la photosynthèse</span><span class="juste">Seulement les cellules <b>chlorophylliennes</b> (avec chloroplastes). Une racine ou un tubercule de pomme de terre n'en font pas. Et toutes les cellules végétales <b>respirent</b>.</span></li>
+      </ul>
+    </div>
+    <div class="f-piege"><div class="f-etiquette">Dans le début du chapitre</div>
+      <ul class="verif">
+        <li><span class="ou">Planche des échelles du vivant</span><span class="ecrit">Tu as écrit : le <b>virus</b> est rangé parmi les organismes</span><span class="juste">Un virus n'est pas une cellule : il ne se multiplie qu'à l'intérieur d'une cellule et n'est généralement pas considéré comme vivant. Il est plus petit qu'une bactérie (environ 10⁻⁷ m).</span></li>
+        <li><span class="ou">Planche, ligne des tissus</span><span class="ecrit">Tu as écrit : « cellule hépatique »</span><span class="juste">C'est le <b>tissu</b> hépatique (du foie).</span></li>
+        <li><span class="ou">Les leucocytes</span><span class="ecrit">Tu as écrit : « possèdent des anticorps membranaires »</span><span class="juste">Seulement <b>certains lymphocytes</b> (les lymphocytes B), pas tous les globules blancs. Et les leucocytes circulent aussi dans le sang.</span></li>
+        <li><span class="ou">TP pomme de terre, résultats</span><span class="ecrit">Tu as écrit : « coloration noire »</span><span class="juste">Le lugol colore l'amidon en <b>bleu-violet foncé</b> (on dit souvent bleu-noir).</span></li>
+        <li><span class="ou">TP pomme de terre, schéma</span><span class="ecrit">Tu as écrit : titre « cellules de pomme de terre », mais seuls des amyloplastes sont dessinés</span><span class="juste">Si on demande des cellules, dessine leurs contours (les parois) avec plusieurs amyloplastes à l'intérieur.</span></li>
+      </ul>
+    </div>
+  </section>
+  <p class="f-fin">Fin de la fiche · Révisions Marcus · SVT</p>
+</main>
+</body>
+</html>

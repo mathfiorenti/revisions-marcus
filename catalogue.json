@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-07-5",
+  "version": "2026-11-08-11",
   "matieres": [
     {
       "id": "histoire",
@@ -199,51 +199,58 @@
       "pictogramme": "feuille",
       "chapitres": [
         {
-          "id": "svt-organisation-vivant",
-          "titre": "Organisation fonctionnelle du vivant",
-          "sousTitre": "Échelles du vivant, cellules spécialisées, MEC, métabolisme",
-          "ajoute": "2026-11-07",
+          "id": "svt-interro-mec-metabolisme",
+          "titre": "Interro · MEC et métabolisme",
+          "sousTitre": "Organisation fonctionnelle du vivant · interro d'1 h cette semaine",
+          "ajoute": "2026-11-08",
           "ressources": [
             {
-              "id": "svt-organisation-vivant-fiche",
+              "id": "svt-interro-fiche",
               "type": "fiche",
               "titre": "Fiche de révision",
-              "detail": "Tout le cours · 22 définitions, schémas, pièges de tes notes",
-              "fichier": "contenus/svt/svt-organisation-vivant-fiche.html"
+              "detail": "MEC et métabolisme en détail, rappels du début, points à vérifier dans tes notes",
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-fiche.html"
             },
             {
-              "id": "svt-organisation-vivant-fc",
+              "id": "svt-interro-fc",
               "type": "flashcards",
               "titre": "Flashcards",
-              "detail": "4 parties · 53 cartes",
-              "fichier": "contenus/svt/svt-organisation-vivant-flashcards.json",
+              "detail": "MEC, métabolisme et rappels · 53 cartes",
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-flashcards.json",
               "decks": [
-                "svt-echelles",
-                "svt-cellules",
                 "svt-mec",
-                "svt-metabolisme"
+                "svt-metabolisme",
+                "svt-echelles",
+                "svt-cellules"
               ]
             },
             {
-              "id": "svt-organisation-vivant-labo",
+              "id": "svt-interro-labo",
               "type": "quiz",
               "titre": "Labo interactif",
-              "detail": "Simulateur du métabolisme, MEC, calculs au microscope, défi de 16 questions",
-              "fichier": "contenus/svt/svt-organisation-vivant-labo.html"
+              "detail": "Simulateur du métabolisme, MEC sous tension, défi de 16 questions",
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-labo.html"
             },
             {
-              "id": "svt-organisation-vivant-dst-sujet",
+              "id": "svt-interro-exercices",
               "type": "entrainement",
-              "titre": "DST blanc · sujet",
-              "detail": "3 exercices type DST · 2 h · sur 20",
-              "fichier": "contenus/svt/svt-organisation-vivant-dst-blanc-sujet.html"
+              "titre": "Exercices d'entraînement",
+              "detail": "9 exercices, corrections à déplier",
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-exercices.html"
             },
             {
-              "id": "svt-organisation-vivant-dst-corrige",
+              "id": "svt-interro-sujets",
+              "type": "entrainement",
+              "titre": "Sujets d'interro",
+              "detail": "2 sujets type · 1 h · sur 20",
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-sujets.html"
+            },
+            {
+              "id": "svt-interro-corriges",
               "type": "corrige",
-              "titre": "DST blanc · corrigé",
+              "titre": "Corrigés des sujets d'interro",
               "detail": "À ouvrir après avoir fait le sujet",
-              "fichier": "contenus/svt/svt-organisation-vivant-dst-blanc-corrige.html"
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-corriges.html"
             }
           ]
         }

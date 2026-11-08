@@ -110,11 +110,11 @@ const ACTIVITES = [
 
 function accueil() {
   app.innerHTML = "";
-  app.append(el(`<div><div class="sur">SVT · Labo interactif</div><h1>Organisation fonctionnelle du vivant</h1><p class="doux">Six activités pour t'entraîner avant le DST. Les deux marquées ★ portent sur ce que ton professeur vient de faire.</p></div>`));
+  app.append(el(`<div><div class="sur">SVT · Labo interactif</div><h1>Organisation fonctionnelle du vivant</h1><p class="doux">Six activités pour t'entraîner avant l'interro. Les deux marquées ★ portent sur les deux derniers cours, ceux de l'interro.</p></div>`));
   const g = el(`<div class="tuiles"></div>`);
   ACTIVITES.forEach(a => {
     const etat = faits[a.k] ? `<span class="etat">✓ ${faits[a.k] === true ? "fait" : faits[a.k]}</span>` : "";
-    const b = el(`<button class="tuile${a.star ? " star" : ""}"><span class="ic">${a.ic}</span><span><b>${a.t}${a.star ? '<span class="badge">★ DST</span>' : ""}</b><span class="doux">${a.d}</span></span>${etat}</button>`);
+    const b = el(`<button class="tuile${a.star ? " star" : ""}"><span class="ic">${a.ic}</span><span><b>${a.t}${a.star ? '<span class="badge">★ interro</span>' : ""}</b><span class="doux">${a.d}</span></span>${etat}</button>`);
     b.onclick = () => { scrollTo(0, 0); a.f(); };
     g.append(b);
   });
@@ -299,7 +299,7 @@ function mec() {
   const Q = [
     ["Que se passe-t-il quand les fibres de collagène sont plus fines ?", ["Les cellules sont moins bien reliées : le tissu perd sa cohésion", "Les cellules se divisent plus vite", "Le tissu devient plus rigide", "Les cellules perdent leur noyau"], 0, "La MEC relie les cellules : si ses fibres sont fines et désorganisées, la cohésion du tissu diminue."],
     ["Où se trouve la matrice extracellulaire ?", ["Entre les cellules", "Dans le noyau", "Dans le cytoplasme", "Dans les mitochondries"], 0, "Extra-cellulaire = à l'extérieur des cellules, entre elles."],
-    ["Quel raisonnement est attendu au DST sur la maladie de la p. 19 ?", ["Molécule → fibres → MEC → tissu → symptômes", "Organisme → cellule → noyau", "Symptômes → médicament", "Cellule → organite → énergie"], 0, "On part de l'anomalie moléculaire du collagène et on remonte jusqu'aux symptômes de l'organisme."]
+    ["Quel raisonnement est attendu à l'interro sur la maladie de la p. 19 ?", ["Molécule → fibres → MEC → tissu → symptômes", "Organisme → cellule → noyau", "Symptômes → médicament", "Cellule → organite → énergie"], 0, "On part de l'anomalie moléculaire du collagène et on remonte jusqu'aux symptômes de l'organisme."]
   ];
   let bons = 0, k = 0;
   const qz = el(`<div class="carte"><h3 style="font-size:1.15rem">3 questions pour vérifier</h3><p class="q" style="font-weight:700"></p><div class="opts"></div><div class="fb"></div></div>`);
@@ -392,7 +392,7 @@ function simu() {
   const df = el(`<div class="carte"><h3 style="font-size:1.15rem">Défis du simulateur</h3><p class="q" style="font-weight:700"></p><div class="ligne"><button class="btn">J'ai réglé, vérifier</button></div><div class="fb"></div></div>`);
   app.append(df);
   const poseD = () => {
-    if (dk === D.length) { df.innerHTML = `<h3 style="font-size:1.15rem">Les 4 défis sont réussis 🎉</h3><p class="doux">Tu sais prévoir la voie métabolique selon la cellule et les conditions : c'est exactement ce qu'on te demandera d'interpréter dans un document au DST.</p>`; marquer("simu", true); return; }
+    if (dk === D.length) { df.innerHTML = `<h3 style="font-size:1.15rem">Les 4 défis sont réussis 🎉</h3><p class="doux">Tu sais prévoir la voie métabolique selon la cellule et les conditions : c'est exactement ce qu'on te demandera d'interpréter dans un document à l'interro.</p>`; marquer("simu", true); return; }
     $(".q", df).textContent = `Défi ${dk + 1}/4 · ${D[dk][0]}`; $(".fb", df).innerHTML = "";
   };
   $(".btn", df).onclick = () => {

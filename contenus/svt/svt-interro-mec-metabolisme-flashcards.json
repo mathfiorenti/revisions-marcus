@@ -1,24 +1,24 @@
 {
  "decks": {
   "svt-echelles": {
-   "titre": "Les échelles du vivant",
+   "titre": "Rappels · Les échelles du vivant",
    "sousTitre": "Niveaux, microscopes, calculs",
-   "ordre": 1
+   "ordre": 3
   },
   "svt-cellules": {
-   "titre": "La spécialisation des cellules",
+   "titre": "Rappels · La spécialisation des cellules",
    "sousTitre": "Sang, pomme de terre, cellules souches",
-   "ordre": 2
+   "ordre": 4
   },
   "svt-mec": {
    "titre": "Les matrices extracellulaires",
    "sousTitre": "Collagène et cohésion des tissus",
-   "ordre": 3
+   "ordre": 1
   },
   "svt-metabolisme": {
    "titre": "Le métabolisme des cellules",
    "sousTitre": "Photosynthèse, respiration, fermentation",
-   "ordre": 4
+   "ordre": 2
   }
  },
  "cards": [
