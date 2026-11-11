@@ -1,7 +1,7 @@
 /* Service worker : appli disponible hors ligne.
    Le code de l'appli (HTML, JS, CSS, JSON) est pris sur le réseau en priorité : une nouvelle version
    s'applique dès la réouverture. Les contenus lourds (PDF, images) restent en cache d'abord. */
-const VERSION = "rev-2026-11-08-11";
+const VERSION = "rev-2026-11-11-2";
 const SHELL = ["./", "index.html", "styles.css", "app.js", "config.js", "exos.js", "exos.css", "dst.js", "dst.json", "contenus/commun/fiche.css", "contenus/commun/fiche.js", "manifest.webmanifest", "catalogue.json",
   "icones/icone-192.png", "icones/icone-512.png", "icones/apple-touch-icon.png", "vendor/pdf.min.js", "vendor/pdf.worker.min.js"];
 

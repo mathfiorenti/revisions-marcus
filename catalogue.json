@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-08-11",
+  "version": "2026-11-11-2",
   "matieres": [
     {
       "id": "histoire",
@@ -12,7 +12,7 @@
           "id": "mediterranee-antique",
           "titre": "La Méditerranée antique",
           "sousTitre": "Les empreintes grecques et romaines · Athènes, Rome",
-          "ajoute": "2026-10-31",
+          "ajoute": "2026-11-11",
           "ressources": [
             {
               "id": "hist-fiches",
@@ -101,6 +101,20 @@
               "titre": "La fin de l'Empire d'Occident",
               "detail": "Extrait vidéo",
               "fichier": "contenus/histoire/medias/fb5f262b8fa2ebe8134a5090f538c366.mp4"
+            },
+            {
+              "id": "hist-ed-sujets",
+              "type": "entrainement",
+              "titre": "Études de documents · sujets d'interro",
+              "detail": "2 sujets sur Athènes · 1 h · sur 20",
+              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-sujets.html"
+            },
+            {
+              "id": "hist-ed-corriges",
+              "type": "corrige",
+              "titre": "Études de documents · corrigés",
+              "detail": "À ouvrir après avoir fait le sujet",
+              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-corriges.html"
             }
           ]
         }
