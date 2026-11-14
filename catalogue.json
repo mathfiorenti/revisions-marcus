@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-14-3",
+  "version": "2026-11-14-4",
   "matieres": [
     {
       "id": "histoire",
@@ -19,7 +19,8 @@
               "type": "fiche",
               "titre": "Fiches de révision",
               "detail": "9 fiches · frises, dates zéro faute, schémas, pièges · imprimable",
-              "fichier": "contenus/histoire/mediterranee-antique-fiches.html"
+              "fichier": "contenus/histoire/mediterranee-antique-fiches.html",
+              "pdf": "contenus/histoire/mediterranee-antique-fiches-imprimable.pdf"
             },
             {
               "id": "hist-fc",
@@ -51,7 +52,8 @@
               "type": "entrainement",
               "titre": "Développements construits",
               "detail": "Méthode + 8 sujets, corrigés à déplier",
-              "fichier": "contenus/histoire/mediterranee-antique-developpements-construits.html"
+              "fichier": "contenus/histoire/mediterranee-antique-developpements-construits.html",
+              "pdf": "contenus/histoire/mediterranee-antique-developpements-construits-imprimable.pdf"
             },
             {
               "id": "hist-v1",
@@ -107,14 +109,16 @@
               "type": "entrainement",
               "titre": "Études de documents · sujets d'interro",
               "detail": "2 sujets sur Athènes · 1 h · sur 20",
-              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-sujets.html"
+              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-sujets.html",
+              "pdf": "contenus/histoire/mediterranee-antique-etudes-documents-sujets-imprimable.pdf"
             },
             {
               "id": "hist-ed-corriges",
               "type": "corrige",
               "titre": "Études de documents · corrigés",
               "detail": "À ouvrir après avoir fait le sujet",
-              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-corriges.html"
+              "fichier": "contenus/histoire/mediterranee-antique-etudes-documents-corriges.html",
+              "pdf": "contenus/histoire/mediterranee-antique-etudes-documents-corriges-imprimable.pdf"
             }
           ]
         }
@@ -138,21 +142,24 @@
               "type": "fiche",
               "titre": "Fiche de révision",
               "detail": "Pennac, Zola, focalisation · Teste-toi",
-              "fichier": "contenus/francais/fiche-roman-sequences-1-2.html"
+              "fichier": "contenus/francais/fiche-roman-sequences-1-2.html",
+              "pdf": "contenus/francais/fiche-roman-sequences-1-2-imprimable.pdf"
             },
             {
               "id": "fr-eval-sujet",
               "type": "entrainement",
               "titre": "Évaluation blanche · sujet",
               "detail": "Le roman réaliste · 1 h",
-              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-sujet.html"
+              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-sujet.html",
+              "pdf": "contenus/francais/evaluation-blanche-roman-realiste-sujet-imprimable.pdf"
             },
             {
               "id": "fr-eval-corrige",
               "type": "corrige",
               "titre": "Évaluation blanche · corrigé",
               "detail": "À ouvrir après avoir fait le sujet",
-              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-corrige.html"
+              "fichier": "contenus/francais/evaluation-blanche-roman-realiste-corrige.html",
+              "pdf": "contenus/francais/evaluation-blanche-roman-realiste-corrige-imprimable.pdf"
             }
           ]
         }
@@ -183,7 +190,8 @@
               "type": "entrainement",
               "titre": "Cours, méthodes et exercices corrigés",
               "detail": "Définitions, méthodes, 12 exercices corrigés à déplier",
-              "fichier": "contenus/ses/ses-chapitre-1-revision-et-exercices.html"
+              "fichier": "contenus/ses/ses-chapitre-1-revision-et-exercices.html",
+              "pdf": "contenus/ses/ses-chapitre-1-revision-et-exercices-imprimable.pdf"
             }
           ]
         }
@@ -223,7 +231,8 @@
               "type": "fiche",
               "titre": "Fiche de révision",
               "detail": "MEC et métabolisme en détail, rappels du début, points à vérifier dans tes notes",
-              "fichier": "contenus/svt/svt-interro-mec-metabolisme-fiche.html"
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-fiche.html",
+              "pdf": "contenus/svt/svt-interro-mec-metabolisme-fiche-imprimable.pdf"
             },
             {
               "id": "svt-interro-fc",
@@ -250,21 +259,24 @@
               "type": "entrainement",
               "titre": "Exercices d'entraînement",
               "detail": "9 exercices, corrections à déplier",
-              "fichier": "contenus/svt/svt-interro-mec-metabolisme-exercices.html"
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-exercices.html",
+              "pdf": "contenus/svt/svt-interro-mec-metabolisme-exercices-imprimable.pdf"
             },
             {
               "id": "svt-interro-sujets",
               "type": "entrainement",
               "titre": "Sujets d'interro",
               "detail": "2 sujets type · 1 h · sur 20",
-              "fichier": "contenus/svt/svt-interro-mec-metabolisme-sujets.html"
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-sujets.html",
+              "pdf": "contenus/svt/svt-interro-mec-metabolisme-sujets-imprimable.pdf"
             },
             {
               "id": "svt-interro-corriges",
               "type": "corrige",
               "titre": "Corrigés des sujets d'interro",
               "detail": "À ouvrir après avoir fait le sujet",
-              "fichier": "contenus/svt/svt-interro-mec-metabolisme-corriges.html"
+              "fichier": "contenus/svt/svt-interro-mec-metabolisme-corriges.html",
+              "pdf": "contenus/svt/svt-interro-mec-metabolisme-corriges-imprimable.pdf"
             }
           ]
         }
@@ -296,21 +308,24 @@
               "type": "fiche",
               "titre": "Fiche de révision",
               "detail": "3 règles · tableaux, pièges, traduction corrigée",
-              "fichier": "contenus/anglais/interro-comparatifs-influence-for-fiche.html"
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-fiche.html",
+              "pdf": "contenus/anglais/interro-comparatifs-influence-for-fiche-imprimable.pdf"
             },
             {
               "id": "ang-interro1-sujet",
               "type": "entrainement",
               "titre": "Interro blanche",
               "detail": "30 min · sur 20 · 4 exercices",
-              "fichier": "contenus/anglais/interro-comparatifs-influence-for-sujet.html"
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-sujet.html",
+              "pdf": "contenus/anglais/interro-comparatifs-influence-for-sujet-imprimable.pdf"
             },
             {
               "id": "ang-interro1-corrige",
               "type": "corrige",
               "titre": "Corrigé de l’interro blanche",
               "detail": "À ouvrir après avoir fait le sujet",
-              "fichier": "contenus/anglais/interro-comparatifs-influence-for-corrige.html"
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-corrige.html",
+              "pdf": "contenus/anglais/interro-comparatifs-influence-for-corrige-imprimable.pdf"
             }
           ]
         }

@@ -3,7 +3,7 @@
 (function () {
 "use strict";
 const CFG = window.REV_CONFIG || {};
-const APP_VERSION = "03/11 · 0 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
+const APP_VERSION = "14/11 · 23 h"; // affichée dans Réglages pour vérifier que l'appareil a bien la dernière version
 const $ = (s, r = document) => r.querySelector(s);
 const app = $("#app");
 
@@ -56,6 +56,7 @@ const ICONS = {
   back: '<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
   chev: '<svg class="chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>',
   print: '<svg viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H4.5A1.5 1.5 0 0 1 3 15.5v-5A1.5 1.5 0 0 1 4.5 9h15a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5H17"/><path d="M7 14h10v7H7z"/></svg>',
+  pdf: '<svg viewBox="0 0 24 24"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg>',
   share: '<svg viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M5 11v8.5A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V11"/></svg>',
   zoom: '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8M10.5 8v5M8 10.5h5"/></svg>',
   speak: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>',
@@ -423,16 +424,20 @@ function vResource(id) {
   const body = h("div", { class: "reader-body" });
   const wrap = h("div", { class: "reader", style: { "--subj": subjColor(m) } }, bar, body);
   const url = r.fichier;
+  const nomPdf = ((x.c && x.c.titre ? x.c.titre + " - " : "") + r.titre).replace(/[\\/:*?"<>|]/g, " ").replace(/\s+/g, " ").trim();
+  const pdfUrl = r.pdf || (/\.pdf$/i.test(url) ? url : null);
+  const prep = pdfUrl ? preparerPdf(pdfUrl, nomPdf) : null;
   if (/\.pdf$/i.test(url)) {
     let zoom = 0;
     const pages = h("div", { class: "pages zoom-0" }, h("div", { class: "loading" }, "Ouverture de la fiche…"));
     bar.append(
       h("button", { class: "icon-btn", onclick: () => { zoom = 1 - zoom; pages.className = "pages zoom-" + zoom; if (pages._redraw) setTimeout(pages._redraw, 50); } }, svg("zoom"), h("span", { class: "lbl" }, "Zoom")),
-      h("button", { class: "icon-btn", onclick: () => sharePdf(url, r.titre) }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
+      h("button", { class: "icon-btn", onclick: () => sharePdf(url, nomPdf, prep) }, svg("pdf"), h("span", { class: "lbl" }, "PDF")));
     body.append(pages);
     renderPdf(url, pages);
   } else if (/\.html?$/i.test(url)) {
-    if (["fiche", "entrainement", "corrige"].includes(r.type)) bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); try { const w = f.contentWindow; (w.ficheImprimer || w.print).call(w); } catch (e) { window.open(url, "_blank"); } } }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
+    if (prep) bar.append(h("button", { class: "icon-btn", onclick: () => sharePdf(pdfUrl, nomPdf, prep) }, svg("pdf"), h("span", { class: "lbl" }, "PDF")));
+    else if (["fiche", "entrainement", "corrige"].includes(r.type)) bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); try { const w = f.contentWindow; (w.ficheImprimer || w.print).call(w); } catch (e) { window.open(url, "_blank"); } } }, svg("print"), h("span", { class: "lbl" }, "Imprimer")));
     bar.append(h("button", { class: "icon-btn", onclick: () => { const f = body.querySelector("iframe"); if (f && f.requestFullscreen) f.requestFullscreen().catch(() => {}); else window.open(url, "_blank"); } }, svg("expand"), h("span", { class: "lbl" }, "Plein écran")));
     body.append(h("iframe", { src: url, title: r.titre, allow: "fullscreen; autoplay", allowfullscreen: true }));
   } else if (/\.(mp4|webm|m4v)$/i.test(url)) {
@@ -480,13 +485,22 @@ async function renderPdf(url, box) {
     box.replaceChildren(h("div", { class: "loading" }, "Impossible d'afficher la fiche ici. ", h("a", { href: url, target: "_blank" }, "Ouvrir le PDF")));
   }
 }
-async function sharePdf(url, title) {
+/* PDF à enregistrer ou imprimer : le fichier est téléchargé dès l'ouverture du support, pour que le partage
+   (menu iPhone/iPad : Enregistrer dans Fichiers, Imprimer, AirDrop…) parte directement du toucher. */
+function preparerPdf(url, nom) {
+  const prep = { file: null };
+  prep.pret = fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
+    .then(b => (prep.file = new File([b], (nom || "fiche") + ".pdf", { type: "application/pdf" }))).catch(() => null);
+  return prep;
+}
+async function sharePdf(url, title, prep) {
   try {
-    const blob = await (await fetch(url)).blob();
-    const file = new File([blob], (title || "fiche") + ".pdf", { type: "application/pdf" });
-    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title }); return; }
+    let file = prep && prep.file;
+    if (!file && !prep) { const b = await (await fetch(url)).blob(); file = new File([b], (title || "fiche") + ".pdf", { type: "application/pdf" }); }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title }); return; }
   } catch (e) { if (e && e.name === "AbortError") return; }
-  window.open(url, "_blank");
+  // pas de partage de fichier possible (ordinateur, PDF pas encore prêt) : ouverture du PDF, qui se télécharge ou s'imprime depuis le navigateur
+  const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; a.download = (title || "fiche") + ".pdf"; document.body.append(a); a.click(); a.remove();
 }
 
 /* ---------------- flashcards : écrans ---------------- */
