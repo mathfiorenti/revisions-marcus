@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-11-2",
+  "version": "2026-11-14-3",
   "matieres": [
     {
       "id": "histoire",
@@ -284,7 +284,37 @@
       "couleur": "#1f86a3",
       "couleurNuit": "#5cc3df",
       "pictogramme": "bulle",
-      "chapitres": []
+      "chapitres": [
+        {
+          "id": "interro-comparatifs-influence-for",
+          "titre": "Interro · Comparatifs, influence, for",
+          "sousTitre": "Grammaire · 3 règles",
+          "ajoute": "2026-11-14",
+          "ressources": [
+            {
+              "id": "ang-interro1-fiche",
+              "type": "fiche",
+              "titre": "Fiche de révision",
+              "detail": "3 règles · tableaux, pièges, traduction corrigée",
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-fiche.html"
+            },
+            {
+              "id": "ang-interro1-sujet",
+              "type": "entrainement",
+              "titre": "Interro blanche",
+              "detail": "30 min · sur 20 · 4 exercices",
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-sujet.html"
+            },
+            {
+              "id": "ang-interro1-corrige",
+              "type": "corrige",
+              "titre": "Corrigé de l’interro blanche",
+              "detail": "À ouvrir après avoir fait le sujet",
+              "fichier": "contenus/anglais/interro-comparatifs-influence-for-corrige.html"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
